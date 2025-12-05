@@ -6,7 +6,6 @@
 #include "geometry/Translation2d.h"
 #include "swerve/SwerveAlign.h"
 #include "swerve/SwerveHeadingController.h"
-#include "Superstructure.h"
 
 #include <pathplanner/lib/trajectory/PathPlannerTrajectory.h>
 #include <pathplanner/lib/path/PathPlannerPath.h>
@@ -37,7 +36,6 @@ class Trajectory
 private:
     frc::Timer delayTimer;
     SwerveDrive &mDrive;
-    Superstructure &mSuperstructure;
     SwerveAlign &mAlign;
     Pigeon &pigeon;
     RobotConfig &config;
@@ -77,8 +75,7 @@ public:
         auto_3F 
     };
 
-    Trajectory(SwerveDrive &mDriveInput, Superstructure &mSuperstructure, SwerveHeadingController &mHeadingController, PhotonVision &cameraFrontInput, PhotonVision &cameraBackInput, SwerveAlign &align, Pigeon &pigeonInput, RobotConfig &configInput) : mDrive(mDriveInput), 
-                                                                                                                mSuperstructure(mSuperstructure),
+    Trajectory(SwerveDrive &mDriveInput, SwerveHeadingController &mHeadingController, PhotonVision &cameraFrontInput, PhotonVision &cameraBackInput, SwerveAlign &align, Pigeon &pigeonInput, RobotConfig &configInput) : mDrive(mDriveInput), 
                                                                                                                 mHeadingController(mHeadingController),
                                                                                                                 cameraBack(cameraBackInput),
                                                                                                                 cameraFront(cameraFrontInput),

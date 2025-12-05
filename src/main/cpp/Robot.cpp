@@ -12,9 +12,8 @@ void Robot::RobotInit()
 {
   mDrive.initModules();
   pigeon.init();
-  mSuperstructure.init();
 
-  frc::CameraServer::StartAutomaticCapture();
+  // frc::CameraServer::StartAutomaticCapture();
 
   // Choosers
   allianceChooser.SetDefaultOption("Red Alliance", redAlliance);
@@ -47,11 +46,7 @@ void Robot::RobotInit()
 
 }
 
-void Robot::RobotPeriodic()
-{
-  frc::SmartDashboard::PutNumber("enc1", mSuperstructure.mElevator.enc.GetPosition());
-  frc::SmartDashboard::PutNumber("enc2", mSuperstructure.mElevator.enc2.GetPosition());
-}
+void Robot::RobotPeriodic() {}
 
 void Robot::AutonomousInit()
 {
@@ -127,10 +122,8 @@ void Robot::AutonomousInit()
   }
 }
 
-void Robot::AutonomousPeriodic()
-{
-  mLED.Set_Color(frc::Color::kBrown);
-}
+void Robot::AutonomousPeriodic() {}
+
 void Robot::TeleopInit()
 {
   mDrive.state = DriveState::Teleop;
@@ -177,23 +170,7 @@ void Robot::TeleopPeriodic()
   // Driver
   int dPad = ctr.GetPOV();
   bool alignPV = ctr.GetR2Button();
-  bool intakeCoral = ctr.GetTriangleButton();
-  bool scoreCoral = ctr.GetCrossButtonPressed();
-  
-  // Co-driver
-  bool coralIntake = ctrOperator.GetR1Button();
-  bool level1 = ctrOperator.GetCrossButton();
-  bool level2 = ctrOperator.GetSquareButton();
-  bool level3 = ctrOperator.GetCircleButton();
-  bool level4 = ctrOperator.GetTriangleButton();
-
-  bool resetGyro = (ctrOperator.GetPOV() == 0) || (ctr.GetPOV() == 0);
-
-  bool zeroElevator = ctrOperator.GetL1ButtonPressed();
-  mSuperstructure.mElevator.motor.Set(-ctrOperator.GetLeftY() * 1);
-  mSuperstructure.mElevator.motor2.Set(-ctrOperator.GetLeftY() * 1);
-
-  int dPadOperator = ctrOperator.GetPOV();
+  bool resetGyro = (ctr.GetPOV() == 0);
   
   // Driving Modes
   double offSet = 0;
@@ -218,42 +195,34 @@ void Robot::TeleopPeriodic()
   else if(dPad==270) {
     coralSide = "left";
   }
-
-  if(level1) {
-    coralLevel = 1;
-    mSuperstructure.mElevator.setState(1);
-    elevatorLevel = "Level 1";
-  }
-  else if(level2) {
-    coralLevel = 2;
-    mSuperstructure.mElevator.setState(2);
-    elevatorLevel = "Level 2";
-  }
-  else if(level3) {
-    coralLevel = 3;
-    mSuperstructure.mElevator.setState(3);
-    elevatorLevel = "Level 3";
-  }
-  else if(level4) {
-    coralLevel = 4;
-    mSuperstructure.mElevator.setState(4);
-    elevatorLevel = "Level 4";
-  }
-  else if (coralIntake) {
-    coralLevel = 5;
-    elevatorLevel = "Coral Station";
-    mSuperstructure.mElevator.setState(5);
-  }
   
   if (ctr.GetR2ButtonPressed()) {
     align.forwardPID.Reset();
     align.strafePID.Reset();
   }
+  else if (ctr.GetR1ButtonPressed() && cameraBack.camera.GetLatestResult().HasTargets()) {
+    align.forwardPID.Reset();
+    align.strafePID.Reset();
+    float offset = cameraBack.getStrafeDistancetoTarget();
+    float distanceToTag = cameraBack.getDistanceToTarget();
+    float angle = cameraBack.getAngleSetpoint();
+    setpointX = mDrive.getOdometryPose().X().value() + (distanceToTag * 39.37);
+    setpointY = mDrive.getOdometryPose().Y().value() - (offset * 39.37);
+  }
+  else if (ctr.GetR1Button()) {
+    ChassisSpeeds speed = align.driveToSetpointX(setpointX, mDrive, pigeon);
+    ChassisSpeeds speeds = align.driveToSetpointY(setpointY, mDrive, pigeon);
+    vy = speed.vyMetersPerSecond;
+    vx = speeds.vyMetersPerSecond;
+    rot = 0;
+    // mHeadingController.setHeadingControllerState(SwerveHeadingController::ALIGN);
+    // mHeadingController.setSetpoint(cameraBack.getAngleSetpoint());
+    // rot = mHeadingController.calculate(pigeon.getBoundedAngleCW().getDegrees());
+  }
   else if (alignPV) { // Alignment Mode
-    if (cameraBack.isTargetDetected() || cameraFront.isTargetDetected()) {
-      if (cameraBack.isTargetDetected() && coralSide == "left") {
+    if (cameraBack.isTargetDetected() && coralSide == "left") {
         targetDistance = 0.275;
-        offSet = -0.07;
+        offSet = 0.078;
 
         ChassisSpeeds speeds = align.autoAlignPV(cameraBack, targetDistance, offSet);
         vx = speeds.vxMetersPerSecond;
@@ -266,7 +235,7 @@ void Robot::TeleopPeriodic()
       }
       else if (cameraFront.isTargetDetected() && coralSide == "right") {
         targetDistance = 0.275;
-        offSet = 0.07;
+        offSet = -0.07;
 
         ChassisSpeeds speeds = align.autoAlignPV(cameraFront, targetDistance, offSet);
         vx = speeds.vxMetersPerSecond;
@@ -277,7 +246,6 @@ void Robot::TeleopPeriodic()
         mHeadingController.setSetpoint(cameraFront.getAngleSetpoint());
         rot = mHeadingController.calculate(pigeon.getBoundedAngleCW().getDegrees());
       }
-    }
   }
   else // Normal driving mode
   {
@@ -300,30 +268,14 @@ void Robot::TeleopPeriodic()
       cleanDriveAccum);
   mDrive.updateOdometry();
 
-  // Superstructure
-  if (intakeCoral) {
-    mLED.Set_Color(frc::Color::kRed);
-
-    if (coralLevel != 4 && coralLevel != 1) {
-      mSuperstructure.intakeCoral();
-    }
-    else if (coralLevel == 1) {
-      mSuperstructure.mEndEffector.scoreL1();
-    }
-    else if (coralLevel == 4) {
-      mSuperstructure.mEndEffector.scoreL4();
-    }
-  }
-  else if (zeroElevator) {
-    mSuperstructure.mElevator.zero();
-  }
-  else if (!(cameraFront.isTargetDetected() && cameraBack.isTargetDetected())) {
-    mSuperstructure.mEndEffector.setState(EndEffector::STOP);
-    mLED.Set_Color(frc::Color::kGreen);
-  }
-  else if (cameraFront.isTargetDetected() || cameraBack.isTargetDetected()) {
-    mLED.Set_Color(frc::Color::kBlue);
-  }
+  frc::SmartDashboard::PutNumber("Odometry X", mDrive.getOdometryPose().X().value());
+  frc::SmartDashboard::PutNumber("Odometry Y", mDrive.getOdometryPose().Y().value());
+  frc::SmartDashboard::PutNumber("vx", vx);
+  frc::SmartDashboard::PutNumber("vy", vy);
+  frc::SmartDashboard::PutNumber("setpoint X", setpointX);
+  frc::SmartDashboard::PutNumber("setpoint y", setpointY);
+  frc::SmartDashboard::PutNumber("distance to tag", cameraBack.getDistanceToTarget());
+  frc::SmartDashboard::PutNumber("offset", cameraBack.getStrafeDistancetoTarget());
 }
 
 void Robot::DisabledInit()

@@ -8,7 +8,7 @@
 
 class SwerveAlign {
 public: 
-    frc::PIDController forwardPID{8.55, 0, 0.2};
+    frc::PIDController forwardPID{9.1, 0, 0.2}; // 8.55
     frc::PIDController strafePID{9.1, 0, 0.2};
     
     double forwardSpeed = 0;
@@ -91,7 +91,7 @@ public:
         double currentX = drive.getOdometryPose().X().value();
 
         //Tolerance
-        strafePID.SetTolerance(0.02, 0.01);
+        strafePID.SetTolerance(1.5, 0.01);
 
         if (!strafePID.AtSetpoint()) {
             double strafeSpeed = strafePID.Calculate(currentX, setpointX);
@@ -101,11 +101,12 @@ public:
             // else {
             //     strafeSpeed = fabs(strafeSpeed);
             // }
-            speeds = ChassisSpeeds::fromFieldRelativeSpeeds(strafeSpeed, 0, 0, pigeon.getBoundedAngleCW());
+            strafeSpeed = std::clamp(strafeSpeed, -10.0, 10.0);
+            speeds = ChassisSpeeds::fromFieldRelativeSpeeds(0, strafeSpeed, 0, pigeon.getBoundedAngleCW());
         }
         else {
             // strafeSpeed = 0;
-            speeds = ChassisSpeeds::fromRobotRelativeSpeeds(0, 0, 0);
+            speeds = ChassisSpeeds::fromFieldRelativeSpeeds(0, 0, 0, 0);
         }
         // prevErrorX = setpointX-currentX;
         return speeds;
@@ -117,7 +118,7 @@ public:
         double currentY = drive.getOdometryPose().Y().value();
 
         // Tolerance
-        forwardPID.SetTolerance(0.02, 0.01);
+        forwardPID.SetTolerance(14.5, 0.01);
 
         if (!forwardPID.AtSetpoint()) {
             double forwardSpeed = forwardPID.Calculate(currentY, setpointY);
@@ -127,7 +128,8 @@ public:
             // else {
             //     forwardSpeed = fabs(forwardSpeed);
             // }
-            speeds = ChassisSpeeds::fromRobotRelativeSpeeds(0, forwardSpeed, 0);
+            forwardSpeed = std::clamp(forwardSpeed, -10.0, 10.0);
+            speeds = ChassisSpeeds::fromFieldRelativeSpeeds(0, forwardSpeed, 0, pigeon.getBoundedAngleCW());
         }
         else {
             // forwardSpeed = 0;
@@ -139,8 +141,8 @@ public:
 
     ChassisSpeeds driveToSetpoint(float setpointX, float setpointY, SwerveDrive &drive, Pigeon &pigeon) {
         ChassisSpeeds speeds;
-        forwardPID.SetTolerance(0.05, 0.01);
-        strafePID.SetTolerance(0.05, 0.01);
+        forwardPID.SetTolerance(0.1, 0.01);
+        strafePID.SetTolerance(0.1, 0.01);
         float currentX = drive.getOdometryPose().X().value();
         float currentY = drive.getOdometryPose().Y().value();
 

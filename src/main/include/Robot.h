@@ -18,8 +18,6 @@
 #include <ctre/phoenix6/Pigeon2.hpp>
 #include "sensors/Pigeon.h"
 #include "sensors/LED.h"
-
-#include "Superstructure.h"
 #include "sensors/PhotonVision.h"
 
 class Robot : public frc::TimedRobot
@@ -45,12 +43,9 @@ public:
 
   // Modules/Devices
   frc::PS5Controller ctr = frc::PS5Controller(0);
-  frc::PS5Controller ctrOperator = frc::PS5Controller(1);
 
   pathplanner::RobotConfig pathConfig = pathplanner::RobotConfig::fromGUISettings();
   frc::SendableChooser<Trajectory::autos> mChooser;
-
-  Superstructure mSuperstructure;
 
   // Vision
   PhotonVision cameraFront = PhotonVision("cameraFront");
@@ -58,18 +53,20 @@ public:
 
   // For Auto Align
   SwerveAlign align;
+  float setpointX = 0;
+  float setpointY = 0;
 
   // Pigeon
   Pigeon pigeon{0};
 
   SwerveDrive mDrive = SwerveDrive(pigeon);
 
-  Trajectory mTrajectory = Trajectory(mDrive, mSuperstructure, mHeadingController, cameraFront, cameraBack, align, pigeon, pathConfig);
+  Trajectory mTrajectory = Trajectory(mDrive, mHeadingController, cameraFront, cameraBack, align, pigeon, pathConfig);
 
   //CANivore
-  ctre::phoenix6::CANBus canbus{"Drivetrain"};
-  ctre::phoenix6::CANBus::CANBusStatus canInfo = canbus.GetStatus();
-  float busUtil = canInfo.BusUtilization;
+  // ctre::phoenix6::CANBus canbus{"Drivetrain"};
+  // ctre::phoenix6::CANBus::CANBusStatus canInfo = canbus.GetStatus();
+  // float busUtil = canInfo.BusUtilization;
 
   // Teleop Controls
   float ctrPercent = 1.0;

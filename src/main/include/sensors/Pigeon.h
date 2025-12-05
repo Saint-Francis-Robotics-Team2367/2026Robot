@@ -11,7 +11,7 @@ private:
 public:
     ctre::phoenix6::hardware::Pigeon2 pigeon;
 
-    Pigeon(int deviceID) : pigeon(ctre::phoenix6::hardware::Pigeon2(deviceID, "Drivetrain"))
+    Pigeon(int deviceID) : pigeon(ctre::phoenix6::hardware::Pigeon2(deviceID, "rio"))
     {
     }
 

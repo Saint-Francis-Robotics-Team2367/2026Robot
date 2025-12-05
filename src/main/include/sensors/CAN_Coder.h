@@ -10,7 +10,7 @@ private:
 
 public:
     ctre::phoenix6::hardware::CANcoder encoder;
-    CAN_Coder(int canID) : encoder(ctre::phoenix6::hardware::CANcoder(canID, "Drivetrain"))
+    CAN_Coder(int canID) : encoder(ctre::phoenix6::hardware::CANcoder(canID, "rio"))
     {
         ID = canID;
     }

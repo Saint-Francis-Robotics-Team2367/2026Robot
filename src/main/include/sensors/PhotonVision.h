@@ -59,17 +59,6 @@ public:
         return camera.GetLatestResult().GetBestTarget().GetFiducialId();
     }
 
-    void getInformationOfSpecificTargetFiducial(auto targetsSpan, int fiducial) {
-        for (auto target : targetsSpan) {
-            if (target.GetFiducialId() == fiducial) {
-                targetDistanceMeters = target.GetBestCameraToTarget().Translation().Norm().value();
-                targetYaw = target.GetBestCameraToTarget().Rotation().Z().value();
-                targetFiducial = target.GetFiducialId();
-                targetxMeters = target.GetBestCameraToTarget().Translation().X().value();
-            }
-        }
-    }
-
     TagType getTagType() {
         if(camera.GetLatestResult().HasTargets()) {
             int tagID = getTagID();

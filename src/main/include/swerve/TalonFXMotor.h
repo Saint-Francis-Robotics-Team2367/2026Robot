@@ -43,7 +43,7 @@ private:
 public:
     pho::hardware::TalonFX motor;
 
-    TalonFXMotor(int deviceID) : motor(pho::hardware::TalonFX(deviceID, "Drivetrain"))
+    TalonFXMotor(int deviceID) : motor(pho::hardware::TalonFX(deviceID, "rio"))
     {
     }
 
