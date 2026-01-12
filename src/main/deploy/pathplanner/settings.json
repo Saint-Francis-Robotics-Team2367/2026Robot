@@ -3,11 +3,12 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "New Folder"
+    "2025 Paths",
+    "2026 Paths"
   ],
   "autoFolders": [
-    "New Folder",
-    "New New Folder"
+    "2025 Autos",
+    "2026 Autos"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
