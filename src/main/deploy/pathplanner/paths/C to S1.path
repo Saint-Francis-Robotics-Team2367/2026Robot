@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.607701754385965,
-        "y": 3.992567251461989
+        "x": 3.5015739520026905,
+        "y": 3.9966351170688696
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.239605264996225,
-        "y": 5.560576338525124
+        "x": 3.1334774626129507,
+        "y": 5.564644204132004
       },
       "isLocked": false,
       "linkedName": "C"
@@ -48,7 +48,7 @@
   "folder": "2026 Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 179.37040139158972
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
