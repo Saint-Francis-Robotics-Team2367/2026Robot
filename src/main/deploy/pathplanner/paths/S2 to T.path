@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6100593119810207,
-        "y": 3.7929181494661917
+        "x": 1.6239707602339184,
+        "y": 3.9501345029239774
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6100593119810203,
-        "y": 3.7929181494661917
+        "x": 2.623970760233918,
+        "y": 3.9501345029239774
       },
       "isLocked": false,
       "linkedName": "S2"
@@ -48,7 +48,7 @@
   "folder": "2026 Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -179.32345454417262
+    "rotation": 2.7927023657132914
   },
   "useDefaultConstraints": true
 }
