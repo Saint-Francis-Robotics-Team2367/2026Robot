@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -45.045732709161065
+    "rotation": -40.0
   },
   "reversed": false,
   "folder": "2026 Paths",

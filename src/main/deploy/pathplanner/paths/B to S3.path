@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.9057172918275036,
-        "y": 5.712255827663052
+        "x": 3.3736140350877193,
+        "y": 5.658052631578949
       },
       "isLocked": false,
       "linkedName": "B"
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 43.42697750260612
+    "rotation": 40.0
   },
   "reversed": false,
   "folder": "2026 Paths",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": -178.7269699799432
+    "velocity": 0.0,
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
