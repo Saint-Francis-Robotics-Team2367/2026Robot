@@ -1,0 +1,86 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.0,
+        "y": 5.9
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.2365985256751677,
+        "y": 5.980753561211485
+      },
+      "isLocked": false,
+      "linkedName": "S1"
+    },
+    {
+      "anchor": {
+        "x": 3.784500739318503,
+        "y": 7.418636398746469
+      },
+      "prevControl": {
+        "x": 3.258311300439279,
+        "y": 7.385196642362839
+      },
+      "nextControl": {
+        "x": 4.4930777024760475,
+        "y": 7.463667027026486
+      },
+      "isLocked": false,
+      "linkedName": "Top Trench Start"
+    },
+    {
+      "anchor": {
+        "x": 5.756212040960452,
+        "y": 7.418636398746469
+      },
+      "prevControl": {
+        "x": 5.132347530836082,
+        "y": 7.390153723389768
+      },
+      "nextControl": {
+        "x": 6.005951897611471,
+        "y": 7.430038328404564
+      },
+      "isLocked": false,
+      "linkedName": "Top Trench End"
+    },
+    {
+      "anchor": {
+        "x": 8.265645193326272,
+        "y": 6.797931287517656
+      },
+      "prevControl": {
+        "x": 7.359082643525323,
+        "y": 6.998441751583297
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "M1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "2026 Paths",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -40.0
+  },
+  "useDefaultConstraints": true
+}
