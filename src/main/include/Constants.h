@@ -30,21 +30,21 @@ namespace MathConstants {
 }
 
 namespace HardwareIDs { // Steer Motors are ID odd numbers, Drive Motors are ID even numbers, Ex. Module 1 (1, 2, 3), Module 2: (4, 5, 6)...
-    static constexpr int FLsteerID = 0;
-    static constexpr int FLdriveID = 0;
-    static constexpr int FLencoderID = 0;
+    static constexpr int FLsteerID = 10;
+    static constexpr int FLdriveID = 11;
+    static constexpr int FLencoderID = 12;
     
-    static constexpr int FRsteerID = 0;
-    static constexpr int FRdriveID = 0;
-    static constexpr int FRencoderID = 0;
+    static constexpr int FRsteerID = 1;
+    static constexpr int FRdriveID = 2;
+    static constexpr int FRencoderID = 3;
 
-    static constexpr int BLsteerID = 0;
-    static constexpr int BLdriveID = 0;
-    static constexpr int BLencoderID = 0;
+    static constexpr int BLsteerID = 7;
+    static constexpr int BLdriveID = 8;
+    static constexpr int BLencoderID = 9;
 
-    static constexpr int BRsteerID = 0;
-    static constexpr int BRdriveID = 0;
-    static constexpr int BRencoderID = 0;
+    static constexpr int BRsteerID = 4;
+    static constexpr int BRdriveID = 5;
+    static constexpr int BRencoderID = 6;
 
     static constexpr int pigeonID = 0;
 }
