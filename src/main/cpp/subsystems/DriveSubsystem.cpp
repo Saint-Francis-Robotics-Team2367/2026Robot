@@ -60,6 +60,11 @@ void DriveSubsystem::initModules() {
   frontRight.initHardware();
   backLeft.initHardware();
   backRight.initHardware();
+
+  frontLeft.setMotor(SwerveModule::control::POSITION, SwerveModule::MotorType::STEER, 0.0 - frontLeft.moduleOffset);
+  frontRight.setMotor(SwerveModule::control::POSITION, SwerveModule::MotorType::STEER, 0.0 - frontRight.moduleOffset);
+  backLeft.setMotor(SwerveModule::control::POSITION, SwerveModule::MotorType::STEER, 0.0 - backLeft.moduleOffset);
+  backRight.setMotor(SwerveModule::control::POSITION, SwerveModule::MotorType::STEER, 0.0 - backRight.moduleOffset);
 }
 
 void DriveSubsystem::resetGyro() {

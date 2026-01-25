@@ -15,7 +15,6 @@ private:
     ctre::phoenix6::hardware::TalonFX driveMotor;
     ctre::phoenix6::hardware::TalonFX steerMotor;
     ctre::phoenix6::hardware::CANcoder encoder;
-    double moduleOffset = 0.0;
 
     ctre::phoenix6::controls::VelocityVoltage velocityVoltage{0_tps};
     ctre::phoenix6::controls::PositionVoltage positionVoltage{0_tr};
@@ -23,6 +22,9 @@ private:
     ctre::phoenix6::configs::TalonFXConfiguration driveConfigs{};
     ctre::phoenix6::configs::TalonFXConfiguration steerConfigs{};
     ctre::phoenix6::configs::CANcoderConfiguration encoderConfigs{};
+
+public:
+    double moduleOffset = 0.0; // Rotations
 
     enum control {
         VELOCITY,
@@ -34,7 +36,6 @@ private:
         DRIVE
     };
 
-public:
     SwerveModule(int driveMotorID, int steerMotorID, int encoderID, std::string canBus = "rio");
 
     void setMotor(control controlType, MotorType motorType, double input);
