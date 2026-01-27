@@ -37,7 +37,11 @@ void RobotContainer::ConfigureBindings() {
           double vy = y * ModuleConstants::moduleMaxMPS;
           rot = rot * ModuleConstants::moduleMaxRot * 2;
 
-          drivetrain.Drive(vx, vy, rot, drivetrain.gyroConnected());
+          frc::SmartDashboard::PutNumber("vx", vx);
+          frc::SmartDashboard::PutNumber("vy", vy);
+          frc::SmartDashboard::PutNumber("rot", rot);
+
+          drivetrain.Drive(-vx, vy, rot, drivetrain.gyroConnected());
         }
       )
   );

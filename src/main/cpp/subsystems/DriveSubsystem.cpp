@@ -3,10 +3,9 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "subsystems/DriveSubsystem.h"
+#include "frc/smartdashboard/SmartDashboard.h"
 
-DriveSubsystem::DriveSubsystem() {
-  // Implementation of subsystem constructor goes here.
-}
+DriveSubsystem::DriveSubsystem() {}
 
 void DriveSubsystem::Drive(double vx, double vy, double rot, bool fieldRelative) {
   frc::ChassisSpeeds speeds;
@@ -21,10 +20,10 @@ void DriveSubsystem::Drive(double vx, double vy, double rot, bool fieldRelative)
   auto states = kinematics.ToSwerveModuleStates(speeds);
   kinematics.DesaturateWheelSpeeds(&states, units::meters_per_second_t(ModuleConstants::moduleMaxMPS));
 
-  frontLeft.setDesiredState(states[0]);
-  frontRight.setDesiredState(states[1]);
-  backLeft.setDesiredState(states[2]);
-  backRight.setDesiredState(states[3]);
+  frontLeft.setDesiredState(states[1]);
+  frontRight.setDesiredState(states[3]);
+  backLeft.setDesiredState(states[0]);
+  backRight.setDesiredState(states[2]);
 }
 
 void DriveSubsystem::updateOdometry() {
@@ -61,10 +60,13 @@ void DriveSubsystem::initModules() {
   backLeft.initHardware();
   backRight.initHardware();
 
-  frontLeft.setMotor(SwerveModule::control::POSITION, SwerveModule::MotorType::STEER, 0.0 - frontLeft.moduleOffset);
-  frontRight.setMotor(SwerveModule::control::POSITION, SwerveModule::MotorType::STEER, 0.0 - frontRight.moduleOffset);
-  backLeft.setMotor(SwerveModule::control::POSITION, SwerveModule::MotorType::STEER, 0.0 - backLeft.moduleOffset);
-  backRight.setMotor(SwerveModule::control::POSITION, SwerveModule::MotorType::STEER, 0.0 - backRight.moduleOffset);
+  frontLeft.zeroModule();
+  frontRight.zeroModule();
+  backLeft.zeroModule();
+  backRight.zeroModule();
+
+  frontLeft.invertModule(ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive, false, true);
+  backRight.invertModule(ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive, false, true);
 }
 
 void DriveSubsystem::resetGyro() {
@@ -72,7 +74,7 @@ void DriveSubsystem::resetGyro() {
 }
 
 bool DriveSubsystem::gyroConnected() {
-  pigeon.IsConnected();
+  return pigeon.IsConnected();
 }
 
 void DriveSubsystem::stopAllModules() {

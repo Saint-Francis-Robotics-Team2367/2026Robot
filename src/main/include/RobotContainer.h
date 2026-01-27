@@ -12,6 +12,7 @@
 
 #include "frc/filter/SlewRateLimiter.h"
 #include "frc/MathUtil.h"
+#include "frc/smartdashboard/SmartDashboard.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since

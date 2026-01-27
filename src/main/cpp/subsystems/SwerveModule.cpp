@@ -8,19 +8,19 @@ void SwerveModule::setMotor(control controlType, MotorType motorType, double inp
     switch (controlType) {
         case control::VELOCITY:
             if (motorType == MotorType::DRIVE) {
-                driveMotor.SetControl(velocityVoltage.WithVelocity(units::turns_per_second_t(input / 60.0)));
+                driveMotor.SetControl(velocityVoltage.WithVelocity(units::turns_per_second_t(input / (0.1016 * M_PI) * ModuleConstants::kDriveGearRatio)).WithSlot(0));
             }
             else {
-                steerMotor.SetControl(velocityVoltage.WithVelocity(units::turns_per_second_t(input / 60.0)));
+                steerMotor.SetControl(velocityVoltage.WithVelocity(units::turns_per_second_t(input / (0.1016 * M_PI) * ModuleConstants::kDriveGearRatio)).WithSlot(0));
             }
             break;
         
         case control::POSITION: 
             if (motorType == MotorType::DRIVE) {
-                driveMotor.SetControl(positionVoltage.WithPosition(units::turn_t(input)));
+                driveMotor.SetControl(positionVoltage.WithPosition(units::turn_t(input)).WithSlot(0));
             }
             else {
-                steerMotor.SetControl(positionVoltage.WithPosition(units::turn_t(input)));
+                steerMotor.SetControl(positionVoltage.WithPosition(units::turn_t(input)).WithSlot(0));
             }
     }
 }
@@ -56,7 +56,7 @@ void SwerveModule::initHardware() {
 
 
     // Steer Configs
-    steerConfigs.Slot0.kP = 0.3;   // An error of 1 rotation per second results in 2V output
+    steerConfigs.Slot0.kP = 0.9;   // An error of 1 rotation per second results in 2V output
     steerConfigs.Slot0.kI = 0.0;    // An error of 1 rotation per second increases output by 0.5V every second
     steerConfigs.Slot0.kD = 0.0; // A change of 1 rotation per second squared results in 0.0001 volts output
     steerConfigs.Slot0.kV = 0.0;   // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
@@ -97,9 +97,10 @@ void SwerveModule::invertModule(ctre::phoenix6::signals::InvertedValue value, bo
 
 void SwerveModule::setDesiredState(frc::SwerveModuleState& state) {
     auto optimizedState = frc::SwerveModuleState::Optimize(state, units::radian_t(encoder.GetAbsolutePosition().GetValueAsDouble() * MathConstants::TWO_PI));
+    frc::SmartDashboard::PutNumber("encoder pos", encoder.GetAbsolutePosition().GetValueAsDouble());
 
     setMotor(VELOCITY, DRIVE, optimizedState.speed.value());
-    setMotor(POSITION, STEER, (optimizedState.angle.Radians().value() / MathConstants::TWO_PI));
+    setMotor(POSITION, STEER, ((optimizedState.angle.Radians().value()) / (2 * M_PI) * ModuleConstants::kSteerGearRatio));
 }
 
 frc::SwerveModulePosition SwerveModule::getPosition() {
@@ -107,4 +108,16 @@ frc::SwerveModulePosition SwerveModule::getPosition() {
     return frc::SwerveModulePosition{units::meter_t(driveMotor.GetPosition().GetValueAsDouble() * conversionFactor),
                                      units::radian_t(encoder.GetAbsolutePosition().GetValueAsDouble() * MathConstants::TWO_PI - moduleOffset)
     };
+}
+
+void SwerveModule::zeroModule() {
+    double absPos = encoder.GetAbsolutePosition().GetValueAsDouble();
+    double corrected = absPos - moduleOffset;
+
+    corrected = std::fmod(corrected, 1.0);
+    if (corrected < 0) corrected += 1.0;
+
+    double motorRotations = corrected * ModuleConstants::kSteerGearRatio;
+
+    steerMotor.SetPosition(units::turn_t(motorRotations));
 }

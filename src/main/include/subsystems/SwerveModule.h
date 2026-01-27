@@ -7,6 +7,7 @@
 
 #include "frc/kinematics/SwerveModuleState.h"
 #include "frc/kinematics/SwerveModulePosition.h"
+#include "frc/smartdashboard/SmartDashboard.h"
 
 #include "Constants.h"
 
@@ -44,4 +45,5 @@ public:
     void invertModule(ctre::phoenix6::signals::InvertedValue value, bool steer, bool drive); // Defaulted to CounterClockwise Positive
     void setDesiredState(frc::SwerveModuleState& state);
     frc::SwerveModulePosition getPosition();
+    void zeroModule();
 };

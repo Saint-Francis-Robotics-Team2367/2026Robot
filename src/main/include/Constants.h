@@ -51,5 +51,5 @@ namespace HardwareIDs { // Steer Motors are ID odd numbers, Drive Motors are ID 
 
 namespace ControllerConstants {
     static constexpr double deadband = 0.05;
-    static constexpr double slewRate = 0.3;
+    static constexpr double slewRate = 3;
 }
