@@ -18,7 +18,7 @@ Robot::Robot() {}
  */
 void Robot::RobotPeriodic() {
   m_container.drivetrain.updateOdometry();
-  frc2::CommandScheduler::GetInstance().Run();
+  frc2::CommandScheduler::GetInstance().Run(); //runs command-based queue
 }
 
 /**
