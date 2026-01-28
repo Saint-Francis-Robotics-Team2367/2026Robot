@@ -34,11 +34,13 @@ public:
 private:
   ctre::phoenix6::hardware::Pigeon2 pigeon{HardwareIDs::pigeonID};
 
+  //module objects
   SwerveModule frontLeft{HardwareIDs::FLdriveID, HardwareIDs::FLsteerID, HardwareIDs::FLencoderID};
   SwerveModule frontRight{HardwareIDs::FRdriveID, HardwareIDs::FRsteerID, HardwareIDs::FRencoderID};
   SwerveModule backLeft{HardwareIDs::BLdriveID, HardwareIDs::BLsteerID, HardwareIDs::BLencoderID};
   SwerveModule backRight{HardwareIDs::BRdriveID, HardwareIDs::BRsteerID, HardwareIDs::BRencoderID};
 
+  //CHANGE THESE IF ROBOT DIMENSIONS CHANGE; positions of swerve modules relative to robot
   frc::SwerveDriveKinematics<4> kinematics {
     frc::Translation2d{0.381_m, 0.381_m}, 
     frc::Translation2d{0.381_m, -0.381_m},
@@ -55,6 +57,6 @@ private:
           backLeft.getPosition(),
           backRight.getPosition()
         },
-        frc::Pose2d{0_m, 0_m, 0_deg} 
+        frc::Pose2d{0_m, 0_m, 0_deg}  //needs to be reset if starting on bump 
   };
 };
