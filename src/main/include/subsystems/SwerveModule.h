@@ -1,13 +1,13 @@
-#include "ctre/phoenix6/TalonFX.hpp"
-#include "ctre/phoenix6/CANcoder.hpp"
-#include "ctre/phoenix6/CANBus.hpp"
-#include "ctre/phoenix6/controls/VelocityVoltage.hpp"
-#include "ctre/phoenix6/controls/PositionVoltage.hpp"
-#include "ctre/phoenix6/configs/Configuration.hpp"
+#include <ctre/phoenix6/TalonFX.hpp>
+#include <ctre/phoenix6/CANcoder.hpp>
+#include <ctre/phoenix6/CANBus.hpp>
+#include <ctre/phoenix6/controls/VelocityVoltage.hpp>
+#include <ctre/phoenix6/controls/PositionVoltage.hpp>
+#include <ctre/phoenix6/configs/Configuration.hpp>
 
-#include "frc/kinematics/SwerveModuleState.h"
-#include "frc/kinematics/SwerveModulePosition.h"
-#include "frc/smartdashboard/SmartDashboard.h"
+#include <frc/kinematics/SwerveModuleState.h>
+#include <frc/kinematics/SwerveModulePosition.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 #include "Constants.h"
 
