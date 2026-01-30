@@ -1,12 +1,11 @@
 #pragma once
+
 #include <ctre/phoenix6/TalonFX.hpp>
-#include <ctre/phoenix6/configs/Configs.hpp>
+#include <ctre/phoenix6/core/CoreTalonFX.hpp>
+#include <ctre/phoenix6/controls/PositionVoltage.hpp>
 
-#include "sensors/CAN_Coder.h"
-#include "geometry/Rotation2d.h"
-
-
-
+#include <ctre/phoenix6/CANcoder.hpp>
+#include <ctre/phoenix6/core/CoreCANcoder.hpp>
 
 constexpr int encoderID = 12;
 constexpr int motorID = 34;
@@ -16,8 +15,6 @@ constexpr double gearRatio = 30; //encoder to turret ratio
 constexpr double kP = 0.3;
 constexpr double kI = 0.0;
 constexpr double kD = 0.0;
-
-constexpr double encoderOffset;
 
 
 class Turret{
@@ -38,12 +35,11 @@ class Turret{
         ctre::phoenix6::hardware::CANcoder encoder;  
         ctre::phoenix6::configs::CANcoderConfiguration encoderConfigs{}; 
 
-        ctre::phoenix6::controls::VelocityVoltage velocityVoltage{0_tps}; //turns per second
         ctre::phoenix6::controls::PositionVoltage positionVoltage{0_tr}; //turns 
+
+        double encoderOffset;
       
 };
 
 
-//1. needs to reset everytime angle change exceeds 180
-//2. need to use the encoder to correct the pid
 
