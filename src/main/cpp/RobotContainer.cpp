@@ -10,6 +10,7 @@
 #include "commands/Autos.h"
 #include "commands/ExampleCommand.h"
 
+//basically initializes robot
 RobotContainer::RobotContainer() {
   // Initialize all of your commands and subsystems here
 
@@ -41,17 +42,19 @@ void RobotContainer::ConfigureBindings() {
           frc::SmartDashboard::PutNumber("vy", vy);
           frc::SmartDashboard::PutNumber("rot", rot);
 
-          drivetrain.Drive(-vx, vy, rot, drivetrain.gyroConnected());
+          drivetrain.Drive(-vx, vy, -rot, drivetrain.gyroConnected());
         }
       )
   );
 
+  //resets gyro on DPad Up
   driverCtr.POVUp().OnTrue(
     drivetrain.RunOnce(
       [this] {drivetrain.resetGyro();}
     )
   );
 
+  //stops modules if disabled
   frc2::RobotModeTriggers::Disabled().WhileTrue(
     drivetrain.RunOnce(
       [this] {

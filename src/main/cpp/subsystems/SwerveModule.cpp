@@ -1,9 +1,11 @@
 #include "subsystems/SwerveModule.h"
 
+//creates drive/steer motors and encoder objects
 SwerveModule::SwerveModule(int driveMotorID, int steerMotorID, int encoderID, std::string canBus) : driveMotor(driveMotorID, canBus),
                                                                                                             steerMotor(steerMotorID, canBus),
                                                                                                             encoder(encoderID, canBus) {};
 
+//input is in turns or turns per sec depending on controlType                                                                                                            
 void SwerveModule::setMotor(control controlType, MotorType motorType, double input) {
     switch (controlType) {
         case control::VELOCITY:
@@ -32,19 +34,19 @@ void SwerveModule::stopModule() {
 
 void SwerveModule::initHardware() {
     // Drive Configs
-    driveConfigs.Slot0.kP = 0.11;   // An error of 1 rotation per second results in 2V output
-    driveConfigs.Slot0.kI = 0.0;    // An error of 1 rotation per second increases output by 0.5V every second
-    driveConfigs.Slot0.kD = 0.0; // A change of 1 rotation per second squared results in 0.0001 volts output
+    driveConfigs.Slot0.kP = 0.35;   // An error of 1 rotation per second results in [] output
+    driveConfigs.Slot0.kI = 0.0;    // An error of 1 rotation per second increases output by [] every second
+    driveConfigs.Slot0.kD = 0.0; // A change of 1 rotation per second squared results in []] volts output
     driveConfigs.Slot0.kV = 0.0;   // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
     driveConfigs.Slot0.kS = 0.00;
 
     driveConfigs.TorqueCurrent.PeakForwardTorqueCurrent = units::ampere_t(10);
     driveConfigs.TorqueCurrent.PeakReverseTorqueCurrent = units::ampere_t(-10);
 
-    driveConfigs.CurrentLimits.SupplyCurrentLimit = 40.0_A;
+    driveConfigs.CurrentLimits.SupplyCurrentLimit = 40.0_A; //breaker limit
     driveConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    driveConfigs.CurrentLimits.StatorCurrentLimit = 80.0_A;
+    driveConfigs.CurrentLimits.StatorCurrentLimit = 80.0_A; //motor limit
     driveConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
 
     driveConfigs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
@@ -56,19 +58,19 @@ void SwerveModule::initHardware() {
 
 
     // Steer Configs
-    steerConfigs.Slot0.kP = 0.9;   // An error of 1 rotation per second results in 2V output
-    steerConfigs.Slot0.kI = 0.0;    // An error of 1 rotation per second increases output by 0.5V every second
-    steerConfigs.Slot0.kD = 0.0; // A change of 1 rotation per second squared results in 0.0001 volts output
+    steerConfigs.Slot0.kP = 0.9;   // An error of 1 rotation per second results in [] output
+    steerConfigs.Slot0.kI = 0.0;    // An error of 1 rotation per second increases output by [] every second
+    steerConfigs.Slot0.kD = 0.0; // A change of 1 rotation per second squared results in []] volts output
     steerConfigs.Slot0.kV = 0.0;   // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
     steerConfigs.Slot0.kS = 0.00;
 
     steerConfigs.TorqueCurrent.PeakForwardTorqueCurrent = units::ampere_t(10);
     steerConfigs.TorqueCurrent.PeakReverseTorqueCurrent = units::ampere_t(-10);
 
-    steerConfigs.CurrentLimits.SupplyCurrentLimit = 20.0_A;
+    steerConfigs.CurrentLimits.SupplyCurrentLimit = 20.0_A; //breaker limit
     steerConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    steerConfigs.CurrentLimits.StatorCurrentLimit = 55.0_A;
+    steerConfigs.CurrentLimits.StatorCurrentLimit = 55.0_A; //motor limit
     steerConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
 
     steerConfigs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
@@ -95,6 +97,7 @@ void SwerveModule::invertModule(ctre::phoenix6::signals::InvertedValue value, bo
     }
 }
 
+//determines setpoint
 void SwerveModule::setDesiredState(frc::SwerveModuleState& state) {
     auto optimizedState = frc::SwerveModuleState::Optimize(state, units::radian_t(encoder.GetAbsolutePosition().GetValueAsDouble() * MathConstants::TWO_PI));
     frc::SmartDashboard::PutNumber("encoder pos", encoder.GetAbsolutePosition().GetValueAsDouble());

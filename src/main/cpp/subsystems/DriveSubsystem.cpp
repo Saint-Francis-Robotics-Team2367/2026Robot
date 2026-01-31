@@ -7,6 +7,7 @@
 
 DriveSubsystem::DriveSubsystem() {}
 
+//fieldRelative always true in swervedrive
 void DriveSubsystem::Drive(double vx, double vy, double rot, bool fieldRelative) {
   frc::ChassisSpeeds speeds;
   
@@ -37,6 +38,7 @@ void DriveSubsystem::updateOdometry() {
     });
 }
 
+//resets origin
 void DriveSubsystem::resetOdometry(frc::Pose2d pose) {
   odometry.ResetPosition(
     pigeon.GetRotation2d(),
@@ -50,10 +52,12 @@ void DriveSubsystem::resetOdometry(frc::Pose2d pose) {
   );
 }
 
+//gets robot position
 frc::Pose2d DriveSubsystem::getPose() {
   return odometry.GetEstimatedPosition();
 }
 
+//initializes swerve modules
 void DriveSubsystem::initModules() {
   frontLeft.initHardware();
   frontRight.initHardware();
@@ -84,6 +88,7 @@ void DriveSubsystem::stopAllModules() {
   backRight.stopModule();
 }
 
+//initializes gyro and sets current gyro situation to zero
 void DriveSubsystem::initGyro() {
   ctre::phoenix6::configs::Pigeon2Configuration pigeonConfigs{};
 

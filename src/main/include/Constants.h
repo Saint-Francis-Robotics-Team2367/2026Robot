@@ -16,12 +16,14 @@
  * they are needed.
  */
 
+
+ //refer with [namespace]::[varname]
 namespace ModuleConstants {
     static constexpr double kDriveGearRatio = 5.357142857142857; // L3+
     static constexpr double kSteerGearRatio = 21.428571428571427; // 150/7:1
     static constexpr double kWheelRadius = 2.0; // inches
     static constexpr double kWheelDiameter = 4.0; // inches
-    static constexpr double moduleMaxMPS = 5.2154328;
+    static constexpr double moduleMaxMPS = 5.2154328; //meters per second
     static constexpr double moduleMaxRot = 2.0; // rad
 }
 
@@ -29,7 +31,7 @@ namespace MathConstants {
     static constexpr double TWO_PI = M_PI * 2;
 }
 
-namespace HardwareIDs { // Steer Motors are ID odd numbers, Drive Motors are ID even numbers, Ex. Module 1 (1, 2, 3), Module 2: (4, 5, 6)...
+namespace HardwareIDs { 
     static constexpr int FLsteerID = 10;
     static constexpr int FLdriveID = 11;
     static constexpr int FLencoderID = 12;
@@ -50,6 +52,6 @@ namespace HardwareIDs { // Steer Motors are ID odd numbers, Drive Motors are ID 
 }
 
 namespace ControllerConstants {
-    static constexpr double deadband = 0.05;
-    static constexpr double slewRate = 3;
+    static constexpr double deadband = 0.05; //prevents joystick drift
+    static constexpr double slewRate = 5.2;
 }
