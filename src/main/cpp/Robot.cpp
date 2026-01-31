@@ -6,6 +6,7 @@
 
 #include <frc2/command/CommandScheduler.h>
 
+
 Robot::Robot() {}
 
 /**
@@ -52,13 +53,30 @@ void Robot::TeleopInit() {
   if (m_autonomousCommand) {
     m_autonomousCommand->Cancel();
   }
+  m_turret.init();
+
 }
 
 /**
  * This function is called periodically during operator control.
  */
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
 
+if (ps5.GetSquareButtonPressed()){
+  m_turret.setAngle(60);
+}
+
+else if (ps5.GetCircleButtonPressed()){
+  m_turret.setAngle(180);
+}
+else if (ps5.GetTriangleButtonPressed()){
+  m_turret.setAngle(270);
+}
+
+else if (ps5.GetCrossButtonPressed()){
+  m_turret.resetTurretPosition();
+}
+}
 /**
  * This function is called periodically during test mode.
  */

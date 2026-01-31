@@ -7,6 +7,8 @@
 #include <ctre/phoenix6/CANcoder.hpp>
 #include <ctre/phoenix6/core/CoreCANcoder.hpp>
 
+#include <frc2/command/Subsystem.h>
+
 constexpr int encoderID = 12;
 constexpr int motorID = 34;
 
@@ -17,7 +19,7 @@ constexpr double kI = 0.0;
 constexpr double kD = 0.0;
 
 
-class Turret{
+class Turret : public frc2::Subsystem{
    public:
        void init(); 
        void stop(); //stop motors

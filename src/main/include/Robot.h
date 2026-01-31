@@ -8,8 +8,10 @@
 
 #include <frc/TimedRobot.h>
 #include <frc2/command/CommandPtr.h>
+#include <frc/PS5Controller.h>
 
 #include "RobotContainer.h"
+#include "Turret.h"
 
 class Robot : public frc::TimedRobot {
  public:
@@ -30,5 +32,11 @@ class Robot : public frc::TimedRobot {
   // doesn't have undefined behavior and potentially crash.
   std::optional<frc2::CommandPtr> m_autonomousCommand;
 
+  Turret m_turret;
+
   RobotContainer m_container;
+  
+  frc::PS5Controller ps5;
+
+
 };
