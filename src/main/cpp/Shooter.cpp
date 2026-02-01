@@ -1,11 +1,4 @@
 #include "Shooter.h"
-using namespace std;
-
-
-const float GRAVITY = 9.81;
-const float SHOOTERWHEELDIAMETER = 0.1;
-const float PI = M_PI;
-
 
 void Shooter::stop() {
     // Stop all motors
@@ -21,17 +14,17 @@ void Shooter::init() {
 
 
     // Configure PID constants for Flywheel Master (Velocity Control)
-    FlywheelConfig.Slot0.kP = FlywheelP;
-    FlywheelConfig.Slot0.kI = FlywheelI;
-    FlywheelConfig.Slot0.kD = FlywheelD;
-    FlywheelConfig.Slot0.kV = FlywheelV;
+    FlywheelConfig.Slot0.kP = ShooterConstants::FlywheelP;
+    FlywheelConfig.Slot0.kI = ShooterConstants::FlywheelI;
+    FlywheelConfig.Slot0.kD = ShooterConstants::FlywheelD;
+    FlywheelConfig.Slot0.kV = ShooterConstants::FlywheelV;
 
 
     // Configure PID constants for Rack Motor (Position Control)
-    RackConfig.Slot0.kP = RackP;
-    RackConfig.Slot0.kI = RackI;
-    RackConfig.Slot0.kD = RackD;
-    RackConfig.Slot0.kG = RackG;
+    RackConfig.Slot0.kP = ShooterConstants::RackP;
+    RackConfig.Slot0.kI = ShooterConstants::RackI;
+    RackConfig.Slot0.kD = ShooterConstants::RackD;
+    RackConfig.Slot0.kG = ShooterConstants::RackG;
 
 
     // Apply configurations
@@ -43,11 +36,10 @@ void Shooter::init() {
 bool Shooter::setFlywheelSpeed(float shooterRPM) {
     // set shooter velocity
     ShooterMotor.SetControl(ctre::phoenix6::controls::VelocityDutyCycle{units::angular_velocity::turns_per_second_t{shooterRPM / 60.0}});
-    std::this_thread::sleep_for(std::chrono::seconds(5));
 
-    double targetVelocity = shooterRPM / 60.0;
-    double actualVelocity = ShooterMotor.GetVelocity().GetValue().value();
-    double tolerance = 0.05; // or whatever tolerance you want
+    float targetVelocity = shooterRPM / 60.0;
+    float actualVelocity = ShooterMotor.GetVelocity().GetValue().value();
+    const float tolerance = 0.05; // or whatever tolerance you want
 
     if (std::fabs(targetVelocity - actualVelocity) < tolerance) {
         std::cout << "Shooter at target speed." << std::endl;
@@ -65,7 +57,7 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
 
 
     // Convert shooter RPM to linear velocity (m/s)
-    float flywheelCircumference = PI * SHOOTERWHEELDIAMETER;
+    float flywheelCircumference = ShooterConstants::PI * ShooterConstants::SHOOTERWHEELDIAMETER;
     float shooterVelocity = (shooterRPM * flywheelCircumference) / 60.0f;
     float exitVelo = 0.95f * shooterVelocity;
 
@@ -82,9 +74,9 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
 
 
     // Solve projectile equation at (dx, dy)
-    const float A = (GRAVITY * dx * dx) / (2.0 * exitVelo * exitVelo);
+    const float A = (ShooterConstants::GRAVITY * dx * dx) / (2.0 * exitVelo * exitVelo);
     const float discriminant = dx * dx - 4.0 * A * (A + dy);
-    float unknownAngle = initialAngle * (PI / 180.0);
+    float unknownAngle = initialAngle * (ShooterConstants::PI / 180.0);
 
 
     // check for validity/ensure we pick the right curve
@@ -105,8 +97,8 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
             float c = cos(theta);
 
 
-            float xApex = (exitVelo * exitVelo * s * c) / GRAVITY;
-            float yApex = (exitVelo * exitVelo * s * s) / (2.0f * GRAVITY);
+            float xApex = (exitVelo * exitVelo * s * c) / ShooterConstants::GRAVITY;
+            float yApex = (exitVelo * exitVelo * s * s) / (2.0f * ShooterConstants::GRAVITY);
 
 
             float ex = xApex - VertexXPose;
@@ -116,9 +108,9 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
             return ex * ex + ey * ey;
         };
 
-
-        bool v1 = theta1 > 0.0 && theta1 < (PI * 0.5);
-        bool v2 = theta2 > 0.0 && theta2 < (PI * 0.5);
+        bool v1 = theta1 > 0.0 && theta1 < (ShooterConstants::PI * 0.5);
+        bool v2 = theta2 > 0.0 && theta2 < (ShooterConstants::PI * 0.5);
+        assert(v1 > 0 && v2 > 0);
 
 
         if (v1 && v2)
@@ -127,12 +119,18 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
             unknownAngle = theta1;
         else if (v2)
             unknownAngle = theta2;
+
+    else {
+            std::cout << "No valid hood angle found." << std::endl;
+            return;
+    }
+    
     }
 
 
-    float hoodAngleDegrees = unknownAngle * 180.0 / PI;
+    float hoodAngleDegrees = unknownAngle * 180.0 / ShooterConstants::PI;
     float requiredAngle = hoodAngleDegrees - initialAngle;
-    double currentDeg = RackEncoder.GetAbsolutePosition().GetValue().value() * 360.0;
+    float currentDeg = RackEncoder.GetAbsolutePosition().GetValue().value() * 360.0;
     if (std::fabs(requiredAngle - currentDeg) > 0.25 && hoodAngleDegrees >= initialAngle && hoodAngleDegrees <= maxAngle) {
         RackMotor.SetControl(ctre::phoenix6::controls::PositionDutyCycle{units::angle::turn_t{GearRatio * (requiredAngle / 360.0)}});
         hoodAngleDegrees = initialAngle;

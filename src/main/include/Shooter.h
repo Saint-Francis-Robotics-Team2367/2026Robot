@@ -10,26 +10,7 @@
 #include <thread>
 #include <units/angular_velocity.h>
 #include <cmath>
-
-
-// Constants for motor configuration
-constexpr int ShooterID = 1; // CAN ID for the master flywheel motor
-constexpr int RackMotorID = 2;       // CAN ID for the rack motor
-
-
-// PID constants for Flywheel Motor (Velocity Control)
-constexpr double FlywheelP = 0.0;
-constexpr double FlywheelI = 0.0;
-constexpr double FlywheelD = 0.0;
-constexpr double FlywheelV = 0.0;
-
-
-// PID constants for Rack Motor (Position Control)
-constexpr double RackP = 0.0;
-constexpr double RackI = 0.0;
-constexpr double RackD = 0.0;
-constexpr double RackG = 0.0;
-
+#include "Constants.h"
 
 class Shooter {
 public:
@@ -40,8 +21,8 @@ public:
 
 private:
     // Motors
-    ctre::phoenix6::hardware::TalonFX ShooterMotor{ShooterID}; // Use CANivore bus if applicable
-    ctre::phoenix6::hardware::TalonFX RackMotor{RackMotorID};
+    ctre::phoenix6::hardware::TalonFX ShooterMotor{ShooterConstants::ShooterID}; // Use CANivore bus if applicable
+    ctre::phoenix6::hardware::TalonFX RackMotor{ShooterConstants::RackMotorID};
 
 
     // Configuration objects
@@ -50,7 +31,7 @@ private:
 
 
     // ThroughBore
-    ctre::phoenix6::hardware::CANcoder RackEncoder{3}; // Uses default CAN bus
+    ctre::phoenix6::hardware::CANcoder RackEncoder{ShooterConstants::RackEncoderID}; // Uses default CAN bus
 
 
     // Timeout for configuration

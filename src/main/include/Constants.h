@@ -55,3 +55,23 @@ namespace ControllerConstants {
     static constexpr double deadband = 0.05; //prevents joystick drift
     static constexpr double slewRate = 5.2;
 }
+
+namespace ShooterConstants {
+    static constexpr double SHOOTERWHEELDIAMETER = 0.1; // in meters
+    static constexpr double GRAVITY = 9.81;
+    static constexpr double PI = M_PI;
+
+    static constexpr int ShooterID = 0.0;
+    static constexpr int RackMotorID = 0.0;
+    static constexpr int RackEncoderID = 0.0;
+
+    static constexpr double FlywheelP = 0.0;
+    static constexpr double FlywheelI = 0.0;
+    static constexpr double FlywheelD = 0.0;
+    static constexpr double FlywheelV = 0.0;
+
+    static constexpr double RackP = 0.0;
+    static constexpr double RackI = 0.0;
+    static constexpr double RackD = 0.0;
+    static constexpr double RackG = 0.0;
+}
