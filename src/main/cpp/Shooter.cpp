@@ -131,7 +131,7 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
     float hoodAngleDegrees = unknownAngle * 180.0 / ShooterConstants::PI;
     float requiredAngle = hoodAngleDegrees - initialAngle;
     float currentDeg = RackEncoder.GetAbsolutePosition().GetValue().value() * 360.0;
-    if (std::fabs(requiredAngle - currentDeg) > 0.25 && hoodAngleDegrees >= initialAngle && hoodAngleDegrees <= maxAngle) {
+    if (std::fabs(requiredAngle - currentDeg) > 1.0 && hoodAngleDegrees >= initialAngle && hoodAngleDegrees <= (maxAngle - 2.5)) {
         RackMotor.SetControl(ctre::phoenix6::controls::PositionDutyCycle{units::angle::turn_t{GearRatio * (requiredAngle / 360.0)}});
         hoodAngleDegrees = initialAngle;
         std::cout << "Hood Angle Set To: " << hoodAngleDegrees << " degrees" << std::endl;
