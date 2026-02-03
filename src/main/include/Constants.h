@@ -55,3 +55,11 @@ namespace ControllerConstants {
     static constexpr double deadband = 0.05; //prevents joystick drift
     static constexpr double slewRate = 5.2;
 }
+namespace HopperConstants {
+    static constexpr double hopperID = 0.0; 
+    static constexpr double hopperP = 0.0; 
+    static constexpr double hopperI = 0.0; 
+    static constexpr double hopperD = 0.0; 
+    static constexpr double hopperG = 0.0; 
+
+}
