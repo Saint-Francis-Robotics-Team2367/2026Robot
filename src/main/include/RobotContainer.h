@@ -9,7 +9,7 @@
 
 #include "Constants.h"
 #include "subsystems/DriveSubsystem.h"
-#include "src/main/include/Shooter.h"
+#include "Shooter.h"
 
 #include "frc/filter/SlewRateLimiter.h"
 #include "frc/MathUtil.h"

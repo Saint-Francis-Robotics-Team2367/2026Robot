@@ -11,8 +11,9 @@
 #include <units/angular_velocity.h>
 #include <cmath>
 #include "Constants.h"
+#include <frc2/command/Subsystem.h>
 
-class Shooter {
+class Shooter : public frc2::Subsystem{
 public:
     void stop();
     void init();

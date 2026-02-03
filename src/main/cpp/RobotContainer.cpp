@@ -63,6 +63,7 @@ void RobotContainer::ConfigureBindings() {
     [this] {
       HoodedShooter.setHoodPosition(0, 0, 0, 0, 0, 0, 0);
       HoodedShooter.setFlywheelSpeed(0);
+      
       std::this_thread::sleep_for(std::chrono::seconds(3));
       HoodedShooter.stop();
     }
