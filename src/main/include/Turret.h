@@ -12,7 +12,7 @@
 constexpr int encoderID = 12;
 constexpr int motorID = 34;
 
-constexpr double gearRatio = 30; //encoder to turret ratio
+constexpr double pulleyRatio = 30; //big wheel to small wheel (encoder) ratio
 
 constexpr double kP = 0.3;
 constexpr double kI = 0.0;
@@ -21,13 +21,15 @@ constexpr double kD = 0.0;
 
 class Turret : public frc2::Subsystem{
    public:
-       void init(); 
-       void stop(); //stop motors
-       void setSpeed(double speed);
-       double getCurrentAngle(); //use the gear ratio to calculate the current angle of the turret
-       void setAngle(double targetAngle);
-       bool isAtAngle(double targetAngle);
-       void resetTurretPosition();
+        Turret();
+        void init(); 
+        void stop(); //stop motors
+        void setSpeed(double speed);
+        double getCurrentAngle(); //use the gear ratio to calculate the current angle of the turret
+        void setAngle(double targetAngle);
+        bool isAtAngle(double targetAngle);
+        void resetTurretPosition();
+        double encoderCounter();
 
    private:
 
@@ -40,7 +42,11 @@ class Turret : public frc2::Subsystem{
         ctre::phoenix6::controls::PositionVoltage positionVoltage{0_tr}; //turns 
 
         double encoderOffset;
-      
+
+        //since it is an absolute encoder that will go on the small pulley, need to keep track of how much the small pulley turns
+        //mainly for resetting the position of the turret when the angle exceeds 180
+        double smallPulleyCounter = 0;
+
 };
 
 

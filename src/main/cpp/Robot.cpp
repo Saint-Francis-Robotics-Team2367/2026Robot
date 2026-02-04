@@ -53,15 +53,15 @@ void Robot::TeleopInit() {
   if (m_autonomousCommand) {
     m_autonomousCommand->Cancel();
   }
-  m_turret.init();
+  //m_turret.init();
 
 }
 
 /**
  * This function is called periodically during operator control.
  */
-void Robot::TeleopPeriodic() {
-
+void Robot::TeleopPeriodic() {}
+/** 
 if (ps5.GetSquareButtonPressed()){
   m_turret.setAngle(60);
 }
@@ -77,6 +77,7 @@ else if (ps5.GetCrossButtonPressed()){
   m_turret.resetTurretPosition();
 }
 }
+**/
 /**
  * This function is called periodically during test mode.
  */
