@@ -4,13 +4,15 @@
 #include "ctre/phoenix6/CANcoder.hpp"
 #include "ctre/phoenix6/configs/Configuration.hpp"
 #include "ctre/phoenix6/controls/PositionVoltage.hpp"
-#include <frc/smartdashboard/SmartDashboard.h>
+
 #include <iostream>
 #include <chrono>
 #include <thread>
 #include <units/angular_velocity.h>
 #include <cmath>
 #include "Constants.h"
+
+#include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/Subsystem.h>
 
 class Shooter : public frc2::Subsystem{
