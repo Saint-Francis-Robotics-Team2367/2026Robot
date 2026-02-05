@@ -55,3 +55,8 @@ namespace ControllerConstants {
     static constexpr double deadband = 0.05; //prevents joystick drift
     static constexpr double slewRate = 5.2;
 }
+
+namespace IntakeConstants {
+    static constexpr int intakePivotID = 0;
+    static constexpr int intakeRollerID = 0;
+}
