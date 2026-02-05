@@ -19,6 +19,8 @@ RobotContainer::RobotContainer() {
   drivetrain.initModules();
   drivetrain.initGyro();
   drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
+
+  climber.init();
 }
 
 void RobotContainer::ConfigureBindings() {

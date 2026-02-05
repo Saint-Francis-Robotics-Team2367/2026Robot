@@ -55,3 +55,11 @@ namespace ControllerConstants {
     static constexpr double deadband = 0.05; //prevents joystick drift
     static constexpr double slewRate = 5.2;
 }
+
+namespace ClimberConstants {
+    static constexpr double leftKrakenID = 0; // Change
+    static constexpr double rightKrakenID = 0; // Change
+
+    static constexpr double leftServoID = 0; // Change
+    static constexpr double rightServoID = 0; // Change
+}

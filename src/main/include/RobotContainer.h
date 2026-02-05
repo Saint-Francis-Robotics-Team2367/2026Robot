@@ -9,6 +9,7 @@
 
 #include "Constants.h"
 #include "subsystems/DriveSubsystem.h"
+#include "subsystems/Climber.h"
 
 #include "frc/filter/SlewRateLimiter.h"
 #include "frc/MathUtil.h"
@@ -28,6 +29,7 @@ class RobotContainer {
   frc2::CommandPtr GetAutonomousCommand();
 
   DriveSubsystem drivetrain;
+  Climber climber;
 
  private:
   // Replace with CommandPS4Controller or CommandJoystick if needed
