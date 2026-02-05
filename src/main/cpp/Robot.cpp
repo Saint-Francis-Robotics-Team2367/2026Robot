@@ -17,6 +17,7 @@ Robot::Robot() {}
  * LiveWindow and SmartDashboard integrated updating.
  */
 void Robot::RobotPeriodic() {
+  QuestNav::getInstance().periodic();
   m_container.drivetrain.updateOdometry();
   frc2::CommandScheduler::GetInstance().Run(); //runs command-based queue
 }

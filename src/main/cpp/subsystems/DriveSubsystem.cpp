@@ -12,7 +12,7 @@ void DriveSubsystem::Drive(double vx, double vy, double rot, bool fieldRelative)
   frc::ChassisSpeeds speeds;
   
   if (fieldRelative) {
-    speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(units::meters_per_second_t(vx), units::meters_per_second_t(vy), units::radians_per_second_t(rot), pigeon.GetRotation2d());
+    speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(units::meters_per_second_t(vx), units::meters_per_second_t(vy), units::radians_per_second_t(rot), QuestNav::getInstance().getRotation2d());
   }
   else {
     speeds = frc::ChassisSpeeds{units::meters_per_second_t(vx), units::meters_per_second_t(vy), units::radians_per_second_t(rot)};
@@ -29,7 +29,7 @@ void DriveSubsystem::Drive(double vx, double vy, double rot, bool fieldRelative)
 
 void DriveSubsystem::updateOdometry() {
   odometry.Update(
-    pigeon.GetRotation2d(), 
+    QuestNav::getInstance().getRotation2d(), 
     { 
       frontLeft.getPosition(),
       frontRight.getPosition(),
@@ -41,7 +41,7 @@ void DriveSubsystem::updateOdometry() {
 //resets origin
 void DriveSubsystem::resetOdometry(frc::Pose2d pose) {
   odometry.ResetPosition(
-    pigeon.GetRotation2d(),
+    QuestNav::getInstance().getRotation2d(),
     {
       frontLeft.getPosition(),
       frontRight.getPosition(),
@@ -74,11 +74,11 @@ void DriveSubsystem::initModules() {
 }
 
 void DriveSubsystem::resetGyro() {
-  pigeon.Reset();
+  QuestNav::getInstance().ZeroGyro();
 }
 
 bool DriveSubsystem::gyroConnected() {
-  return pigeon.IsConnected();
+  return true;
 }
 
 void DriveSubsystem::stopAllModules() {
@@ -86,21 +86,4 @@ void DriveSubsystem::stopAllModules() {
   frontRight.stopModule();
   backLeft.stopModule();
   backRight.stopModule();
-}
-
-//initializes gyro and sets current gyro situation to zero
-void DriveSubsystem::initGyro() {
-  ctre::phoenix6::configs::Pigeon2Configuration pigeonConfigs{};
-
-  pigeonConfigs.MountPose.MountPosePitch = units::degree_t(0.0);
-  pigeonConfigs.MountPose.MountPoseRoll = units::degree_t(0.0);
-  pigeonConfigs.MountPose.MountPoseYaw = units::degree_t(0.0);
-
-  pigeonConfigs.Pigeon2Features.EnableCompass = true;
-  pigeonConfigs.FutureProofConfigs = false;
-
-  pigeon.GetConfigurator().Apply(pigeonConfigs);
-
-  pigeon.Reset();
-  pigeon.ClearStickyFaults();
 }

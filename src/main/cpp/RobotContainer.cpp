@@ -17,7 +17,7 @@ RobotContainer::RobotContainer() {
   // Configure the button bindings
   ConfigureBindings();
   drivetrain.initModules();
-  drivetrain.initGyro();
+  QuestNav::getInstance().init();
   drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
 }
 

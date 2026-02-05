@@ -15,7 +15,8 @@
 #include "frc/geometry/Pose2d.h"
 
 #include "subsystems/SwerveModule.h"
-#include "ctre/phoenix6/Pigeon2.hpp"
+
+#include "subsystems/vision/QuestNav.h"
 
 class DriveSubsystem : public frc2::SubsystemBase {
 public:
@@ -32,8 +33,6 @@ public:
   void initGyro();
 
 private:
-  ctre::phoenix6::hardware::Pigeon2 pigeon{HardwareIDs::pigeonID};
-
   //module objects
   SwerveModule frontLeft{HardwareIDs::FLdriveID, HardwareIDs::FLsteerID, HardwareIDs::FLencoderID};
   SwerveModule frontRight{HardwareIDs::FRdriveID, HardwareIDs::FRsteerID, HardwareIDs::FRencoderID};
@@ -50,7 +49,7 @@ private:
 
   frc::SwerveDrivePoseEstimator<4> odometry{
         kinematics, 
-        pigeon.GetRotation2d(), 
+        QuestNav::getInstance().getRotation2d(), 
         { 
           frontLeft.getPosition(),
           frontRight.getPosition(),

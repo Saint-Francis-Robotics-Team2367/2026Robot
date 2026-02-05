@@ -47,8 +47,6 @@ namespace HardwareIDs {
     static constexpr int BRsteerID = 4;
     static constexpr int BRdriveID = 5;
     static constexpr int BRencoderID = 6;
-
-    static constexpr int pigeonID = 0;
 }
 
 namespace ControllerConstants {
