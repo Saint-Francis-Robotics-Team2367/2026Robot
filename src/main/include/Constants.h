@@ -61,15 +61,18 @@ namespace ShooterConstants {
     static constexpr double GRAVITY = 9.81;
     static constexpr double PI = M_PI;
 
+    // CAN IDs
     static constexpr int ShooterID = 0.0;
     static constexpr int RackMotorID = 0.0;
     static constexpr int RackEncoderID = 0.0;
 
+    // PID Constants Shooter
     static constexpr double FlywheelP = 0.0;
     static constexpr double FlywheelI = 0.0;
     static constexpr double FlywheelD = 0.0;
     static constexpr double FlywheelV = 0.0;
 
+    // PID Constants Rack
     static constexpr double RackP = 0.0;
     static constexpr double RackI = 0.0;
     static constexpr double RackD = 0.0;

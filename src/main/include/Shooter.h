@@ -20,7 +20,7 @@ public:
     void stop();
     void init();
     bool setFlywheelSpeed(float rotationsPerMinute);
-    void setHoodPosition(float shooterRPM, float horizontalOffset, float yOffset, float cameraHeight, float initialAngle, float maxAngle, float GearRatio);
+    void setHoodPosition(float shooterRPM, float horizontalOffset, float yOffset, float shooterHeight = (14.186 + 2), float initialAngle = 68, float minAngle = 31, float GearRatio = 116.8831);
 
 private:
     // Motors

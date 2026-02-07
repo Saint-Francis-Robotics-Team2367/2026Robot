@@ -63,7 +63,7 @@ void RobotContainer::ConfigureBindings() {
   driverCtr.POVDown().OnTrue(
     HoodedShooter.RunOnce(
     [this] {
-      HoodedShooter.setHoodPosition(0, 0, 0, 0, 0, 0, 0);
+      HoodedShooter.setHoodPosition(0, 0, 0);
       HoodedShooter.setFlywheelSpeed(0);
 
       std::this_thread::sleep_for(std::chrono::seconds(3));
