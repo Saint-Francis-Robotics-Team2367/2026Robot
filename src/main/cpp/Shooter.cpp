@@ -134,20 +134,14 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
     float MotorRequiredRotations = (requiredAngle / 360.0) * ThroughBoreGearRatio * MotorGearRatio;
     rotations += MotorRequiredRotations;
 
-    if (MotorRequiredRotations >= 1.0 || MotorRequiredRotations <= -1.0) {
+    if ((std::fmod(rotations * 360.0, 360.0) > minAngle) && (std::fmod(rotations * 360.0, 360.0) < initialAngle)) {
         RackMotor.SetControl(ctre::phoenix6::controls::PositionDutyCycle{units::angle::turn_t{rotations}});
-    } else {
-        RackMotor.SetControl(ctre::phoenix6::controls::PositionDutyCycle{units::angle::turn_t{(requiredAngle / 360.0)}});
     }
-    }   
 
-
-
-        RackMotor.SetControl(ctre::phoenix6::controls::PositionDutyCycle{units::angle::turn_t{MotorGearRatio * (requiredAngle / 360.0) + rotations}});
-        hoodAngleDegrees = initialAngle;
-
-        std::cout << "Hood Angle Set To: " << hoodAngleDegrees << " degrees" << std::endl;
-    } else {
-        std::cout << "Hood Angle Error : " << hoodAngleDegrees << " degrees remains" << std::endl;
+    double rackPose = RackEncoder.GetPosition().GetValue().value();
+    if (std::fabs(rackPose - rotations) <= 1.0) {
+        double error = rackPose - rotations;
+        RackMotor.SetControl(ctre::phoenix6::controls::PositionDutyCycle{units::angle::turn_t{error}});
+        rotations += error;
     }
 }
