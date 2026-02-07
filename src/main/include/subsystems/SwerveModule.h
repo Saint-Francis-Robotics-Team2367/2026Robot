@@ -49,5 +49,7 @@ public:
     void invertModule(ctre::phoenix6::signals::InvertedValue value, bool steer, bool drive); // Defaulted to CounterClockwise Positive
     void setDesiredState(frc::SwerveModuleState& state);
     frc::SwerveModulePosition getPosition();
+    frc::SwerveModuleState getState();
+    units::meters_per_second_t getDriveVelocity();
     void zeroModule();
 };

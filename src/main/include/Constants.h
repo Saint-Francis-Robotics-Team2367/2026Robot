@@ -21,8 +21,8 @@
 namespace ModuleConstants {
     static constexpr double kDriveGearRatio = 5.357142857142857; // L3+
     static constexpr double kSteerGearRatio = 21.428571428571427; // 150/7:1
-    static constexpr double kWheelRadius = 2.0; // inches
-    static constexpr double kWheelDiameter = 4.0; // inches
+    static constexpr double kWheelRadius = 0.0508; // meters
+    static constexpr double kWheelDiameter = 0.1016; // meters
     static constexpr double moduleMaxMPS = 5.2154328; //meters per second
     static constexpr double moduleMaxRot = 2.0; // rad
 }

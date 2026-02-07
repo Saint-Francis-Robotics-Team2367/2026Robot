@@ -30,6 +30,7 @@ public:
   bool gyroConnected();
   void stopAllModules();
   void initGyro();
+  frc::ChassisSpeeds getRobotRelativeSpeeds();
 
 private:
   ctre::phoenix6::hardware::Pigeon2 pigeon{HardwareIDs::pigeonID};

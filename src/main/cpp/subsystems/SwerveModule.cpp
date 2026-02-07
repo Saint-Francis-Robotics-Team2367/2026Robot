@@ -113,6 +113,20 @@ frc::SwerveModulePosition SwerveModule::getPosition() {
     };
 }
 
+units::meters_per_second_t SwerveModule::getDriveVelocity() {
+    double motorRPS = driveMotor.GetVelocity().GetValueAsDouble();
+    double wheelCircumference = ModuleConstants::kWheelDiameter * std::numbers::pi;
+    return units::meters_per_second_t(motorRPS * wheelCircumference / ModuleConstants::kDriveGearRatio);
+}
+
+
+frc::SwerveModuleState SwerveModule::getState() {
+    return frc::SwerveModuleState{
+        getDriveVelocity(),
+        frc::Rotation2d(units::radian_t(encoder.GetAbsolutePosition().GetValueAsDouble() - moduleOffset))
+    };
+}
+
 void SwerveModule::zeroModule() {
     double absPos = encoder.GetAbsolutePosition().GetValueAsDouble();
     double corrected = absPos - moduleOffset;

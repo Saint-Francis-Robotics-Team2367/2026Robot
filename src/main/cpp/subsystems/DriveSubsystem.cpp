@@ -104,3 +104,11 @@ void DriveSubsystem::initGyro() {
   pigeon.Reset();
   pigeon.ClearStickyFaults();
 }
+
+frc::ChassisSpeeds DriveSubsystem::getRobotRelativeSpeeds() {
+    frc::SwerveModuleState fl = frontLeft.getState();
+    frc::SwerveModuleState fr = frontRight.getState();
+    frc::SwerveModuleState bl = backLeft.getState();
+    frc::SwerveModuleState br = backRight.getState();
+    return kinematics.ToChassisSpeeds(fl, fr, bl, br);
+}
