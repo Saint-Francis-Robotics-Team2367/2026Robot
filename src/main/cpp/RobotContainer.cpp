@@ -3,6 +3,8 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "RobotContainer.h"
+#include <thread>
+#include <chrono>
 
 #include <frc2/command/button/Trigger.h>
 #include "frc2/command/button/RobotModeTriggers.h"
@@ -13,12 +15,15 @@
 //basically initializes robot
 RobotContainer::RobotContainer() {
   // Initialize all of your commands and subsystems here
+  // Initialize Shooter
+  HoodedShooter.init();
 
   // Configure the button bindings
   ConfigureBindings();
   drivetrain.initModules();
   drivetrain.initGyro();
   drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
+
 }
 
 void RobotContainer::ConfigureBindings() {
@@ -51,6 +56,19 @@ void RobotContainer::ConfigureBindings() {
   driverCtr.POVUp().OnTrue(
     drivetrain.RunOnce(
       [this] {drivetrain.resetGyro();}
+    )
+  );
+
+  //stops shooter on DPad Down
+  driverCtr.POVDown().OnTrue(
+    HoodedShooter.RunOnce(
+    [this] {
+      HoodedShooter.setHoodPosition(0, 0, 0);
+      HoodedShooter.setFlywheelSpeed(0);
+
+      std::this_thread::sleep_for(std::chrono::seconds(3));
+      HoodedShooter.stop();
+    }
     )
   );
 
