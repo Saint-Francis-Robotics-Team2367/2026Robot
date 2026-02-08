@@ -10,6 +10,7 @@
 #include "commands/Autos.h"
 #include "commands/ExampleCommand.h"
 #include "frc/DriverStation.h"
+#include "pathplanner/lib/auto/AutoBuilder.h"
 #include "pathplanner/lib/controllers/PathFollowingController.h"
 #include "pathplanner/lib/controllers/PPHolonomicDriveController.h"
 
@@ -29,10 +30,12 @@ RobotContainer::RobotContainer() {
     [this]() {return drivetrain.getPose();}, 
     [this](const frc::Pose2d& pose) {drivetrain.resetOdometry(pose);},
     [this]() {return drivetrain.getRobotRelativeSpeeds();},
-    [this](auto speeds, auto feedforwards) {drivetrain.Drive(speeds.vx.value(), speeds.vy.value(), speeds.omega.value(), drivetrain.gyroConnected());},
+    [this](auto speeds, auto feedforwards) {
+      drivetrain.Drive(speeds.vx.value(), speeds.vy.value(), speeds.omega.value(), drivetrain.gyroConnected());
+    },
     std::make_shared<pathplanner::PPHolonomicDriveController> (
-      pathplanner::PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-      pathplanner::PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+      pathplanner::PIDConstants(3.5, 0.0, 0.0), // Translation PID constants
+      pathplanner::PIDConstants(3.5, 0.0, 0.0) // Rotation PID constants
     ),
     robotConfig,
     []() { return frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed;},
@@ -84,5 +87,5 @@ void RobotContainer::ConfigureBindings() {
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
-  return autos::FollowPath(&drivetrain, "A to S1");
+  return autos::FollowPath(&drivetrain, "E to S2", "S1 to T", "S3 to T");
 }

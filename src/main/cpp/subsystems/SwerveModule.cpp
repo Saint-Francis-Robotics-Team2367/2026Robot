@@ -127,6 +127,14 @@ frc::SwerveModuleState SwerveModule::getState() {
     };
 }
 
+void SwerveModule::setDesiredStateVolts(const frc::SwerveModuleState& state, units::current::ampere_t torqueCurrent) {
+
+    auto optimizedState = frc::SwerveModuleState::Optimize(state, getState().angle);
+
+    setMotor(POSITION, STEER, ((optimizedState.angle.Radians().value()) / (2 * M_PI) * ModuleConstants::kSteerGearRatio));
+    driveMotor.SetControl(ctre::phoenix6::controls::TorqueCurrentFOC{torqueCurrent});
+}
+
 void SwerveModule::zeroModule() {
     double absPos = encoder.GetAbsolutePosition().GetValueAsDouble();
     double corrected = absPos - moduleOffset;

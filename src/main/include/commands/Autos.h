@@ -12,5 +12,5 @@ namespace autos {
 /**
  * Example static factory for an autonomous command.
  */
-frc2::CommandPtr FollowPath(DriveSubsystem* subsystem, std::string pathName);
+frc2::CommandPtr FollowPath(DriveSubsystem* subsystem, std::string pathName1, std::string pathName2, std::string pathName3);
 }  // namespace autos

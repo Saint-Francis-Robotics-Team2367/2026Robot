@@ -10,10 +10,21 @@
 #include "pathplanner/lib/auto/AutoBuilder.h"
 #include "pathplanner/lib/path/PathPlannerPath.h"
 
-frc2::CommandPtr autos::FollowPath(DriveSubsystem* subsystem, std::string pathName) {
-    auto path = pathplanner::PathPlannerPath::fromPathFile(pathName);
-    return pathplanner::AutoBuilder::followPath(path);
+frc2::CommandPtr autos::FollowPath(DriveSubsystem* subsystem, std::string pathName1, std::string pathName2, std::string pathName3) {
+    auto path1 = pathplanner::PathPlannerPath::fromPathFile(pathName1);
+    auto path2 = pathplanner::PathPlannerPath::fromPathFile(pathName2);
+    auto path3 = pathplanner::PathPlannerPath::fromPathFile(pathName3);
 
-    // return frc2::cmd::Sequence(subsystem->Drive(),
-    //                          ExampleCommand(subsystem).ToPtr());
+    // auto resetPose = frc2::cmd::RunOnce(
+    //     [subsystem, &path1] {
+    //         subsystem->resetOdometry(path1.get()->getStartingHolonomicPose().value());
+    //     }
+    // );
+
+    return frc2::cmd::Sequence(
+        // std::move(resetPose),
+        pathplanner::AutoBuilder::followPath(path1)
+        // frc2::cmd::Wait(1_s),
+        // pathplanner::AutoBuilder::followPath(path2)
+    );
 }

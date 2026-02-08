@@ -27,6 +27,18 @@ void DriveSubsystem::Drive(double vx, double vy, double rot, bool fieldRelative)
   backRight.setDesiredState(states[2]);
 }
 
+void DriveSubsystem::DriveWithFF(const frc::ChassisSpeeds& speeds, const pathplanner::DriveFeedforwards& feedforwards) {
+  auto states = kinematics.ToSwerveModuleStates(speeds);
+  kinematics.DesaturateWheelSpeeds(&states, units::meters_per_second_t(ModuleConstants::moduleMaxMPS));
+
+  frc::SmartDashboard::PutNumber("Size", feedforwards.torqueCurrents.size());
+
+  frontLeft.setDesiredStateVolts(states[1], feedforwards.torqueCurrents[1]);
+  frontRight.setDesiredStateVolts(states[3], feedforwards.torqueCurrents[3]);
+  backLeft.setDesiredStateVolts(states[0], feedforwards.torqueCurrents[0]);
+  backRight.setDesiredStateVolts(states[2], feedforwards.torqueCurrents[2]);
+}
+
 void DriveSubsystem::updateOdometry() {
   odometry.Update(
     pigeon.GetRotation2d(), 
@@ -69,7 +81,7 @@ void DriveSubsystem::initModules() {
   backLeft.zeroModule();
   backRight.zeroModule();
 
-  frontLeft.invertModule(ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive, false, true);
+  // frontLeft.invertModule(ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive, false, true);
   backRight.invertModule(ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive, false, true);
 }
 
