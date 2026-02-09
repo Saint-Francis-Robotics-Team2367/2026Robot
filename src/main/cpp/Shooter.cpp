@@ -11,16 +11,14 @@ void Shooter::stop() {
 
 
 void Shooter::init() {
-    // Reset all motors to factory defaults
-    ShooterMotor.GetConfigurator().Apply(FlywheelConfig);
-    RackMotor.GetConfigurator().Apply(RackConfig);
-
-
     // Configure PID constants for Flywheel Master (Velocity Control)
     FlywheelConfig.Slot0.kP = ShooterConstants::FlywheelP;
     FlywheelConfig.Slot0.kI = ShooterConstants::FlywheelI;
     FlywheelConfig.Slot0.kD = ShooterConstants::FlywheelD;
     FlywheelConfig.Slot0.kV = ShooterConstants::FlywheelV;
+
+    FlywheelConfig.CurrentLimits.SupplyCurrentLimit = 20_A;
+    FlywheelConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
 
     // Configure PID constants for Rack Motor (Position Control)
