@@ -13,16 +13,23 @@
 //basically initializes robot
 RobotContainer::RobotContainer() {
   // Initialize all of your commands and subsystems here
-
+  
   // Configure the button bindings
   ConfigureBindings();
   drivetrain.initModules();
   drivetrain.initGyro();
   drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
-}
+};
 
 void RobotContainer::ConfigureBindings() {
   // Configure your trigger bindings here
+  driverCtr.Triangle().OnTrue(
+    intake.RunOnce(
+      [this] {intake.deploy();}
+    )
+  );
+  
+  
   drivetrain.SetDefaultCommand(
       drivetrain.Run(
         [this]() {

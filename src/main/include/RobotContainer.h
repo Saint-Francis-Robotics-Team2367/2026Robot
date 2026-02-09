@@ -14,6 +14,8 @@
 #include "frc/MathUtil.h"
 #include "frc/smartdashboard/SmartDashboard.h"
 
+#include <subsystems/Intake.h>
+
 /**
  * This class is where the bulk of the robot should be declared.  Since
  * Command-based is a "declarative" paradigm, very little robot logic should
@@ -28,6 +30,7 @@ class RobotContainer {
   frc2::CommandPtr GetAutonomousCommand();
 
   DriveSubsystem drivetrain;
+  Intake intake;
 
  private:
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -39,6 +42,7 @@ class RobotContainer {
   frc::SlewRateLimiter<units::scalar> xLimiter{ControllerConstants::slewRate / 1_s};
   frc::SlewRateLimiter<units::scalar> yLimiter{ControllerConstants::slewRate / 1_s};
   frc::SlewRateLimiter<units::scalar> rotLimiter{ControllerConstants::slewRate / 1_s};
+
 
   void ConfigureBindings();
 };
