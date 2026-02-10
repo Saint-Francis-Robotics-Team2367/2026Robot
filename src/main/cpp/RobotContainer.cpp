@@ -10,6 +10,8 @@
 #include "commands/Autos.h"
 #include "commands/ExampleCommand.h"
 
+#include "commands/TurretCommand.h"
+
 //basically initializes robot
 RobotContainer::RobotContainer() {
   // Initialize all of your commands and subsystems here
@@ -51,6 +53,12 @@ void RobotContainer::ConfigureBindings() {
   driverCtr.POVUp().OnTrue(
     drivetrain.RunOnce(
       [this] {drivetrain.resetGyro();}
+    )
+  );
+
+  driverCtr.Cross().OnTrue(
+    m_turret.RunOnce(
+    [this]{m_turret.setAngle(90);}
     )
   );
 

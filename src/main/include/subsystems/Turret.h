@@ -36,7 +36,7 @@ class Turret : public frc2::Subsystem{
         ctre::phoenix6::hardware::TalonFX turretMotor{motorID};
         ctre::phoenix6::configs::TalonFXConfiguration turretConfigs{};
 
-        ctre::phoenix6::hardware::CANcoder encoder;  
+        ctre::phoenix6::hardware::CANcoder encoder{encoderID};  
         ctre::phoenix6::configs::CANcoderConfiguration encoderConfigs{}; 
 
         ctre::phoenix6::controls::PositionVoltage positionVoltage{0_tr}; //turns 

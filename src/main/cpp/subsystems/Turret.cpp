@@ -1,16 +1,14 @@
 #include "Turret.h"
 
-void Turret::init() {
+Turret::Turret() {
     //pids
     turretConfigs.Slot0.kP = kP; 
     turretConfigs.Slot0.kI = kI;
     turretConfigs.Slot0.kD = kD;
    
     turretMotor.GetConfigurator().Apply(turretConfigs);
-
-    //through bore
-    encoderConfigs.MagnetSensor.WithSensorDirection(ctre::phoenix6::signals::SensorDirectionValue::CounterClockwise_Positive);
     encoderOffset = encoderConfigs.MagnetSensor.MagnetOffset.value();
+
 }
 
 
