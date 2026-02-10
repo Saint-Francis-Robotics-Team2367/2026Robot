@@ -32,13 +32,13 @@ public:
   void initGyro();
 
 private:
-  ctre::phoenix6::hardware::Pigeon2 pigeon{HardwareIDs::pigeonID};
+  ctre::phoenix6::hardware::Pigeon2 pigeon{HardwareIDs::pigeonID, "Drivetrain"};
 
   //module objects
-  SwerveModule frontLeft{HardwareIDs::FLdriveID, HardwareIDs::FLsteerID, HardwareIDs::FLencoderID};
-  SwerveModule frontRight{HardwareIDs::FRdriveID, HardwareIDs::FRsteerID, HardwareIDs::FRencoderID};
-  SwerveModule backLeft{HardwareIDs::BLdriveID, HardwareIDs::BLsteerID, HardwareIDs::BLencoderID};
-  SwerveModule backRight{HardwareIDs::BRdriveID, HardwareIDs::BRsteerID, HardwareIDs::BRencoderID};
+  SwerveModule frontLeft{HardwareIDs::FLdriveID, HardwareIDs::FLsteerID, HardwareIDs::FLencoderID, "Drivetrain"};
+  SwerveModule frontRight{HardwareIDs::FRdriveID, HardwareIDs::FRsteerID, HardwareIDs::FRencoderID, "Drivetrain"};
+  SwerveModule backLeft{HardwareIDs::BLdriveID, HardwareIDs::BLsteerID, HardwareIDs::BLencoderID, "Drivetrain"};
+  SwerveModule backRight{HardwareIDs::BRdriveID, HardwareIDs::BRsteerID, HardwareIDs::BRencoderID, "Drivetrain"};
 
   //CHANGE THESE IF ROBOT DIMENSIONS CHANGE; positions of swerve modules relative to robot
   frc::SwerveDriveKinematics<4> kinematics {
