@@ -11,6 +11,9 @@
 #include "commands/ExampleCommand.h"
 
 #include "commands/TurretCommand.h"
+#include "subsystems/Turret.h"
+#include "frc/smartdashboard/SmartDashboard.h"
+
 
 //basically initializes robot
 RobotContainer::RobotContainer() {
@@ -58,9 +61,20 @@ void RobotContainer::ConfigureBindings() {
 
   driverCtr.Cross().OnTrue(
     m_turret.RunOnce(
-    [this]{m_turret.setAngle(90);}
+    [this]{m_turret.setAngle(270);}
     )
   );
+  driverCtr.Circle().OnTrue(
+    m_turret.RunOnce(
+    [this]{m_turret.setAngle(180);}
+    )
+  );
+  driverCtr.Square().OnTrue(
+    m_turret.RunOnce(
+    [this]{m_turret.stop();}
+    )
+  );
+
 
   //stops modules if disabled
   frc2::RobotModeTriggers::Disabled().WhileTrue(

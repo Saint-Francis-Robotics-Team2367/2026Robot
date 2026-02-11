@@ -9,10 +9,10 @@
 
 #include <frc2/command/Subsystem.h>
 
-constexpr int encoderID = 12;
-constexpr int motorID = 34;
+constexpr int encoderID = 60;
+constexpr int motorID = 13;
 
-constexpr double pulleyRatio = 30; //big wheel to small wheel (encoder) ratio
+constexpr double pulleyRatio = 158/18; //big wheel to small wheel (encoder) ratio
 
 constexpr double kP = 0.3;
 constexpr double kI = 0.0;

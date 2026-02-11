@@ -13,7 +13,7 @@
 #include "frc/filter/SlewRateLimiter.h"
 #include "frc/MathUtil.h"
 #include "frc/smartdashboard/SmartDashboard.h"
-
+#include "subsystems/Turret.h"
 /**
  * This class is where the bulk of the robot should be declared.  Since
  * Command-based is a "declarative" paradigm, very little robot logic should
@@ -28,6 +28,7 @@ class RobotContainer {
   frc2::CommandPtr GetAutonomousCommand();
 
   DriveSubsystem drivetrain;
+  Turret m_turret;
 
  private:
   // Replace with CommandPS4Controller or CommandJoystick if needed

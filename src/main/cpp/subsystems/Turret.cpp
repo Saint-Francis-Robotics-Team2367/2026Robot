@@ -1,12 +1,18 @@
-#include "Turret.h"
+#include "subsystems/Turret.h"
+#include <frc/smartdashboard/SmartDashboard.h>
 
 Turret::Turret() {
     //pids
     turretConfigs.Slot0.kP = kP; 
     turretConfigs.Slot0.kI = kI;
     turretConfigs.Slot0.kD = kD;
+
+    turretConfigs.CurrentLimits.SupplyCurrentLimit = 10_A;
+    turretConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+    turretConfigs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
    
     turretMotor.GetConfigurator().Apply(turretConfigs);
+    encoder.GetConfigurator().Apply(encoderConfigs);
     encoderOffset = encoderConfigs.MagnetSensor.MagnetOffset.value();
 
 }
@@ -27,24 +33,27 @@ double Turret::getCurrentAngle() {
     double encoderPos = turretMotor.GetPosition().GetValueAsDouble() * 360; //find pos in degrees
     double corrected = encoderPos - encoderOffset; //corrected value
     double currentAngle = fmod(corrected/pulleyRatio, 360.0);//divide by pulley ratio to convert from angle of small wheel to angle of large wheel
-
     return currentAngle;
 }
 
 
 void Turret::setAngle(double targetAngle) {
-    resetTurretPosition(); //this will take care of if the turret rotates more that 180 deg.
-
     double currentAngle = getCurrentAngle(); //get the current absolute angle
+    if (fabs(currentAngle + targetAngle)>180){
+        resetTurretPosition(); //this will take care of if the turret rotates more that 180 deg.
+    }
+
     double turnAngle = targetAngle - currentAngle; //find the angle the turret needs to turn
     //decides which direction to turn
-    if (fabs(turnAngle) <= 180){
+    if (fabs(turnAngle) < 180){
+        frc::SmartDashboard::PutNumber("turn angle", turnAngle);
         //turn to the desired position
         turretMotor.SetControl(positionVoltage.WithPosition(units::angle::turn_t(turnAngle/360 * pulleyRatio)).WithSlot(0));
         smallPulleyCounter += turnAngle/360 * pulleyRatio; //keep track of how much the small pulley turns
     }
     else{
         //turn the opposite direction, change the turn angle
+        frc::SmartDashboard::PutNumber("turn angle", turnAngle);
         turnAngle = (360-turnAngle) + currentAngle;
         //turn to the desired position
         turretMotor.SetControl(positionVoltage.WithPosition(units::angle::turn_t (-turnAngle/360 * pulleyRatio)).WithSlot(0));
@@ -55,6 +64,7 @@ void Turret::setAngle(double targetAngle) {
 bool Turret::isAtAngle(double targetAngle) {
     if (fabs(targetAngle - getCurrentAngle()) < 5) return true; // if the current angle is within 5 degrees of the target angle
     else return false;
+    frc::SmartDashboard::PutBoolean("isAtAngle", isAtAngle(targetAngle));
 }
 
 void Turret::resetTurretPosition(){
