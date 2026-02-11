@@ -25,7 +25,7 @@ void RobotContainer::ConfigureBindings() {
   // Configure your trigger bindings here
   driverCtr.Triangle().OnTrue(
     intake.RunOnce(
-      [this] {intake.deploy();}
+      [this] {intake.retract();}
     )
   );
   

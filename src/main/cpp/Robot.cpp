@@ -6,6 +6,8 @@
 
 #include <frc2/command/CommandScheduler.h>
 
+#include <frc/smartdashboard/SmartDashboard.h>
+
 Robot::Robot() {}
 
 /**
@@ -57,7 +59,9 @@ void Robot::TeleopInit() {
 /**
  * This function is called periodically during operator control.
  */
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
+  frc::SmartDashboard::PutNumber("Pivot", m_container.intake.pivotEncoder.GetPosition().GetValueAsDouble());
+}
 
 /**
  * This function is called periodically during test mode.

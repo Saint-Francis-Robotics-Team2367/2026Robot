@@ -2,9 +2,12 @@
 
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <ctre/phoenix6/configs/Configuration.hpp>
+#include <ctre/phoenix6/CANcoder.hpp>
+
 #include "Constants.h"
 #include <array>
 #include <units/angle.h>
+
 #include "frc2/command/StartEndCommand.h"
 #include "frc2/command/SubsystemBase.h"
 #include "frc2/command/Requirements.h"
@@ -28,13 +31,19 @@ class Intake : public frc2::SubsystemBase {
         void stop();
         int getCurrentState();
 
+    public:    
         ctre::phoenix6::hardware::TalonFX pivotMotor{IntakeConstants::intakePivotID};
         ctre::phoenix6::hardware::TalonFX rollerMotor{IntakeConstants::intakeRollerID};
+
+        ctre::phoenix6::hardware::CANcoder pivotEncoder{IntakeConstants::intakePivotID};
+        ctre::phoenix6::hardware::CANcoder rollerEncoder{IntakeConstants::intakeRollerID};
+
+        ctre::phoenix6::configs::CANcoderConfiguration pivotEncoderConfig{};
+        ctre::phoenix6::configs::CANcoderConfiguration rollerEncoderConfig{};
 
         ctre::phoenix6::configs::TalonFXConfiguration pivotConfig{};
         ctre::phoenix6::configs::TalonFXConfiguration rollerConfig{};
 
-    private:
         Intake& mIntake;
         frc2::StartEndCommand intakeToggle{ [this] {init();}, 
                                             [this] {stop();}, 
