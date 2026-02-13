@@ -30,14 +30,17 @@ class RobotContainer {
   frc2::CommandPtr GetAutonomousCommand();
 
   DriveSubsystem drivetrain;
-  Intake intake;
+  Intake mIntake;
 
  private:
   // Replace with CommandPS4Controller or CommandJoystick if needed
   frc2::CommandPS5Controller driverCtr{0}; //drive controller should be first controller that is plugged in
 
-  // The robot's subsystems are defined here...
-
+  frc2::StartEndCommand intakeToggle {
+    [this] {mIntake.intake(0.3);},
+    [this] {mIntake.stop();},
+    {&mIntake}
+  };
 
   frc::SlewRateLimiter<units::scalar> xLimiter{ControllerConstants::slewRate / 1_s};
   frc::SlewRateLimiter<units::scalar> yLimiter{ControllerConstants::slewRate / 1_s};

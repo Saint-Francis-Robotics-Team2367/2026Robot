@@ -19,19 +19,15 @@ RobotContainer::RobotContainer() {
   drivetrain.initModules();
   drivetrain.initGyro();
   drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
+  mIntake.init();
 };
 
 void RobotContainer::ConfigureBindings() {
   // Configure your trigger bindings here
-  driverCtr.Triangle().OnTrue(
-    intake.RunOnce(
-      [this] {intake.retract();}
-    )
-  );
-  
-  
+  driverCtr.Triangle().ToggleOnTrue(&intakeToggle);
+
   drivetrain.SetDefaultCommand(
-      drivetrain.Run(
+      drivetrain.Run( 
         [this]() {
           double x = frc::ApplyDeadband(driverCtr.GetLeftX(), ControllerConstants::deadband);
           double y = frc::ApplyDeadband(driverCtr.GetLeftY(), ControllerConstants::deadband);

@@ -60,7 +60,7 @@ void Robot::TeleopInit() {
  * This function is called periodically during operator control.
  */
 void Robot::TeleopPeriodic() {
-  frc::SmartDashboard::PutNumber("Pivot", m_container.intake.pivotEncoder.GetPosition().GetValueAsDouble());
+  // frc::SmartDashboard::PutNumber("Pivot", m_container.intake.pivotEncoder.GetPosition().GetValueAsDouble());
 }
 
 /**
