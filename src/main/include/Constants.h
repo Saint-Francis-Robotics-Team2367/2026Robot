@@ -59,4 +59,5 @@ namespace ControllerConstants {
 namespace IntakeConstants {
     static constexpr int intakePivotID = 15;
     static constexpr int intakeRollerID = 14;
+    static constexpr int hopperMotorID = 16;
 }

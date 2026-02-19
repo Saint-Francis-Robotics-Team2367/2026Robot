@@ -26,6 +26,17 @@ void RobotContainer::ConfigureBindings() {
   // Configure your trigger bindings here
   driverCtr.Triangle().ToggleOnTrue(&intakeToggle);
 
+  driverCtr.Circle().OnTrue(
+    frc2::cmd::Either(
+      mIntake.deploySequence(),
+      mIntake.retractSequence(),
+      [this] {return runFirstSequence;}
+    )
+    .AndThen (
+      frc2::cmd::RunOnce([this] {runFirstSequence = !runFirstSequence;})
+    )
+  );
+
   drivetrain.SetDefaultCommand(
       drivetrain.Run( 
         [this]() {

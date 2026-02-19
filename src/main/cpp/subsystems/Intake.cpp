@@ -18,8 +18,39 @@ void Intake::init() {
     rollerConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
     rollerMotor.GetConfigurator().Apply(rollerConfig);
 
+    hopperConfig.Slot0.kP = 0.1;
+    hopperConfig.Slot0.kI = 0.0;
+    hopperConfig.Slot0.kD = 0.0;
+
+    hopperConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
+    hopperMotor.GetConfigurator().Apply(hopperConfig);
+
     currentState = 0;
     targetPosition = stowedPos;
+}
+
+frc2::CommandPtr Intake::deploySequence() {
+    return frc2::cmd::Sequence(
+        frc2::cmd::RunOnce([this] {deploy();}),
+        frc2::cmd::Wait(0.1_s),
+        frc2::cmd::RunOnce([this] {deployHopper();})
+    );
+}
+
+frc2::CommandPtr Intake::retractSequence() {
+    return frc2::cmd::Sequence (
+        frc2::cmd::RunOnce([this] {retractHopper();}),
+        frc2::cmd::Wait(0.1_s),
+        frc2::cmd::RunOnce([this] {retract();})
+    );
+}
+
+void Intake::deployHopper() {
+    hopperMotor.SetControl(ctre::phoenix6::controls::PositionVoltage{hopperDeployedPos});
+}
+
+void Intake::retractHopper() {
+    hopperMotor.SetControl(ctre::phoenix6::controls::PositionVoltage{hopperStowPos});
 }
 
 void Intake::deploy() {
