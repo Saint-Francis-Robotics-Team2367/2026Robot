@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <cmath>
+#include <numbers>
 
 /**
  * The Constants header provides a convenient place for teams to hold robot-wide
@@ -28,27 +28,27 @@ namespace ModuleConstants {
 }
 
 namespace MathConstants {
-    static constexpr double TWO_PI = M_PI * 2;
+    static constexpr double TWO_PI = std::numbers::pi * 2;
 }
 
 namespace HardwareIDs { 
-    static constexpr int FLsteerID = 10;
-    static constexpr int FLdriveID = 11;
-    static constexpr int FLencoderID = 12;
+    // static constexpr int FLsteerID = 10;
+    // static constexpr int FLdriveID = 11;
+    // static constexpr int FLencoderID = 12;
     
-    static constexpr int FRsteerID = 1;
-    static constexpr int FRdriveID = 2;
-    static constexpr int FRencoderID = 3;
+    // static constexpr int FRsteerID = 1;
+    // static constexpr int FRdriveID = 2;
+    // static constexpr int FRencoderID = 3;
 
-    static constexpr int BLsteerID = 7;
-    static constexpr int BLdriveID = 8;
-    static constexpr int BLencoderID = 9;
+    // static constexpr int BLsteerID = 7;
+    // static constexpr int BLdriveID = 8;
+    // static constexpr int BLencoderID = 9;
 
-    static constexpr int BRsteerID = 4;
-    static constexpr int BRdriveID = 5;
-    static constexpr int BRencoderID = 6;
+    // static constexpr int BRsteerID = 4;
+    // static constexpr int BRdriveID = 5;
+    // static constexpr int BRencoderID = 6;
 
-    static constexpr int pigeonID = 0;
+    // static constexpr int pigeonID = 13;
 }
 
 namespace ControllerConstants {
@@ -59,22 +59,22 @@ namespace ControllerConstants {
 namespace ShooterConstants {
     static constexpr double SHOOTERWHEELDIAMETER = 0.1; // in meters
     static constexpr double GRAVITY = 9.81;
-    static constexpr double PI = M_PI;
+    static constexpr double PI = std::numbers::pi;
 
     // CAN IDs
-    static constexpr int ShooterID = 0.0;
-    static constexpr int RackMotorID = 0.0;
-    static constexpr int RackEncoderID = 0.0;
+    static constexpr int ShooterID = 3.0; // Wheel
+    static constexpr int RackMotorID = 0.0; // Kraken
+    static constexpr int RackEncoderID = 2.0; // ThroughBore
 
     // PID Constants Shooter
-    static constexpr double FlywheelP = 0.0;
+    static constexpr double FlywheelP = 0.05;
     static constexpr double FlywheelI = 0.0;
     static constexpr double FlywheelD = 0.0;
-    static constexpr double FlywheelV = 0.0;
-
+    static constexpr double FlywheelV = 0.01;
+    
     // PID Constants Rack
-    static constexpr double RackP = 0.0;
+    static constexpr double RackP = 0.025;
     static constexpr double RackI = 0.0;
-    static constexpr double RackD = 0.0;
-    static constexpr double RackG = 0.0;
+    static constexpr double RackD = 0.001;
+    static constexpr double RackG = 0.01;
 }

@@ -9,80 +9,62 @@
 #include <frc2/command/button/Trigger.h>
 #include "frc2/command/button/RobotModeTriggers.h"
 
-#include "commands/Autos.h"
-#include "commands/ExampleCommand.h"
+#include "Shooter.h"
+
 
 //basically initializes robot
 RobotContainer::RobotContainer() {
   // Initialize all of your commands and subsystems here
   // Initialize Shooter
-  HoodedShooter.init();
-
-  // Configure the button bindings
   ConfigureBindings();
-  drivetrain.initModules();
-  drivetrain.initGyro();
-  drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
-
+  HoodedShooter.init(); // Initalize Shooter motors and encoders
+  // HoodedShooter.zeroHood(); // Set initial hood position to 0
 }
+
 
 void RobotContainer::ConfigureBindings() {
-  // Configure your trigger bindings here
-  drivetrain.SetDefaultCommand(
-      drivetrain.Run(
-        [this]() {
-          double x = frc::ApplyDeadband(driverCtr.GetLeftX(), ControllerConstants::deadband);
-          double y = frc::ApplyDeadband(driverCtr.GetLeftY(), ControllerConstants::deadband);
-          double rot = frc::ApplyDeadband(driverCtr.GetRightX(), ControllerConstants::deadband);
+  frc::SmartDashboard::PutString("Shooter Status", "Idle");
 
-          x = xLimiter.Calculate(x);
-          y = yLimiter.Calculate(y);
-          rot = rotLimiter.Calculate(rot);
-
-          double vx = x * ModuleConstants::moduleMaxMPS;
-          double vy = y * ModuleConstants::moduleMaxMPS;
-          rot = rot * ModuleConstants::moduleMaxRot * 2;
-
-          frc::SmartDashboard::PutNumber("vx", vx);
-          frc::SmartDashboard::PutNumber("vy", vy);
-          frc::SmartDashboard::PutNumber("rot", rot);
-
-          drivetrain.Drive(-vx, vy, -rot, drivetrain.gyroConnected());
-        }
-      )
-  );
-
-  //resets gyro on DPad Up
-  driverCtr.POVUp().OnTrue(
-    drivetrain.RunOnce(
-      [this] {drivetrain.resetGyro();}
-    )
-  );
-
-  //stops shooter on DPad Down
-  driverCtr.POVDown().OnTrue(
-    HoodedShooter.RunOnce(
-    [this] {
-      HoodedShooter.setHoodPosition(0, 0, 0);
-      HoodedShooter.setFlywheelSpeed(0);
-
-      std::this_thread::sleep_for(std::chrono::seconds(3));
-      HoodedShooter.stop();
-    }
-    )
-  );
-
-  //stops modules if disabled
-  frc2::RobotModeTriggers::Disabled().WhileTrue(
-    drivetrain.RunOnce(
+  driverCtr.Circle().ToggleOnTrue(
+    frc2::cmd::StartEnd(
+      // ON
       [this] {
-        drivetrain.stopAllModules();
-      }
-    ).IgnoringDisable(true)
+        frc::SmartDashboard::PutString("Shooter Status", "Shooting");
+        HoodedShooter.applyHoodBrake(); 
+        HoodedShooter.setFlywheelSpeed(-3250);
+      },
+      // OFF
+      [this] {
+        frc::SmartDashboard::PutString("Shooter Status", "Idle");
+        HoodedShooter.setFlywheelSpeed(0);
+        HoodedShooter.releaseHoodBrake(); 
+      },
+      { &HoodedShooter } 
+    )
+  );
+
+  driverCtr.Triangle().OnTrue(
+    frc2::cmd::RunOnce(
+      [this] {
+        frc::SmartDashboard::PutString("Shooter Status", "Aligning");
+        HoodedShooter.setHoodPosition(3250, 132, 186);
+      },
+      { &HoodedShooter } 
+    )
+  );
+
+  driverCtr.Square().OnTrue(
+    frc2::cmd::RunOnce(
+      [this] {
+        frc::SmartDashboard::PutString("Shooter Status", "Zeroing Hood");
+        HoodedShooter.zeroHood();
+      },
+      { &HoodedShooter }
+    )
   );
 }
 
-frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
-  // An example command will be run in autonomous
-  // return autos::ExampleAuto(&m_subsystem);
-}
+// frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
+//   // An example command will be run in autonomous
+//   //return autos::ExampleAuto(&m_subsystem);
+// }

@@ -5,10 +5,10 @@
 #pragma once
 
 #include <frc2/command/CommandPtr.h>
+#include "frc2/command/Commands.h"
 #include <frc2/command/button/CommandPS5Controller.h>
 
 #include "Constants.h"
-#include "subsystems/DriveSubsystem.h"
 #include "Shooter.h"
 
 #include "frc/filter/SlewRateLimiter.h"
@@ -28,13 +28,14 @@ class RobotContainer {
 
   frc2::CommandPtr GetAutonomousCommand();
 
-  DriveSubsystem drivetrain;
- private:
+ public:
   // Replace with CommandPS4Controller or CommandJoystick if needed
   frc2::CommandPS5Controller driverCtr{0}; //drive controller should be first controller that is plugged in
 
   // The robot's subsystems are defined here...
   Shooter HoodedShooter;
+
+  bool runFirstSequence = true;
 
   frc::SlewRateLimiter<units::scalar> xLimiter{ControllerConstants::slewRate / 1_s};
   frc::SlewRateLimiter<units::scalar> yLimiter{ControllerConstants::slewRate / 1_s};
