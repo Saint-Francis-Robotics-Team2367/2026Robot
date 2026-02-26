@@ -31,12 +31,15 @@ void RobotContainer::ConfigureBindings() {
       [this] {
         frc::SmartDashboard::PutString("Shooter Status", "Shooting");
         HoodedShooter.applyHoodBrake(); 
-        HoodedShooter.setFlywheelSpeed(-3250);
+        BallFeeder.setFeederSpeed(-2250);
+        HoodedShooter.setFlywheelSpeed(-2250);
+
       },
       // OFF
       [this] {
         frc::SmartDashboard::PutString("Shooter Status", "Idle");
         HoodedShooter.setFlywheelSpeed(0);
+        BallFeeder.setFeederSpeed(0);
         HoodedShooter.releaseHoodBrake(); 
       },
       { &HoodedShooter } 
@@ -47,7 +50,7 @@ void RobotContainer::ConfigureBindings() {
     frc2::cmd::RunOnce(
       [this] {
         frc::SmartDashboard::PutString("Shooter Status", "Aligning");
-        HoodedShooter.setHoodPosition(3250, 132, 186);
+        HoodedShooter.setHoodPosition(2250, 132, 186);
       },
       { &HoodedShooter } 
     )
@@ -62,6 +65,7 @@ void RobotContainer::ConfigureBindings() {
       { &HoodedShooter }
     )
   );
+
 }
 
 // frc2::CommandPtr RobotContainer::GetAutonomousCommand() {

@@ -25,12 +25,10 @@ public:
     bool setFlywheelSpeed(float rotationsPerMinute);
     void setHoodPosition(float shooterRPM, float horizontalOffset, float yOffset, float shooterHeight = (34), float initialAngle = 68, float minAngle = 31, float MotorGearRatio = 116.8831, float ThroughBoreGearRatio = 16.32);
     void zeroHood();
-    // bool hoodAtTarget(); 
     void applyHoodBrake();
     void releaseHoodBrake(); 
+    int findOptimalRPM(float horizontalOffset, float yOffset);
     
-
-    float rotations;
     float hoodCenterRot;
     float targetAbs;
 

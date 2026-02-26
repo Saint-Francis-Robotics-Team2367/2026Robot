@@ -65,6 +65,13 @@ namespace ShooterConstants {
     static constexpr int ShooterID = 3.0; // Wheel
     static constexpr int RackMotorID = 0.0; // Kraken
     static constexpr int RackEncoderID = 2.0; // ThroughBore
+    static constexpr int FeederID = 4.0; // Feeder
+
+    // PID Constants Feeder
+    static constexpr double FeederP = 0.0;
+    static constexpr double FeederI = 0.0;
+    static constexpr double FeederD = 0.0;
+    static constexpr double FeederV = 0.0;
 
     // PID Constants Shooter
     static constexpr double FlywheelP = 0.05;

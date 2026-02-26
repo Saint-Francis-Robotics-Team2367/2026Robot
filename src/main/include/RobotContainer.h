@@ -10,6 +10,7 @@
 
 #include "Constants.h"
 #include "Shooter.h"
+#include "Feeder.h"
 
 #include "frc/filter/SlewRateLimiter.h"
 #include "frc/MathUtil.h"
@@ -34,6 +35,7 @@ class RobotContainer {
 
   // The robot's subsystems are defined here...
   Shooter HoodedShooter;
+  Feeder BallFeeder;
 
   bool runFirstSequence = true;
 
