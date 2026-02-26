@@ -20,6 +20,11 @@ Robot::Robot() {}
 void Robot::RobotPeriodic() {
   m_container.drivetrain.updateOdometry();
   frc2::CommandScheduler::GetInstance().Run(); //runs command-based queue
+  double currAngle = m_container.m_turret.getCurrentAngle();
+  frc::SmartDashboard::PutNumber("motor pos", currAngle);
+  frc::SmartDashboard::PutNumber("setpoint", m_container.m_turret.setpoint);
+  frc::SmartDashboard::PutNumber("small Pulley counter", m_container.m_turret.smallPulleyCounter);
+  frc::SmartDashboard::PutBoolean("is at angle?", m_container.m_turret.isAtAngle(m_container.m_turret.setpoint));
 }
 
 /**
@@ -60,7 +65,10 @@ void Robot::TeleopInit() {
 /**
  * This function is called periodically during operator control.
  */
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
+
+  //frc::SmartDashboard::PutNumber("encoder angle", m_turret.getCurrentAngle());
+}
 /** 
 if (ps5.GetSquareButtonPressed()){
   m_turret.setAngle(60);

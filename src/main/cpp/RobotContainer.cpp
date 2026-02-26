@@ -13,6 +13,7 @@
 #include "commands/TurretCommand.h"
 #include "subsystems/Turret.h"
 #include "frc/smartdashboard/SmartDashboard.h"
+#include <frc2/command/CommandPtr.h>
 
 
 //basically initializes robot
@@ -53,39 +54,45 @@ void RobotContainer::ConfigureBindings() {
   );
 
   //resets gyro on DPad Up
-  driverCtr.POVUp().OnTrue(
+  driverCtr.Cross().OnTrue(
     drivetrain.RunOnce(
       [this] {drivetrain.resetGyro();}
     )
   );
 
-  driverCtr.Cross().OnTrue(
-    m_turret.RunOnce(
-    [this]{m_turret.setAngle(270);}
-    )
-  );
-  driverCtr.Circle().OnTrue(
-    m_turret.RunOnce(
-    [this]{m_turret.setAngle(180);}
-    )
-  );
-  driverCtr.Square().OnTrue(
-    m_turret.RunOnce(
-    [this]{m_turret.stop();}
-    )
-  );
 
+driverCtr.POVUp().ToggleOnTrue(
+    m_turret.RunOnce(
+        [this] { m_turret.addToSetpoint(45);}   
+    )
+);
 
-  //stops modules if disabled
-  frc2::RobotModeTriggers::Disabled().WhileTrue(
-    drivetrain.RunOnce(
-      [this] {
-        drivetrain.stopAllModules();
-      }
-    ).IgnoringDisable(true)
-  );
+driverCtr.POVDown().ToggleOnTrue(
+    m_turret.RunOnce(
+        [this] { m_turret.addToSetpoint(-45); }
+    )
+);
+driverCtr.Triangle().OnTrue(
+    m_turret.RunOnce(
+        [this] { m_turret.setAngle(180); }    
+    )
+);
+
+driverCtr.Circle().OnTrue(
+    m_turret.RunOnce(
+        [this] { m_turret.setAngle(0); }    
+    )
+);
+
+driverCtr.Square().OnTrue(
+    m_turret.RunOnce(
+        [this] { m_turret.setAngle(m_turret.setpoint); }    
+    )
+);
 }
 
+  //stops modules if disabled
+  
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
   // An example command will be run in autonomous
   // return autos::ExampleAuto(&m_subsystem);
