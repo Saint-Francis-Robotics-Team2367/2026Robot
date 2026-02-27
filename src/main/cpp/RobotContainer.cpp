@@ -12,13 +12,23 @@
 
 //basically initializes robot
 RobotContainer::RobotContainer() {
-  // Initialize all of your commands and subsystems here
+  if (drivetrain.gyroConnected(DriveSubsystem::GyroType::QuestNav)) {
+    gyroType = DriveSubsystem::GyroType::QuestNav;
+    frc::SmartDashboard::PutString("Gyro Type", "QuestNav");
+  }
+  else if (drivetrain.gyroConnected(DriveSubsystem::GyroType::Pigeon)) {
+    gyroType = DriveSubsystem::GyroType::Pigeon;
+    frc::SmartDashboard::PutString("Gyro Type", "Pigeon");
+  }
+  else {
+    frc::SmartDashboard::PutString("Gyro Type", "Not Connected");
+  }
 
   // Configure the button bindings
   ConfigureBindings();
   drivetrain.initModules();
   QuestNav::getInstance().init();
-  drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
+  drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad}, gyroType);
 }
 
 void RobotContainer::ConfigureBindings() {
@@ -42,7 +52,7 @@ void RobotContainer::ConfigureBindings() {
           frc::SmartDashboard::PutNumber("vy", vy);
           frc::SmartDashboard::PutNumber("rot", rot);
 
-          drivetrain.Drive(-vx, vy, -rot, drivetrain.gyroConnected());
+          drivetrain.Drive(-vx, vy, -rot, drivetrain.gyroConnected(gyroType));
         }
       )
   );
@@ -50,9 +60,12 @@ void RobotContainer::ConfigureBindings() {
   //resets gyro on DPad Up
   driverCtr.POVUp().OnTrue(
     drivetrain.RunOnce(
-      [this] {drivetrain.resetGyro();}
+      [this] {drivetrain.resetGyro(gyroType);}
     )
   );
+
+  // Switches gyro
+  driverCtr.POVDown().ToggleOnTrue(&gyroToggle);
 
   //stops modules if disabled
   frc2::RobotModeTriggers::Disabled().WhileTrue(

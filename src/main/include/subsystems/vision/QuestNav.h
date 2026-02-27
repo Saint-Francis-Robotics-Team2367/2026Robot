@@ -18,6 +18,8 @@ private:
     nt::RawSubscriber m_questNavSub;
     questnav::protos::data::ProtobufQuestNavFrameData m_frame;
     units::radian_t yawOffset = 0_rad;
+
+    bool questConnected = false;
 public:
     frc::Pose3d robotPose;
     frc::Quaternion robotQuaternion;
@@ -33,6 +35,22 @@ public:
     }
 
     void periodic() {
+        auto connection = inst.GetConnections();
+        questConnected = false;
+
+        for(const auto& c : connection) {
+            if (c.remote_id.find("QuestNav") != std::string::npos) {
+                questConnected = true;
+            }
+        }
+        frc::SmartDashboard::PutBoolean("Quest Connected?", questConnected);
+
+        bool topicConnected = inst.GetTopic("/QuestNav/frameData").Exists();
+        frc::SmartDashboard::PutBoolean("QuestNav Topic Exists", topicConnected);
+
+        auto lastUpdate = m_questNavSub.GetLastChange();
+        frc::SmartDashboard::PutNumber("QuestNav Last Update", lastUpdate);
+
         std::vector<uint8_t> rawBytes = m_questNavSub.Get({});
 
         if (rawBytes.empty()) return;
@@ -70,8 +88,8 @@ public:
         }
     }
 
-    void ZeroGyro() {
-        yawOffset = robotPose.Rotation().Z(); 
+    void ZeroGyro(double offset = 0.0) { // radians
+        yawOffset = robotPose.Rotation().Z() + units::radian_t(offset); 
     }
 
     frc::Rotation2d getRotation2d() {
@@ -100,5 +118,9 @@ public:
     frc::Rotation2d getBoundedAngleCW()
     {
         return frc::Rotation2d(-1*robotPose.Rotation().Z());
+    }
+
+    bool isConnected() {
+        return questConnected;
     }
 };

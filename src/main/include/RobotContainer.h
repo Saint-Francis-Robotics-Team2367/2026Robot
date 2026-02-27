@@ -13,6 +13,8 @@
 #include "frc/filter/SlewRateLimiter.h"
 #include "frc/MathUtil.h"
 #include "frc/smartdashboard/SmartDashboard.h"
+#include "frc2/command/Commands.h"
+#include "frc2/command/StartEndCommand.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -28,17 +30,29 @@ class RobotContainer {
   frc2::CommandPtr GetAutonomousCommand();
 
   DriveSubsystem drivetrain;
+  DriveSubsystem::GyroType gyroType = DriveSubsystem::GyroType::QuestNav;
 
  private:
   // Replace with CommandPS4Controller or CommandJoystick if needed
   frc2::CommandPS5Controller driverCtr{0}; //drive controller should be first controller that is plugged in
 
-  // The robot's subsystems are defined here...
-
-
   frc::SlewRateLimiter<units::scalar> xLimiter{ControllerConstants::slewRate / 1_s};
   frc::SlewRateLimiter<units::scalar> yLimiter{ControllerConstants::slewRate / 1_s};
   frc::SlewRateLimiter<units::scalar> rotLimiter{ControllerConstants::slewRate / 1_s};
+
+  frc2::StartEndCommand gyroToggle {
+    [this] {      
+      gyroType = DriveSubsystem::GyroType::Pigeon;
+      drivetrain.syncAndSwitchToPigeon();
+      frc::SmartDashboard::PutString("Gyro Type", "Pigeon");
+    },
+    [this] {
+      gyroType == DriveSubsystem::GyroType::QuestNav;
+      drivetrain.syncAndSwitchToQuest();
+      frc::SmartDashboard::PutString("Gyro Type", "QuestNav");
+    },
+    {&drivetrain}
+  };
 
   void ConfigureBindings();
 };

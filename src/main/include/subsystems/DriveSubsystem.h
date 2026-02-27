@@ -17,22 +17,36 @@
 #include "subsystems/SwerveModule.h"
 
 #include "subsystems/vision/QuestNav.h"
+#include "ctre/phoenix6/Pigeon2.hpp"
 
 class DriveSubsystem : public frc2::SubsystemBase {
 public:
+  enum GyroType {
+    QuestNav,
+    Pigeon
+  };
+
   DriveSubsystem();
 
   void Drive(double vx, double vy, double rot, bool fieldRelative);
   void initModules();
-  void updateOdometry();
-  void resetOdometry(frc::Pose2d pose);
+  void updateOdometry(GyroType gyro);
+  void resetOdometry(frc::Pose2d pose, GyroType gyro);
   frc::Pose2d getPose();
-  void resetGyro();
-  bool gyroConnected();
+  void resetGyro(GyroType gyro);
+  bool gyroConnected(GyroType gyro);
   void stopAllModules();
   void initGyro();
+  frc::Rotation2d getActiveGyroRotation(GyroType gyro);
+  void syncAndSwitchToPigeon();
+  void syncAndSwitchToQuest();
+  wpi::array<frc::SwerveModulePosition, 4> getModulePositions();
 
 private:
+  ctre::phoenix6::hardware::Pigeon2 pigeon{HardwareIDs::pigeonID};
+  units::radian_t questOffset = 0_rad;
+  units::radian_t pigeonOffset = 0_rad;
+
   //module objects
   SwerveModule frontLeft{HardwareIDs::FLdriveID, HardwareIDs::FLsteerID, HardwareIDs::FLencoderID};
   SwerveModule frontRight{HardwareIDs::FRdriveID, HardwareIDs::FRsteerID, HardwareIDs::FRencoderID};

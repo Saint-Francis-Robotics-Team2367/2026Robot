@@ -18,8 +18,11 @@ Robot::Robot() {}
  */
 void Robot::RobotPeriodic() {
   QuestNav::getInstance().periodic();
-  m_container.drivetrain.updateOdometry();
-  frc2::CommandScheduler::GetInstance().Run(); //runs command-based queue
+  m_container.drivetrain.updateOdometry(m_container.gyroType);
+  frc2::CommandScheduler::GetInstance().Run();
+  frc::SmartDashboard::PutNumber("Odometry X", m_container.drivetrain.getPose().X().value());
+  frc::SmartDashboard::PutNumber("Odometry Y", m_container.drivetrain.getPose().Y().value());
+  frc::SmartDashboard::PutNumber("Heading", m_container.drivetrain.getPose().Rotation().Degrees().value());
 }
 
 /**
