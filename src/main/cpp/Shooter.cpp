@@ -71,10 +71,10 @@ bool Shooter::setFlywheelSpeed(float shooterRPM) {
 void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yOffset, float shooterHeight, float initialAngle, float minAngle, float MotorGearRatio, float ThroughBoreGearRatio) {
 
     // Convert shooter RPM to linear velocity (m/s)
-    // alter (0.775) based on how much of rotational velocity is translated to linear velocity
+    // alter (0.75) based on how much of rotational velocity is translated to linear velocity
     float flywheelCircumference = ShooterConstants::PI * ShooterConstants::SHOOTERWHEELDIAMETER;
     float shooterVelocity = (shooterRPM * flywheelCircumference) / 60.0f;
-    float exitVelo = 0.75f * shooterVelocity;
+    float exitVelo = shooterVelocity;
 
     // Target point (dx, dy) in meters
     // Alter (10) to make it shoot farther or closer to the center of the goal
@@ -149,30 +149,27 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
 
 }
 
-int Shooter::findOptimalRPM(float horizontalOffset, float yOffset) {
+float Shooter::findOptimalRPM(float horizontalOffset, float yOffset, float k) {
+    float dx = (10.0f * 0.0254f) + std::sqrt(std::pow(horizontalOffset * 0.0254f, 2.0f) + std::pow(yOffset* 0.0254f, 2.0f));
 
-    // 2d plane horizontal
-    float dx = (10 * 0.0254f) + std::sqrt(std::pow(horizontalOffset * 0.0254f, 2.0f) + std::pow(yOffset * 0.0254f, 2.0f));
-
-    if (dx < (25.0 * 0.0254f)) {
-        return 0;
-    } else if (dx < (50.0 * 0.0254f) && dx >= (25.0 * 0.0254f)) {
-        return 1600;
-    } else if (dx < (75.0 * 0.0254f) && dx >= (50.0 * 0.0254f)) {
-        return 1650;
-    } else if (dx < (100.0 * 0.0254f) && dx >= (75.0 * 0.0254f)) {
-        return 1750;
-    } else if (dx < (125.0 * 0.0254f) && dx >= (100.0 * 0.0254f)) {
-        return 1900;
-    } else if (dx < (150.0 * 0.0254f) && dx >= (125.0 * 0.0254f)) {
-        return 2000;
-    } else if (dx < (175.0 * 0.0254f) && dx >= (150.0 * 0.0254f)) {
-        return 2100;
+    if (dx < (25.0f * 0.0254f)) {
+        return 0.0f;
+    } else if (dx < (50.0f * 0.0254f)) {
+        return 911.3741f / k;
+    } else if (dx < (75.0f * 0.0254f)) {
+        return 1005.0751f / k;
+    } else if (dx < (100.0f * 0.0254f)) {
+        return 1101.0902f / k;
+    } else if (dx < (125.0f * 0.0254f)) {
+        return 1193.5726f / k;
+    } else if (dx < (150.0f * 0.0254f)) {
+        return 1281.3769f / k;
+    } else if (dx < (175.0f * 0.0254f)) {
+        return 1364.6042f / k;
     } else {
-        return 2250;
+        return 1443.6638f / k; 
     }
 }
-
 
 
 void Shooter::applyHoodBrake() {
