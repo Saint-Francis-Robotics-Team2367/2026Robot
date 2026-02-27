@@ -28,7 +28,9 @@ public:
     void applyHoodBrake();
     void releaseHoodBrake(); 
     int findOptimalRPM(float horizontalOffset, float yOffset);
-    
+    float calculateAngle(float x_dist);
+    float calculateInitVelocity(float x_dist);
+
     float hoodCenterRot;
     float targetAbs;
 

@@ -149,6 +149,16 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
 
 }
 
+float Shooter::calculateAngle(float x_dist){
+    return std::atan((std::pow(3, 0.5) + 2*1.32/x_dist));
+
+}
+
+float Shooter::calculateInitVelocity(float x_dist){
+    float optimalAngle = calculateAngle(x_dist);
+    return x_dist*std::cos(optimalAngle)*std::pow(9.8/x_dist, 0.5);
+}
+
 int Shooter::findOptimalRPM(float horizontalOffset, float yOffset) {
 
     // horizontal offset
