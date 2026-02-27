@@ -10,6 +10,8 @@
 #include "frc2/command/button/RobotModeTriggers.h"
 
 #include "Shooter.h"
+#include "Feeder.h"
+
 
 
 //basically initializes robot
@@ -18,13 +20,40 @@ RobotContainer::RobotContainer() {
   // Initialize Shooter
   ConfigureBindings();
   HoodedShooter.init(); // Initalize Shooter motors and encoders
-  // HoodedShooter.zeroHood(); // Set initial hood position to 0
+  BallFeeder.init(); // Initialize Feeder motors and encoders
+  drivetrain.initModules();
+  drivetrain.initGyro();
+  drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
 }
 
 
 void RobotContainer::ConfigureBindings() {
   frc::SmartDashboard::PutString("Shooter Status", "Idle");
 
+  drivetrain.SetDefaultCommand(
+      drivetrain.Run(
+        [this]() {
+          double x = frc::ApplyDeadband(driverCtr.GetLeftX(), ControllerConstants::deadband);
+          double y = frc::ApplyDeadband(driverCtr.GetLeftY(), ControllerConstants::deadband);
+          double rot = frc::ApplyDeadband(driverCtr.GetRightX(), ControllerConstants::deadband);
+
+          x = xLimiter.Calculate(x);
+          y = yLimiter.Calculate(y);
+          rot = rotLimiter.Calculate(rot);
+
+          double vx = x * ModuleConstants::moduleMaxMPS;
+          double vy = y * ModuleConstants::moduleMaxMPS;
+          rot = rot * ModuleConstants::moduleMaxRot * 2;
+
+          frc::SmartDashboard::PutNumber("vx", vx);
+          frc::SmartDashboard::PutNumber("vy", vy);
+          frc::SmartDashboard::PutNumber("rot", rot);
+
+          drivetrain.Drive(-vx, vy, -rot, drivetrain.gyroConnected());
+        }
+      )
+  );
+  
   driverCtr.Circle().ToggleOnTrue(
     frc2::cmd::StartEnd(
       // ON
@@ -32,7 +61,7 @@ void RobotContainer::ConfigureBindings() {
         frc::SmartDashboard::PutString("Shooter Status", "Shooting");
         HoodedShooter.applyHoodBrake(); 
         BallFeeder.setFeederSpeed(-2250);
-        HoodedShooter.setFlywheelSpeed(-2250);
+        HoodedShooter.setFlywheelSpeed(HoodedShooter.findOptimalRPM(132, 186));
 
       },
       // OFF
@@ -50,7 +79,7 @@ void RobotContainer::ConfigureBindings() {
     frc2::cmd::RunOnce(
       [this] {
         frc::SmartDashboard::PutString("Shooter Status", "Aligning");
-        HoodedShooter.setHoodPosition(2250, 132, 186);
+        HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(132, 186), 132, 186);
       },
       { &HoodedShooter } 
     )
@@ -66,7 +95,22 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
+  driverCtr.POVUp().OnTrue(
+    drivetrain.RunOnce(
+      [this] {drivetrain.resetGyro();}
+    )
+  );
+
+  //stops modules if disabled
+  frc2::RobotModeTriggers::Disabled().WhileTrue(
+    drivetrain.RunOnce(
+      [this] {
+        drivetrain.stopAllModules();
+      }
+    ).IgnoringDisable(true)
+  );
 }
+
 
 // frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
 //   // An example command will be run in autonomous

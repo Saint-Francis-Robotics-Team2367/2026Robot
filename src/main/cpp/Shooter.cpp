@@ -151,7 +151,7 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
 
 int Shooter::findOptimalRPM(float horizontalOffset, float yOffset) {
 
-    // horizontal offset
+    // 2d plane horizontal
     float dx = (10 * 0.0254f) + std::sqrt(std::pow(horizontalOffset * 0.0254f, 2.0f) + std::pow(yOffset * 0.0254f, 2.0f));
 
     if (dx < (25.0 * 0.0254f)) {

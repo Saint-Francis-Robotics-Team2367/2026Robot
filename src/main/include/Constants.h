@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <numbers>
+#include <cmath>
 
 /**
  * The Constants header provides a convenient place for teams to hold robot-wide
@@ -18,6 +18,7 @@
 
 
  //refer with [namespace]::[varname]
+
 namespace ModuleConstants {
     static constexpr double kDriveGearRatio = 5.357142857142857; // L3+
     static constexpr double kSteerGearRatio = 21.428571428571427; // 150/7:1
@@ -28,7 +29,7 @@ namespace ModuleConstants {
 }
 
 namespace MathConstants {
-    static constexpr double TWO_PI = std::numbers::pi * 2;
+    static constexpr double TWO_PI = M_PI * 2;
 }
 
 namespace HardwareIDs { 
@@ -48,7 +49,7 @@ namespace HardwareIDs {
     static constexpr int BRdriveID = 6;
     static constexpr int BRencoderID = 11;
 
-    // static constexpr int pigeonID = 13;
+    static constexpr int pigeonID = 0;
 }
 
 namespace ControllerConstants {
@@ -59,7 +60,7 @@ namespace ControllerConstants {
 namespace ShooterConstants {
     static constexpr double SHOOTERWHEELDIAMETER = 0.1; // in meters
     static constexpr double GRAVITY = 9.81;
-    static constexpr double PI = std::numbers::pi;
+    static constexpr double PI = M_PI;
 
     // CAN IDs
     static constexpr int ShooterID = 3.0; // Wheel
