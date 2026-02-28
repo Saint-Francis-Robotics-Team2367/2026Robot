@@ -38,6 +38,8 @@ void Shooter::init() {
 
     RackConfig.CurrentLimits.SupplyCurrentLimit = 5_A;
     RackConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    RackConfig.CurrentLimits.StatorCurrentLimit = 10_A;
+    RackConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     // Apply configurations
     ShooterMotor.GetConfigurator().Apply(FlywheelConfig);

@@ -14,6 +14,8 @@ void Feeder::init() {
 
     FeederConfig.CurrentLimits.SupplyCurrentLimit = 10_A; 
     FeederConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    FeederConfig.CurrentLimits.StatorCurrentLimit = 10_A;
+    FeederConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     FeederConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
 

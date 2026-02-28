@@ -10,7 +10,7 @@ void Indexer::init(){
     indexerConfigs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
     indexerConfigs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
 
-    indexerConfigs.CurrentLimits.StatorCurrentLimit = 20_A;
+    indexerConfigs.CurrentLimits.StatorCurrentLimit = 25_A;
     indexerConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
     indexerConfigs.CurrentLimits.SupplyCurrentLimit = 20_A;
     indexerConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
