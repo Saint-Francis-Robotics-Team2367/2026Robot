@@ -28,7 +28,7 @@ public:
 
   DriveSubsystem();
 
-  void Drive(double vx, double vy, double rot, bool fieldRelative);
+  void Drive(double vx, double vy, double rot, bool fieldRelative, GyroType gyro);
   void initModules();
   void updateOdometry(GyroType gyro);
   void resetOdometry(frc::Pose2d pose, GyroType gyro);
@@ -41,6 +41,7 @@ public:
   void syncAndSwitchToPigeon();
   void syncAndSwitchToQuest();
   wpi::array<frc::SwerveModulePosition, 4> getModulePositions();
+  ctre::phoenix6::hardware::Pigeon2& getPigeon();
 
 private:
   ctre::phoenix6::hardware::Pigeon2 pigeon{HardwareIDs::pigeonID};

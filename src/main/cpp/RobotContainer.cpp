@@ -12,11 +12,11 @@
 
 //basically initializes robot
 RobotContainer::RobotContainer() {
-  if (drivetrain.gyroConnected(DriveSubsystem::GyroType::QuestNav)) {
+  if (QuestNav::getInstance().isConnected()) {
     gyroType = DriveSubsystem::GyroType::QuestNav;
     frc::SmartDashboard::PutString("Gyro Type", "QuestNav");
   }
-  else if (drivetrain.gyroConnected(DriveSubsystem::GyroType::Pigeon)) {
+  else if (drivetrain.getPigeon().IsConnected()) {
     gyroType = DriveSubsystem::GyroType::Pigeon;
     frc::SmartDashboard::PutString("Gyro Type", "Pigeon");
   }
@@ -28,6 +28,9 @@ RobotContainer::RobotContainer() {
   ConfigureBindings();
   drivetrain.initModules();
   QuestNav::getInstance().init();
+  drivetrain.initGyro();
+  drivetrain.resetGyro(DriveSubsystem::GyroType::Pigeon);
+  drivetrain.resetGyro(DriveSubsystem::GyroType::QuestNav);
   drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad}, gyroType);
 }
 
@@ -52,7 +55,7 @@ void RobotContainer::ConfigureBindings() {
           frc::SmartDashboard::PutNumber("vy", vy);
           frc::SmartDashboard::PutNumber("rot", rot);
 
-          drivetrain.Drive(-vx, vy, -rot, drivetrain.gyroConnected(gyroType));
+          drivetrain.Drive(-vx, vy, -rot, drivetrain.gyroConnected(gyroType), gyroType);
         }
       )
   );
