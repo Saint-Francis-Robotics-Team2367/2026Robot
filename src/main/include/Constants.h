@@ -88,3 +88,11 @@ namespace ShooterConstants {
     static constexpr double RackD = 0.001;
     static constexpr double RackG = 0.01;
 }
+
+namespace IndexerConstants {
+    static constexpr int IndexerMotorID = 5.0;
+    static constexpr double IndexerP = 0.0;
+    static constexpr double IndexerI = 0.0;
+    static constexpr double IndexerD = 0.0;
+    static constexpr double IndexerV = 0.0;
+}

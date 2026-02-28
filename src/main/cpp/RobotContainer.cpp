@@ -17,6 +17,8 @@ RobotContainer::RobotContainer() {
   ConfigureBindings();
   HoodedShooter.init(); // Initalize Shooter motors and encoders
   BallFeeder.init(); // Initialize Feeder motors and encoders
+  BallIndexer.init(); // Initialize Indexer motors and encoders
+
   drivetrain.initModules();
   drivetrain.initGyro();
   drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
@@ -77,7 +79,7 @@ void RobotContainer::ConfigureBindings() {
         frc::SmartDashboard::PutString("Shooter Status", "Aligning");
         HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(132, 186), 132, 186);
       },
-      { &HoodedShooter, &BallFeeder } 
+      { &HoodedShooter} 
     )
   );
 
@@ -87,13 +89,29 @@ void RobotContainer::ConfigureBindings() {
         frc::SmartDashboard::PutString("Shooter Status", "Zeroing Hood");
         HoodedShooter.zeroHood();
       },
-      { &HoodedShooter, &BallFeeder }
+      { &HoodedShooter } 
     )
   );
 
   driverCtr.POVUp().OnTrue(
     drivetrain.RunOnce(
       [this] {drivetrain.resetGyro();}
+    )
+  );
+
+  driverCtr.POVDown().OnTrue(
+    frc2::cmd::StartEnd(
+      // ON
+      [this] {
+        frc::SmartDashboard::PutString("Shooter Status", "Shooting");
+        BallFeeder.setFeederSpeed(HoodedShooter.findOptimalRPM(132, 186));
+      },
+      // OFF
+      [this] {
+        frc::SmartDashboard::PutString("Shooter Status", "Idle");
+        BallFeeder.setFeederSpeed(0);
+      },
+      {&BallFeeder, &HoodedShooter} 
     )
   );
 

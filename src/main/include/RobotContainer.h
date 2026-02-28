@@ -9,8 +9,11 @@
 #include <frc2/command/button/CommandPS5Controller.h>
 
 #include "Constants.h"
+
 #include "subsystems/Shooter.h"
 #include "subsystems/Feeder.h"
+#include "subsystems/Indexer.h"
+
 #include "subsystems/DriveSubsystem.h"
 
 #include "frc/filter/SlewRateLimiter.h"
@@ -38,6 +41,7 @@ class RobotContainer {
   // The robot's subsystems are defined here...
   Shooter HoodedShooter;
   Feeder BallFeeder;
+  Indexer BallIndexer;
 
   bool runFirstSequence = true;
 
