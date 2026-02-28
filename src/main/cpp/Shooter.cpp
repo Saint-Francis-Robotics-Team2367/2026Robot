@@ -161,13 +161,16 @@ float Shooter::calculateInitVelocity(float x_dist){
 
 //returns <velocity, angle> pair
 std::pair<float, float> Shooter::calculateTraj(float x_dist, float y_dist){
-    float gravity = 9.81;
-    float a = (-1.0f*std::sqrt(3)-y_dist)/(x_dist*x_dist);
-    float b = (-1.0f*std::sqrt(3)+2*y_dist/x_dist);
+    float gravity = -9.81;
+    float angleOfEntry = 30;//degrees
+    float sinEntryAngle = std::sin(angleOfEntry*ShooterConstants::PI/180);
+    float a = (-1.0f*sinEntryAngle*x_dist-y_dist)/(x_dist*x_dist);
+    float b = ((-1.0f*sinEntryAngle+2*y_dist)/x_dist);
     float angle = std::atan(b);
 
-    float y_val_vertex = a*(-1*b/(2*a))*(-1*b/(2*a)) + b*(-1*b/(2*a));
-    float velocity = std::sqrt(-1*2*gravity*y_val_vertex)/std::sin(angle);
+    float x_val_vertex = (-1*b/(2*a));
+    float y_val_vertex = a*x_val_vertex*x_val_vertex + b*x_val_vertex;
+    float velocity = std::sqrt(-2*gravity*y_val_vertex)/std::sin(angle);
 
     return std::pair<float, float>(velocity, angle);
 
