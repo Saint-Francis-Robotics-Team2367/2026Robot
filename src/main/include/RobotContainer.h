@@ -9,10 +9,12 @@
 
 #include "Constants.h"
 #include "subsystems/DriveSubsystem.h"
+#include "subsystems/Indexer.h"
 
 #include "frc/filter/SlewRateLimiter.h"
 #include "frc/MathUtil.h"
 #include "frc/smartdashboard/SmartDashboard.h"
+#include "frc2/command/StartEndCommand.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -28,6 +30,7 @@ class RobotContainer {
   frc2::CommandPtr GetAutonomousCommand();
 
   DriveSubsystem drivetrain;
+  Indexer indexer;
 
  private:
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -41,4 +44,10 @@ class RobotContainer {
   frc::SlewRateLimiter<units::scalar> rotLimiter{ControllerConstants::slewRate / 1_s};
 
   void ConfigureBindings();
+
+  frc2::StartEndCommand indexerToggle {
+    [this] {indexer.setIndexerSpeed(2500);},
+    [this] {indexer.stopIndexer();},
+    {&indexer}
+  };
 };

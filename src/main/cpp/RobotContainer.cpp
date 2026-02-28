@@ -47,6 +47,8 @@ void RobotContainer::ConfigureBindings() {
       )
   );
 
+  driverCtr.Triangle().ToggleOnTrue(&indexerToggle);
+
   //resets gyro on DPad Up
   driverCtr.POVUp().OnTrue(
     drivetrain.RunOnce(
