@@ -34,8 +34,10 @@ void DriveSubsystem::updateOdometry(GyroType gyro) {
   switch (gyro) {
     case GyroType::QuestNav:
       rot2d = QuestNav::getInstance().getRotation2d();
+      break;
     case GyroType::Pigeon:
       rot2d = pigeon.GetRotation2d();
+      break;
   };
 
   odometry.Update(
@@ -53,8 +55,10 @@ void DriveSubsystem::resetOdometry(frc::Pose2d pose, GyroType gyro) {
   switch (gyro) {
     case GyroType::QuestNav:
       rot2d = QuestNav::getInstance().getRotation2d();
+      break;
     case GyroType::Pigeon:
       rot2d = pigeon.GetRotation2d();
+      break;
   };
 
   odometry.ResetPosition(
@@ -91,9 +95,10 @@ void DriveSubsystem::resetGyro(GyroType gyro) {
   switch (gyro) {
     case GyroType::QuestNav:
       QuestNav::getInstance().ZeroGyro();
-
+      break;
     case GyroType::Pigeon:
       pigeon.Reset();
+      break;
   };
 }
 

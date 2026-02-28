@@ -47,7 +47,7 @@ class RobotContainer {
       frc::SmartDashboard::PutString("Gyro Type", "Pigeon");
     },
     [this] {
-      gyroType == DriveSubsystem::GyroType::QuestNav;
+      gyroType = DriveSubsystem::GyroType::QuestNav;
       drivetrain.syncAndSwitchToQuest();
       frc::SmartDashboard::PutString("Gyro Type", "QuestNav");
     },
