@@ -22,7 +22,9 @@ void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run();
   frc::SmartDashboard::PutNumber("Odometry X", m_container.drivetrain.getPose().X().value());
   frc::SmartDashboard::PutNumber("Odometry Y", m_container.drivetrain.getPose().Y().value());
-  frc::SmartDashboard::PutNumber("Heading", m_container.drivetrain.getPose().Rotation().Degrees().value());
+  frc::SmartDashboard::PutNumber("Quest Heading (deg)", QuestNav::getInstance().getPose2d().Rotation().Degrees().value());
+  frc::SmartDashboard::PutNumber("Pigeon Heading (deg)", std::fmod(m_container.drivetrain.getPigeon().GetYaw().GetValueAsDouble(), 360.0));
+  frc::SmartDashboard::PutBoolean("Pigeon Connected?", m_container.drivetrain.getPigeon().IsConnected());
 }
 
 /**

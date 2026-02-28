@@ -8,11 +8,19 @@
 DriveSubsystem::DriveSubsystem() {}
 
 //fieldRelative always true in swervedrive
-void DriveSubsystem::Drive(double vx, double vy, double rot, bool fieldRelative) {
+void DriveSubsystem::Drive(double vx, double vy, double rot, bool fieldRelative, GyroType gyro) {
   frc::ChassisSpeeds speeds;
+  frc::Rotation2d rot2d;
+
+  if (gyro == GyroType::QuestNav) {
+    rot2d = QuestNav::getInstance().getRotation2d();
+  }
+  else if (gyro == GyroType::Pigeon) {
+    rot2d = pigeon.GetRotation2d();
+  }
   
   if (fieldRelative) {
-    speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(units::meters_per_second_t(vx), units::meters_per_second_t(vy), units::radians_per_second_t(rot), QuestNav::getInstance().getRotation2d());
+    speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(units::meters_per_second_t(vx), units::meters_per_second_t(vy), units::radians_per_second_t(rot), rot2d);
   }
   else {
     speeds = frc::ChassisSpeeds{units::meters_per_second_t(vx), units::meters_per_second_t(vy), units::radians_per_second_t(rot)};
@@ -158,6 +166,8 @@ void DriveSubsystem::syncAndSwitchToPigeon() {
   double rawPigeonYawRad = rawPigeonYawDeg * (std::numbers::pi / 180.0);
   pigeonOffset = units::radian_t(currentPose.Rotation().Radians().value() - rawPigeonYawRad);
 
+  pigeon.SetYaw(pigeonOffset);
+
   odometry.ResetPosition(
     getActiveGyroRotation(GyroType::Pigeon),
     getModulePositions(),
@@ -171,9 +181,15 @@ void DriveSubsystem::syncAndSwitchToQuest() {
   units::radian_t maintainedHeading = currentPose.Rotation().Radians();
   questOffset = maintainedHeading - questHeading;
 
+  QuestNav::getInstance().ZeroGyro(questOffset.value());
+
   odometry.ResetPosition(
     getActiveGyroRotation(GyroType::QuestNav),
     getModulePositions(),
     currentPose
   );
+}
+
+ctre::phoenix6::hardware::Pigeon2& DriveSubsystem::getPigeon() {
+  return pigeon;
 }
