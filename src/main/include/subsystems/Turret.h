@@ -19,6 +19,7 @@ constexpr int motorID = 0;
 constexpr double pulleyRatio = 44; //big wheel to small wheel (encoder) ratio
 constexpr double tbTurretRatio = 8.77778;
 
+//need to tune
 constexpr double kP = 1.05;
 constexpr double kI = 0.02;
 constexpr double kD = 0.10;
