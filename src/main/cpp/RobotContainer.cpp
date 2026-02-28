@@ -12,6 +12,11 @@
 
 //basically initializes robot
 RobotContainer::RobotContainer() {
+  drivetrain.initModules();
+  QuestNav::getInstance().init();
+  QuestNav::getInstance().periodic();
+  drivetrain.initGyro();
+
   if (QuestNav::getInstance().isConnected()) {
     gyroType = DriveSubsystem::GyroType::QuestNav;
     frc::SmartDashboard::PutString("Gyro Type", "QuestNav");
@@ -26,9 +31,6 @@ RobotContainer::RobotContainer() {
 
   // Configure the button bindings
   ConfigureBindings();
-  drivetrain.initModules();
-  QuestNav::getInstance().init();
-  drivetrain.initGyro();
   drivetrain.resetGyro(DriveSubsystem::GyroType::Pigeon);
   drivetrain.resetGyro(DriveSubsystem::GyroType::QuestNav);
   drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad}, gyroType);
