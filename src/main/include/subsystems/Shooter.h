@@ -27,7 +27,7 @@ public:
     void zeroHood();
     void applyHoodBrake();
     void releaseHoodBrake(); 
-    float findOptimalRPM(float horizontalOffset, float yOffset, float k = 0.75f);
+    float findOptimalRPM(float horizontalOffset, float yOffset);
     
     float hoodCenterRot;
     float targetAbs;
@@ -37,11 +37,9 @@ public:
     ctre::phoenix6::hardware::TalonFX ShooterMotor{ShooterConstants::ShooterID}; // Use CANivore bus if applicable
     ctre::phoenix6::hardware::TalonFX RackMotor{ShooterConstants::RackMotorID};
 
-
     // Configuration objects
     ctre::phoenix6::configs::TalonFXConfiguration FlywheelConfig;
     ctre::phoenix6::configs::TalonFXConfiguration RackConfig;
-
 
     // ThroughBore
     ctre::phoenix6::hardware::CANcoder RackEncoder{ShooterConstants::RackEncoderID}; // Uses default CAN bus

@@ -1,4 +1,4 @@
-#include "Shooter.h"
+#include "subsystems/Shooter.h"
 
 void Shooter::stop() {
     // Stop all motors
@@ -149,25 +149,25 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
 
 }
 
-float Shooter::findOptimalRPM(float horizontalOffset, float yOffset, float k) {
+float Shooter::findOptimalRPM(float horizontalOffset, float yOffset) {
     float dx = (10.0f * 0.0254f) + std::sqrt(std::pow(horizontalOffset * 0.0254f, 2.0f) + std::pow(yOffset* 0.0254f, 2.0f));
 
     if (dx < (25.0f * 0.0254f)) {
         return 0.0f;
     } else if (dx < (50.0f * 0.0254f)) {
-        return 911.3741f / k;
+        return 911.3741f / ShooterConstants::SHOOTEREFFICIENCY;
     } else if (dx < (75.0f * 0.0254f)) {
-        return 1005.0751f / k;
+        return 1005.0751f / ShooterConstants::SHOOTEREFFICIENCY;
     } else if (dx < (100.0f * 0.0254f)) {
-        return 1101.0902f / k;
+        return 1101.0902f / ShooterConstants::SHOOTEREFFICIENCY;
     } else if (dx < (125.0f * 0.0254f)) {
-        return 1193.5726f / k;
+        return 1193.5726f / ShooterConstants::SHOOTEREFFICIENCY;
     } else if (dx < (150.0f * 0.0254f)) {
-        return 1281.3769f / k;
+        return 1281.3769f / ShooterConstants::SHOOTEREFFICIENCY;
     } else if (dx < (175.0f * 0.0254f)) {
-        return 1364.6042f / k;
+        return 1364.6042f / ShooterConstants::SHOOTEREFFICIENCY;
     } else {
-        return 1443.6638f / k; 
+        return 1443.6638f / ShooterConstants::SHOOTEREFFICIENCY; 
     }
 }
 

@@ -9,10 +9,6 @@
 #include <frc2/command/button/Trigger.h>
 #include "frc2/command/button/RobotModeTriggers.h"
 
-#include "Shooter.h"
-#include "Feeder.h"
-
-
 
 //basically initializes robot
 RobotContainer::RobotContainer() {
@@ -71,7 +67,7 @@ void RobotContainer::ConfigureBindings() {
         BallFeeder.setFeederSpeed(0);
         HoodedShooter.releaseHoodBrake(); 
       },
-      { &HoodedShooter } 
+      { &HoodedShooter, &BallFeeder } 
     )
   );
 
@@ -81,7 +77,7 @@ void RobotContainer::ConfigureBindings() {
         frc::SmartDashboard::PutString("Shooter Status", "Aligning");
         HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(132, 186), 132, 186);
       },
-      { &HoodedShooter } 
+      { &HoodedShooter, &BallFeeder } 
     )
   );
 
@@ -91,7 +87,7 @@ void RobotContainer::ConfigureBindings() {
         frc::SmartDashboard::PutString("Shooter Status", "Zeroing Hood");
         HoodedShooter.zeroHood();
       },
-      { &HoodedShooter }
+      { &HoodedShooter, &BallFeeder }
     )
   );
 

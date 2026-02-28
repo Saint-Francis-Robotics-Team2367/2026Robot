@@ -9,8 +9,8 @@
 #include <frc2/command/button/CommandPS5Controller.h>
 
 #include "Constants.h"
-#include "Shooter.h"
-#include "Feeder.h"
+#include "subsystems/Shooter.h"
+#include "subsystems/Feeder.h"
 #include "subsystems/DriveSubsystem.h"
 
 #include "frc/filter/SlewRateLimiter.h"
