@@ -30,6 +30,7 @@ public:
     int findOptimalRPM(float horizontalOffset, float yOffset);
     float calculateAngle(float x_dist);
     float calculateInitVelocity(float x_dist);
+    std::pair<float, float> calculateTraj(float x_dist, float y_dist);
 
     float hoodCenterRot;
     float targetAbs;

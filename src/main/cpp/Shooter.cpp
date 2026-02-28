@@ -159,6 +159,20 @@ float Shooter::calculateInitVelocity(float x_dist){
     return x_dist*std::cos(optimalAngle)*std::pow(9.8/x_dist, 0.5);
 }
 
+//returns <velocity, angle> pair
+std::pair<float, float> Shooter::calculateTraj(float x_dist, float y_dist){
+    float gravity = 9.81;
+    float a = (-1.0f*std::sqrt(3)-y_dist)/(x_dist*x_dist);
+    float b = (-1.0f*std::sqrt(3)+2*y_dist/x_dist);
+    float angle = std::atan(b);
+
+    float y_val_vertex = a*(-1*b/(2*a))*(-1*b/(2*a)) + b*(-1*b/(2*a));
+    float velocity = std::sqrt(-1*2*gravity*y_val_vertex)/std::sin(angle);
+
+    return std::pair<float, float>(velocity, angle);
+
+}
+
 int Shooter::findOptimalRPM(float horizontalOffset, float yOffset) {
 
     // horizontal offset
