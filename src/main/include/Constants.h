@@ -62,6 +62,7 @@ namespace ShooterConstants {
     static constexpr double GRAVITY = 9.81;
     static constexpr double PI = M_PI;
     static constexpr double SHOOTEREFFICIENCY = 0.75;
+    static constexpr double MeterConversionFactor = 0.0254f; // inches to meters
 
     // CAN IDs
     static constexpr int ShooterID = 3.0; // Wheel

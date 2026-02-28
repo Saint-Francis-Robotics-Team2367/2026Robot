@@ -78,14 +78,14 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
 
     // Target point (dx, dy) in meters
     // Alter (10) to make it shoot farther or closer to the center of the goal
-    float dx = (10 * 0.0254f) + std::sqrt(std::pow(horizontalOffset * 0.0254f, 2.0f) + std::pow(yOffset * 0.0254f, 2.0f));
-    const float dy = 72.0f * 0.0254f;
-    const float verticalOffset = dy - (shooterHeight * 0.0254f);
+    float dx = (7.5 * ShooterConstants::MeterConversionFactor) + std::sqrt(std::pow(horizontalOffset * ShooterConstants::MeterConversionFactor, 2.0f) + std::pow(yOffset * ShooterConstants::MeterConversionFactor, 2.0f));
+    const float dy = 72.0f * ShooterConstants::MeterConversionFactor;
+    const float verticalOffset = dy - (shooterHeight * ShooterConstants::MeterConversionFactor);
 
     // Desired vertex location  
     // Alter (24) to make it shooter higher
-    // const float VertexYPose = verticalOffset + (24.0f * 0.0254f);
-    // float VertexXPose = dx - (24.0755062252f * 0.0254f);
+    // const float VertexYPose = verticalOffset + (24.0f * ShooterConstants::MeterConversionFactor);
+    // float VertexXPose = dx - (24.0755062252f * ShooterConstants::MeterConversionFactor);
 
     // Solve projectile equation at (dx, dy)
     const float A = (ShooterConstants::GRAVITY * dx * dx) / (2.0f * exitVelo * exitVelo);
@@ -150,22 +150,28 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
 }
 
 float Shooter::findOptimalRPM(float horizontalOffset, float yOffset) {
-    float dx = (10.0f * 0.0254f) + std::sqrt(std::pow(horizontalOffset * 0.0254f, 2.0f) + std::pow(yOffset* 0.0254f, 2.0f));
+    float dx = (10.0f * ShooterConstants::MeterConversionFactor) + std::sqrt(std::pow(horizontalOffset * ShooterConstants::MeterConversionFactor, 2.0f) + std::pow(yOffset* ShooterConstants::MeterConversionFactor, 2.0f));
 
-    if (dx < (25.0f * 0.0254f)) {
+    if (dx < (25.0f * ShooterConstants::MeterConversionFactor)) {
         return 0.0f;
-    } else if (dx < (50.0f * 0.0254f)) {
+    } else if (dx < (50.0f * ShooterConstants::MeterConversionFactor)) {
         return 911.3741f / ShooterConstants::SHOOTEREFFICIENCY;
-    } else if (dx < (75.0f * 0.0254f)) {
+        
+    } else if (dx < (75.0f * ShooterConstants::MeterConversionFactor)) {
         return 1005.0751f / ShooterConstants::SHOOTEREFFICIENCY;
-    } else if (dx < (100.0f * 0.0254f)) {
+
+    } else if (dx < (100.0f * ShooterConstants::MeterConversionFactor)) {
         return 1101.0902f / ShooterConstants::SHOOTEREFFICIENCY;
-    } else if (dx < (125.0f * 0.0254f)) {
+
+    } else if (dx < (125.0f * ShooterConstants::MeterConversionFactor)) {
         return 1193.5726f / ShooterConstants::SHOOTEREFFICIENCY;
-    } else if (dx < (150.0f * 0.0254f)) {
+
+    } else if (dx < (150.0f * ShooterConstants::MeterConversionFactor)) {
         return 1281.3769f / ShooterConstants::SHOOTEREFFICIENCY;
-    } else if (dx < (175.0f * 0.0254f)) {
+
+    } else if (dx < (175.0f * ShooterConstants::MeterConversionFactor)) {
         return 1364.6042f / ShooterConstants::SHOOTEREFFICIENCY;
+
     } else {
         return 1443.6638f / ShooterConstants::SHOOTEREFFICIENCY; 
     }
