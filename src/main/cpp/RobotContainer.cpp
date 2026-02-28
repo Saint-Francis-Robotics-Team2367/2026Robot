@@ -66,6 +66,16 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
+  driverCtr.R1().OnTrue(
+    frc2::cmd::Run(
+      [this]{
+        HoodedShooter.calculateAngle(1.08);
+      },
+    
+    { &HoodedShooter }
+    )
+  );
+
 }
 
 // frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
