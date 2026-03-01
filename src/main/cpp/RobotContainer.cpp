@@ -14,26 +14,31 @@
 RobotContainer::RobotContainer() {
   drivetrain.initModules();
   QuestNav::getInstance().init();
-  QuestNav::getInstance().periodic();
   drivetrain.initGyro();
-
-  if (QuestNav::getInstance().isConnected()) {
-    gyroType = DriveSubsystem::GyroType::QuestNav;
-    frc::SmartDashboard::PutString("Gyro Type", "QuestNav");
-  }
-  else if (drivetrain.getPigeon().IsConnected()) {
-    gyroType = DriveSubsystem::GyroType::Pigeon;
-    frc::SmartDashboard::PutString("Gyro Type", "Pigeon");
-  }
-  else {
-    frc::SmartDashboard::PutString("Gyro Type", "Not Connected");
-  }
 
   // Configure the button bindings
   ConfigureBindings();
   drivetrain.resetGyro(DriveSubsystem::GyroType::Pigeon);
   drivetrain.resetGyro(DriveSubsystem::GyroType::QuestNav);
   drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad}, gyroType);
+}
+
+void RobotContainer::CheckGyroConnection() {
+  if (gyroSelected) return;
+
+  if (QuestNav::getInstance().isConnected()) {
+    gyroType = DriveSubsystem::GyroType::QuestNav;
+    frc::SmartDashboard::PutString("Gyro Type", "QuestNav");
+    gyroSelected = true;
+  }
+  else if (drivetrain.getPigeon().IsConnected()) {
+    gyroType = DriveSubsystem::GyroType::Pigeon;
+    frc::SmartDashboard::PutString("Gyro Type", "Pigeon");
+    gyroSelected = true;
+  }
+  else {
+    frc::SmartDashboard::PutString("Gyro Type", "Not Connected");
+  }
 }
 
 void RobotContainer::ConfigureBindings() {

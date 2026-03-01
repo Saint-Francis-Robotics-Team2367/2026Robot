@@ -18,6 +18,7 @@ Robot::Robot() {}
  */
 void Robot::RobotPeriodic() {
   QuestNav::getInstance().periodic();
+  m_container.CheckGyroConnection();
   m_container.drivetrain.updateOdometry(m_container.gyroType);
   frc2::CommandScheduler::GetInstance().Run();
   frc::SmartDashboard::PutNumber("Odometry X", m_container.drivetrain.getPose().X().value());

@@ -28,9 +28,11 @@ class RobotContainer {
   RobotContainer();
 
   frc2::CommandPtr GetAutonomousCommand();
+  void CheckGyroConnection();
 
   DriveSubsystem drivetrain;
   DriveSubsystem::GyroType gyroType = DriveSubsystem::GyroType::QuestNav;
+  bool gyroSelected = false;
 
  private:
   // Replace with CommandPS4Controller or CommandJoystick if needed
