@@ -18,8 +18,15 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/SubsystemBase.h>
 
+#include "frc2/command/StartEndCommand.h"
+#include "frc2/command/SubsystemBase.h"
+#include "frc2/command/Requirements.h"
+#include "frc2/command/Commands.h"
+#include "frc2/command/CommandPtr.h"
+
 class Shooter : public frc2::SubsystemBase{
 public:
+    frc2::CommandPtr Shooter::setAngle();
     void stop();
     void init();
     bool setFlywheelSpeed(float rotationsPerMinute);
