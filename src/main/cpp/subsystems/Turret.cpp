@@ -62,11 +62,11 @@ double Turret::getSetpoint(){
 void Turret::setAngle(double targetAngle) {
     
     if (targetAngle > 180) {
-        targetAngle = std::fmod(targetAngle, 360);
+        targetAngle = std::fmod(targetAngle, 360) - 360;
     } 
 
     else if (targetAngle < -180) {
-        targetAngle = std::fmod(targetAngle, -360);
+        targetAngle = std::fmod(targetAngle, -360) + 360;
     } 
     turretMotor.SetControl(positionVoltage.WithPosition(units::angle::turn_t(targetAngle/360 * ControllerConstants::turretPulleyRatio)).WithSlot(0));
 
