@@ -2,9 +2,9 @@
 
 Turret::Turret() {
     //pids
-    turretConfigs.Slot0.kP = kP; 
-    turretConfigs.Slot0.kI = kI;
-    turretConfigs.Slot0.kD = kD;
+    turretConfigs.Slot0.kP = ControllerConstants::turretkP; 
+    turretConfigs.Slot0.kI = ControllerConstants::turretkI;
+    turretConfigs.Slot0.kD = ControllerConstants::turretkD;
 
     turretConfigs.CurrentLimits.SupplyCurrentLimit = 10_A;
     turretConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -44,26 +44,31 @@ void Turret::stop(){
 //angle of the turret found from the relative position of the motor
 double Turret::getCurrentMotorAngle() {
     double motorPos = turretMotor.GetPosition().GetValueAsDouble() * 360; //find pos in degrees
-    double currentAngle = std::fmod(motorPos/pulleyRatio, 360.0);//pullyRatio = 44
+    double currentAngle = std::fmod(motorPos/ControllerConstants::turretPulleyRatio, 360.0);//pullyRatio = 44
     return currentAngle;
 }
 
 //Not yet tested; We can get the relative value from the encoder, which makes life easier
 double Turret::getCurrentEncoderAngle() {
     double encoderPos = encoder.GetPosition().GetValueAsDouble() * 360; //find pos in degrees
-    double currentAngle = std::fmod(encoderPos/tbTurretRatio, 360.0);//tb to turret ratio = 8.7777
+    double currentAngle = std::fmod(encoderPos/ControllerConstants::turretTbRatio, 360.0);//tb to turret ratio = 8.7777
     return currentAngle;
+}
+
+double Turret::getSetpoint(){
+    return setpoint;
 }
 
 void Turret::setAngle(double targetAngle) {
     
     if (targetAngle > 180) {
-        targetAngle = targetAngle - 360;
+        targetAngle = std::fmod(targetAngle, 360);
     } 
+
     else if (targetAngle < -180) {
-        targetAngle = targetAngle + 360;
+        targetAngle = std::fmod(targetAngle, -360);
     } 
-    turretMotor.SetControl(positionVoltage.WithPosition(units::angle::turn_t(targetAngle/360 * pulleyRatio)).WithSlot(0));
+    turretMotor.SetControl(positionVoltage.WithPosition(units::angle::turn_t(targetAngle/360 * ControllerConstants::turretPulleyRatio)).WithSlot(0));
 
 //Not yet tested! I need to test the encoder values first, and this is just a backup when skipping happens
 
@@ -85,11 +90,11 @@ void Turret::setAngle(double targetAngle) {
 
 bool Turret::isAtAngle(double targetAngle) {
     if (targetAngle > 180) {
-        targetAngle = targetAngle - 360;
+        targetAngle = std::fmod(targetAngle, 360) - 360;
     } 
 
     else if (targetAngle < -180) {
-        targetAngle = targetAngle + 360;
+        targetAngle = std::fmod(targetAngle, -360) + 360;
     } 
     double actualEncVal = getCurrentMotorAngle();
     if (std::fabs(targetAngle - actualEncVal) < 2) return true; // if the current angle is within 5 degrees of the target angle

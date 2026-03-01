@@ -12,24 +12,10 @@
 #include <cmath> 
 #include <iostream>
 
-
-constexpr int encoderID = 60;
-constexpr int motorID = 0;
-
-constexpr double pulleyRatio = 44; //big wheel to small wheel (encoder) ratio
-constexpr double tbTurretRatio = 8.77778;
-
-//need to tune
-constexpr double kP = 1.05;
-constexpr double kI = 0.02;
-constexpr double kD = 0.10;
-
+#include "Constants.h"
 
 class Turret : public frc2::Subsystem{
   public:
-
-    double setpoint = 0.0;
-    double smallPulleyCounter = 0.0;
      
     Turret();
     void setSpeed(double speed);
@@ -40,6 +26,7 @@ class Turret : public frc2::Subsystem{
 
     double getCurrentMotorAngle(); //use the gear ratio to calculate the current angle of the turret
     double getCurrentEncoderAngle();
+    double getSetpoint();
 
     void setAngle(double targetAngle);
     bool isAtAngle(double targetAngle);
@@ -48,14 +35,15 @@ class Turret : public frc2::Subsystem{
   
   private:
 
-    ctre::phoenix6::hardware::TalonFX turretMotor{motorID};
+    ctre::phoenix6::hardware::TalonFX turretMotor{HardwareIDs::turretMotorID};
     ctre::phoenix6::configs::TalonFXConfiguration turretConfigs{};
 
-    ctre::phoenix6::hardware::CANcoder encoder{encoderID, "rio"};  
+    ctre::phoenix6::hardware::CANcoder encoder{HardwareIDs::turretEncoderID, "rio"};  
     ctre::phoenix6::configs::CANcoderConfiguration encoderConfigs{}; 
 
     ctre::phoenix6::controls::PositionVoltage positionVoltage{0_tr}; //turns 
 
     double speed = 0.0;
+    double setpoint = 0.0;
 
 };

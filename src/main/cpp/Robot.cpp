@@ -4,6 +4,7 @@
 
 #include "Robot.h"
 
+
 #include <frc2/command/CommandScheduler.h>
 
 
@@ -20,11 +21,10 @@ Robot::Robot() {}
 void Robot::RobotPeriodic() {
   m_container.drivetrain.updateOdometry();
   frc2::CommandScheduler::GetInstance().Run(); //runs command-based queue
-  double currAngle = m_container.m_turret.getCurrentAngle();
+  double currAngle = m_container.m_turret.getCurrentMotorAngle();
   frc::SmartDashboard::PutNumber("motor pos", currAngle);
-  frc::SmartDashboard::PutNumber("setpoint", m_container.m_turret.setpoint);
-  frc::SmartDashboard::PutNumber("small Pulley counter", m_container.m_turret.smallPulleyCounter);
-  frc::SmartDashboard::PutBoolean("is at angle?", m_container.m_turret.isAtAngle(m_container.m_turret.setpoint));
+  frc::SmartDashboard::PutNumber("setpoint", m_container.m_turret.getSetpoint());
+  frc::SmartDashboard::PutBoolean("is at angle?", m_container.m_turret.isAtAngle(m_container.m_turret.getSetpoint()));
 }
 
 /**
@@ -69,23 +69,6 @@ void Robot::TeleopPeriodic() {
 
   //frc::SmartDashboard::PutNumber("encoder angle", m_turret.getCurrentAngle());
 }
-/** 
-if (ps5.GetSquareButtonPressed()){
-  m_turret.setAngle(60);
-}
-
-else if (ps5.GetCircleButtonPressed()){
-  m_turret.setAngle(180);
-}
-else if (ps5.GetTriangleButtonPressed()){
-  m_turret.setAngle(270);
-}
-
-else if (ps5.GetCrossButtonPressed()){
-  m_turret.resetTurretPosition();
-}
-}
-**/
 /**
  * This function is called periodically during test mode.
  */

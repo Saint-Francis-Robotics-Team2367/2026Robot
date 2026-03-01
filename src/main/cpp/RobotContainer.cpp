@@ -52,7 +52,7 @@ void RobotContainer::ConfigureBindings() {
       )
   );
 
-  //resets gyro on DPad Up
+  //resets gyro on Cross button
   driverCtr.Cross().OnTrue(
     drivetrain.RunOnce(
       [this] {drivetrain.resetGyro();}
@@ -85,7 +85,7 @@ driverCtr.Circle().OnTrue(
 
 driverCtr.Square().OnTrue(
     m_turret.RunOnce(
-        [this] { m_turret.setAngle(m_turret.setpoint); }    
+        [this] { m_turret.setAngle(m_turret.getSetpoint()); }    
     )
 );
 }
