@@ -55,3 +55,7 @@ namespace ControllerConstants {
     static constexpr double deadband = 0.05; //prevents joystick drift
     static constexpr double slewRate = 5.2;
 }
+
+namespace IndexerConstants {
+    static constexpr int IndexerMotorID = 13;
+}

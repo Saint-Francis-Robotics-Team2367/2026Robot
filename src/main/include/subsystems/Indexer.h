@@ -1,7 +1,9 @@
 #pragma once
 
+
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <ctre/phoenix6/controls/PositionVoltage.hpp>
+
 
 #include <frc2/command/Subsystem.h>
 #include "frc2/command/StartEndCommand.h"
@@ -11,19 +13,17 @@
 #include "frc2/command/CommandPtr.h"
 #include "frc2/command/button/Trigger.h"
 
-
-constexpr int motorID = 13;//Have to change this later
+#include <Constants.h>
 
 class Indexer : public frc2::Subsystem {
+
     public:
-        Indexer();
-        frc2::CommandPtr index();
         void init();
+        frc2::CommandPtr index();
         void setIndexerSpeed(double speed);
         void stopIndexer();
        
-       
     private:
-        ctre::phoenix6::hardware::TalonFX indexerMotor{motorID};
-        ctre::phoenix6::configs::TalonFXConfiguration indexerConfigs{};
+        ctre::phoenix6::hardware::TalonFX indexerMotor{IndexerConstants::IndexerMotorID}; // Use CANivore bus if applicable
+        ctre::phoenix6::configs::TalonFXConfiguration indexerConfigs;
 };
