@@ -5,6 +5,8 @@
 #pragma once
 
 #include <cmath>
+#include "frc2/command/Commands.h"
+#include "frc2/command/CommandPtr.h"
 
 /**
  * The Constants header provides a convenient place for teams to hold robot-wide
@@ -65,13 +67,13 @@ namespace ShooterConstants {
     static constexpr double MeterConversionFactor = 0.0254f; // inches to meters
 
     // CAN IDs
-    static constexpr int ShooterID = 3.0; // Wheel
-    static constexpr int RackMotorID = 0.0; // Kraken
+    static constexpr int ShooterID = 36; // Wheel
+    static constexpr int RackMotorID = 27; // Kraken
     static constexpr int RackEncoderID = 2.0; // ThroughBore
-    static constexpr int FeederID = 4.0; // Feeder
+    static constexpr int FeederID = 21; // Feeder
 
     // PID Constants Feeder
-    static constexpr double FeederP = 0.0;
+    static constexpr double FeederP = 0.5;
     static constexpr double FeederI = 0.0;
     static constexpr double FeederD = 0.0;
     static constexpr double FeederV = 0.0;
@@ -90,9 +92,15 @@ namespace ShooterConstants {
 }
 
 namespace IndexerConstants {
-    static constexpr int IndexerMotorID = 5.0;
+    static constexpr int IndexerMotorID = 42;
     static constexpr double IndexerP = 0.0;
     static constexpr double IndexerI = 0.0;
     static constexpr double IndexerD = 0.0;
     static constexpr double IndexerV = 0.0;
+}
+
+namespace IntakeConstants {
+    static constexpr int intakePivotID = 13;
+    static constexpr int intakeRollerID = 14;
+    static constexpr int hopperMotorID = 16;
 }

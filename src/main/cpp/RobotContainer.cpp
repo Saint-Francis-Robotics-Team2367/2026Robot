@@ -65,66 +65,88 @@ void RobotContainer::ConfigureBindings() {
       )
   );
   
+  // driverCtr.Circle().ToggleOnTrue(
+  //   frc2::cmd::StartEnd(
+  //     // ON
+  //     [this] {
+  //       frc::SmartDashboard::PutString("Shooter Status", "Shooting");
+  //       HoodedShooter.applyHoodBrake(); 
+  //       BallFeeder.setFeederSpeed(-2250);
+  //       HoodedShooter.setFlywheelSpeed(HoodedShooter.findOptimalRPM(132, 186));
+
+  //     },
+  //     // OFF
+  //     [this] {
+  //       frc::SmartDashboard::PutString("Shooter Status", "Idle");
+  //       HoodedShooter.setFlywheelSpeed(0);
+  //       BallFeeder.setFeederSpeed(0);
+  //       HoodedShooter.releaseHoodBrake(); 
+  //     },
+  //     { &HoodedShooter, &BallFeeder } 
+  //   )
+  // );
+
+  // driverCtr.Triangle().OnTrue(
+  //   frc2::cmd::RunOnce(
+  //     [this] {
+  //       frc::SmartDashboard::PutString("Shooter Status", "Aligning");
+  //       HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(132, 186), 132, 186);
+  //     },
+  //     { &HoodedShooter} 
+  //   )
+  // );
+
+  // driverCtr.Square().OnTrue(
+  //   frc2::cmd::RunOnce(
+  //     [this] {
+  //       frc::SmartDashboard::PutString("Shooter Status", "Zeroing Hood");
+  //       HoodedShooter.zeroHood();
+  //     },
+  //     { &HoodedShooter } 
+  //   )
+  // );
+
+  // driverCtr.POVUp().OnTrue(
+  //   drivetrain.RunOnce(
+  //     [this] {drivetrain.resetGyro();}
+  //   )
+  // );
+
+  // driverCtr.POVDown().OnTrue(
+  //   frc2::cmd::StartEnd(
+  //     // ON
+  //     [this] {
+  //       frc::SmartDashboard::PutString("Shooter Status", "Shooting");
+  //       BallFeeder.setFeederSpeed(HoodedShooter.findOptimalRPM(132, 186));
+  //     },
+  //     // OFF
+  //     [this] {
+  //       frc::SmartDashboard::PutString("Shooter Status", "Idle");
+  //       BallFeeder.setFeederSpeed(0);
+  //     },
+  //     {&BallFeeder, &HoodedShooter} 
+  //   )
+  // );
+
+  driverCtr.Triangle().ToggleOnTrue(
+    BallFeeder.RunFeeder(&BallFeeder, -1800)
+  );
+
   driverCtr.Circle().ToggleOnTrue(
-    frc2::cmd::StartEnd(
-      // ON
-      [this] {
-        frc::SmartDashboard::PutString("Shooter Status", "Shooting");
-        HoodedShooter.applyHoodBrake(); 
-        BallFeeder.setFeederSpeed(-2250);
-        HoodedShooter.setFlywheelSpeed(HoodedShooter.findOptimalRPM(132, 186));
-
-      },
-      // OFF
-      [this] {
-        frc::SmartDashboard::PutString("Shooter Status", "Idle");
-        HoodedShooter.setFlywheelSpeed(0);
-        BallFeeder.setFeederSpeed(0);
-        HoodedShooter.releaseHoodBrake(); 
-      },
-      { &HoodedShooter, &BallFeeder } 
-    )
+    BallIndexer.RunIndexer(&BallIndexer, -3000)
   );
 
-  driverCtr.Triangle().OnTrue(
+  driverCtr.Cross().ToggleOnTrue(
+    mIntake.RunIntake(&mIntake, 3000)
+  );
+
+  // driverCtr.Square().ToggleOnTrue(
+  //   mIntake.DeployIntake(&mIntake)
+  // );
+
+  driverCtr.POVLeft().OnTrue(
     frc2::cmd::RunOnce(
-      [this] {
-        frc::SmartDashboard::PutString("Shooter Status", "Aligning");
-        HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(132, 186), 132, 186);
-      },
-      { &HoodedShooter} 
-    )
-  );
-
-  driverCtr.Square().OnTrue(
-    frc2::cmd::RunOnce(
-      [this] {
-        frc::SmartDashboard::PutString("Shooter Status", "Zeroing Hood");
-        HoodedShooter.zeroHood();
-      },
-      { &HoodedShooter } 
-    )
-  );
-
-  driverCtr.POVUp().OnTrue(
-    drivetrain.RunOnce(
-      [this] {drivetrain.resetGyro();}
-    )
-  );
-
-  driverCtr.POVDown().OnTrue(
-    frc2::cmd::StartEnd(
-      // ON
-      [this] {
-        frc::SmartDashboard::PutString("Shooter Status", "Shooting");
-        BallFeeder.setFeederSpeed(HoodedShooter.findOptimalRPM(132, 186));
-      },
-      // OFF
-      [this] {
-        frc::SmartDashboard::PutString("Shooter Status", "Idle");
-        BallFeeder.setFeederSpeed(0);
-      },
-      {&BallFeeder, &HoodedShooter} 
+      [this] {mIntake.pivotMotor.SetPosition(0_tr);}
     )
   );
 

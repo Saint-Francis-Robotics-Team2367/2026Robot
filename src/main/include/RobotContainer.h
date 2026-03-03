@@ -13,6 +13,7 @@
 #include "subsystems/Shooter.h"
 #include "subsystems/Feeder.h"
 #include "subsystems/Indexer.h"
+#include "subsystems/Intake.h"
 
 #include "subsystems/DriveSubsystem.h"
 
@@ -42,6 +43,7 @@ class RobotContainer {
   Shooter HoodedShooter;
   Feeder BallFeeder;
   Indexer BallIndexer;
+  Intake mIntake;
 
   bool runFirstSequence = true;
 

@@ -34,15 +34,15 @@ public:
 
 public:
     // Motors
-    ctre::phoenix6::hardware::TalonFX ShooterMotor{ShooterConstants::ShooterID}; // Use CANivore bus if applicable
-    ctre::phoenix6::hardware::TalonFX RackMotor{ShooterConstants::RackMotorID};
+    ctre::phoenix6::hardware::TalonFX ShooterMotor{ShooterConstants::ShooterID, "Drivetrain"}; // Use CANivore bus if applicable
+    ctre::phoenix6::hardware::TalonFX RackMotor{ShooterConstants::RackMotorID, "Drivetrain"};
 
     // Configuration objects
     ctre::phoenix6::configs::TalonFXConfiguration FlywheelConfig;
     ctre::phoenix6::configs::TalonFXConfiguration RackConfig;
 
     // ThroughBore
-    ctre::phoenix6::hardware::CANcoder RackEncoder{ShooterConstants::RackEncoderID}; // Uses default CAN bus
+    ctre::phoenix6::hardware::CANcoder RackEncoder{ShooterConstants::RackEncoderID, "Drivetrain"}; // Uses default CAN bus
     
     ctre::phoenix6::controls::PositionVoltage positionVoltage{0_tr};
 
