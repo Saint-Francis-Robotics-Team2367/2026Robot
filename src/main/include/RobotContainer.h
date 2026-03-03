@@ -42,7 +42,7 @@ class RobotContainer {
     {&mIntake}
   };
 
-  bool runFirstSequence = true;
+  bool runFirstSequence = true;//this is to check which sequence was last run 
 
   frc::SlewRateLimiter<units::scalar> xLimiter{ControllerConstants::slewRate / 1_s};
   frc::SlewRateLimiter<units::scalar> yLimiter{ControllerConstants::slewRate / 1_s};

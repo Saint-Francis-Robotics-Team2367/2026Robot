@@ -31,9 +31,10 @@ void Intake::init() {
 
 frc2::CommandPtr Intake::deploySequence() {
     return frc2::cmd::Sequence(
-        frc2::cmd::RunOnce([this] {deploy();}),
+        frc2::cmd::RunOnce([this] {deployIntake();}),
         frc2::cmd::Wait(0.1_s),
-        frc2::cmd::RunOnce([this] {deployHopper();})
+        frc2::cmd::RunOnce([this] {deployHopper();}), 
+        {this}
     );
 }
 
@@ -41,7 +42,8 @@ frc2::CommandPtr Intake::retractSequence() {
     return frc2::cmd::Sequence (
         frc2::cmd::RunOnce([this] {retractHopper();}),
         frc2::cmd::Wait(0.1_s),
-        frc2::cmd::RunOnce([this] {retract();})
+        frc2::cmd::RunOnce([this] {retractIntake();}),
+        {this}
     );
 }
 
@@ -53,12 +55,12 @@ void Intake::retractHopper() {
     hopperMotor.SetControl(ctre::phoenix6::controls::PositionVoltage{hopperStowPos});
 }
 
-void Intake::deploy() {
+void Intake::deployIntake() {
     currentState = 1;
     pivotMotor.SetControl(ctre::phoenix6::controls::PositionVoltage{deployedPos});
 }
 
-void Intake::retract() {
+void Intake::retractIntake() {
     currentState = 0;
     pivotMotor.SetControl(ctre::phoenix6::controls::PositionVoltage{stowedPos});
 }

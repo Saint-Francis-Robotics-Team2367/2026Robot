@@ -29,10 +29,10 @@ public:
     void init();
     frc2::CommandPtr deploySequence();
     frc2::CommandPtr retractSequence();
-    void deploy();
+    void deployIntake();
     void deployHopper();
     void retractHopper();
-    void retract();
+    void retractIntake();
     void setMotorSpeed(double speed);
     void intake(double speed = 1.0);
     void stop();
