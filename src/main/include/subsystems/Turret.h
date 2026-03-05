@@ -1,0 +1,49 @@
+#pragma once
+
+#include <ctre/phoenix6/TalonFX.hpp>
+#include <ctre/phoenix6/core/CoreTalonFX.hpp>
+#include <ctre/phoenix6/controls/PositionVoltage.hpp>
+#include <ctre/phoenix6/CANcoder.hpp>
+#include <ctre/phoenix6/core/CoreCANcoder.hpp>
+
+#include <frc2/command/Subsystem.h>
+#include <frc/smartdashboard/SmartDashboard.h>
+
+#include <cmath> 
+#include <iostream>
+
+#include "Constants.h"
+
+class Turret : public frc2::Subsystem{
+  public:
+     
+    Turret();
+    void setSpeed(double speed);
+    void changeSpeed(double increment);
+    double getSpeed();
+    void addToSetpoint(double addition);
+    void stop(); //stop motors
+
+    double getCurrentMotorAngle(); //use the gear ratio to calculate the current angle of the turret
+    double getCurrentEncoderAngle();
+    double getSetpoint();
+
+    void setAngle(double targetAngle);
+    bool isAtAngle(double targetAngle);
+
+    void resetTurretPosition();
+  
+  private:
+
+    ctre::phoenix6::hardware::TalonFX turretMotor{HardwareIDs::turretMotorID};
+    ctre::phoenix6::configs::TalonFXConfiguration turretConfigs{};
+
+    ctre::phoenix6::hardware::CANcoder encoder{HardwareIDs::turretEncoderID, "rio"};  
+    ctre::phoenix6::configs::CANcoderConfiguration encoderConfigs{}; 
+
+    ctre::phoenix6::controls::PositionVoltage positionVoltage{0_tr}; //turns 
+
+    double speed = 0.0;
+    double setpoint = 0.0;
+
+};
