@@ -2,7 +2,7 @@
 
 // Initalization of Motor and Configs
 void Indexer::init(){
-    indexerConfigs.Slot0.kP = 0.05;
+    indexerConfigs.Slot0.kP = 0.5;
     indexerConfigs.Slot0.kI = 0.0;
     indexerConfigs.Slot0.kD = 0.0;
     indexerConfigs.Slot0.kV = 0.0;
@@ -10,9 +10,9 @@ void Indexer::init(){
     indexerConfigs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
     indexerConfigs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
 
-    indexerConfigs.CurrentLimits.StatorCurrentLimit = 25_A;
+    indexerConfigs.CurrentLimits.StatorCurrentLimit = 110_A;
     indexerConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
-    indexerConfigs.CurrentLimits.SupplyCurrentLimit = 70_A;
+    indexerConfigs.CurrentLimits.SupplyCurrentLimit = 40_A;
     indexerConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     indexerMotor.GetConfigurator().Apply(indexerConfigs);

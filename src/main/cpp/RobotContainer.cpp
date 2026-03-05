@@ -137,16 +137,16 @@ void RobotContainer::ConfigureBindings() {
   );
 
   driverCtr.Cross().ToggleOnTrue(
-    mIntake.RunIntake(&mIntake, 3000)
+    RunIntake.IntakeCommand(&RunIntake, 3000)
   );
 
-  // driverCtr.Square().ToggleOnTrue(
-  //   mIntake.DeployIntake(&mIntake)
-  // );
+  driverCtr.Square().ToggleOnTrue(
+    DeployIntake.DeployIntakeCommand(&DeployIntake)
+  );
 
   driverCtr.POVLeft().OnTrue(
     frc2::cmd::RunOnce(
-      [this] {mIntake.pivotMotor.SetPosition(0_tr);}
+      [this] {DeployIntake.zeroPivot();}
     )
   );
 
