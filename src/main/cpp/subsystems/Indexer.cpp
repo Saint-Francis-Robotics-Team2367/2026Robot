@@ -7,12 +7,12 @@ void Indexer::init(){
     indexerConfigs.Slot0.kD = 0.0;
     indexerConfigs.Slot0.kV = 0.0;
 
-    indexerConfigs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
+    indexerConfigs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
     indexerConfigs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
 
-    indexerConfigs.CurrentLimits.StatorCurrentLimit = 20_A;
+    indexerConfigs.CurrentLimits.StatorCurrentLimit = 25_A;
     indexerConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
-    indexerConfigs.CurrentLimits.SupplyCurrentLimit = 20_A;
+    indexerConfigs.CurrentLimits.SupplyCurrentLimit = 70_A;
     indexerConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     indexerMotor.GetConfigurator().Apply(indexerConfigs);
@@ -24,10 +24,18 @@ frc2::CommandPtr Indexer::index(){
 
 // Gear Ratio is 1:1, so RPM is directly proportional to the output speed of the indexer
 void Indexer::setIndexerSpeed(double indexerRPM){
-    indexerMotor.SetControl(ctre::phoenix6::controls::VelocityDutyCycle{units::angular_velocity::turns_per_second_t{indexerRPM / 60.0}});
+    indexerMotor.SetControl(ctre::phoenix6::controls::VelocityVoltage{units::angular_velocity::turns_per_second_t{indexerRPM / 60.0}}.WithSlot(0));
 }
 
 
 void Indexer::stopIndexer(){
     indexerMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0});
+}
+
+frc2::CommandPtr Indexer::RunIndexer(Indexer* indexer, double speed) {
+    return frc2::cmd::StartEnd(
+        [indexer, speed] {indexer->setIndexerSpeed(speed);},
+        [indexer] {indexer->stopIndexer();},
+        {indexer}
+    );
 }
