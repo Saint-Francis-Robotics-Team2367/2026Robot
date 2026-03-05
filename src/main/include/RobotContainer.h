@@ -5,9 +5,16 @@
 #pragma once
 
 #include <frc2/command/CommandPtr.h>
+#include "frc2/command/Commands.h"
 #include <frc2/command/button/CommandPS5Controller.h>
 
 #include "Constants.h"
+
+#include "subsystems/Shooter.h"
+#include "subsystems/Feeder.h"
+#include "subsystems/Indexer.h"
+#include "subsystems/Intake.h"
+
 #include "subsystems/DriveSubsystem.h"
 
 #include "frc/filter/SlewRateLimiter.h"
@@ -32,7 +39,6 @@ class RobotContainer {
   DriveSubsystem drivetrain;
   Intake mIntake;
 
- private:
   // Replace with CommandPS4Controller or CommandJoystick if needed
   frc2::CommandPS5Controller driverCtr{0}; //drive controller should be first controller that is plugged in
 

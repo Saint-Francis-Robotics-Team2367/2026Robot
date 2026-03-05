@@ -17,7 +17,7 @@
 class Intake : public frc2::SubsystemBase {
 public:
     units::angle::turn_t stowedPos = 0_tr;
-    units::angle::turn_t deployedPos = units::turn_t(1/8);   // Example values-->have to tune
+    units::angle::turn_t deployedPos = units::turn_t(1.95);   // Example values-->have to tune
     units::turn_t hopperStowPos = 0_tr;
     units::turn_t hopperDeployedPos = units::turn_t(1/8);
 
@@ -29,14 +29,14 @@ public:
     void init();
     frc2::CommandPtr deploySequence();
     frc2::CommandPtr retractSequence();
+    frc2::CommandPtr RunIntake(Intake* intake, double speed);
+    frc2::CommandPtr DeployIntake(Intake* intake);
     void deployIntake();
     void deployHopper();
     void retractHopper();
     void retractIntake();
     void setMotorSpeed(double speed);
-    void intake(double speed = 1.0);
     void stop();
-    int getCurrentState();
 
 public:    
     ctre::phoenix6::hardware::TalonFX pivotMotor{IntakeConstants::intakePivotID, "Drivetrain"};

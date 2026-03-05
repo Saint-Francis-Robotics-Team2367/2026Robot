@@ -5,6 +5,8 @@
 #pragma once
 
 #include <cmath>
+#include "frc2/command/Commands.h"
+#include "frc2/command/CommandPtr.h"
 
 /**
  * The Constants header provides a convenient place for teams to hold robot-wide
@@ -18,6 +20,7 @@
 
 
  //refer with [namespace]::[varname]
+
 namespace ModuleConstants {
     static constexpr double kDriveGearRatio = 5.357142857142857; // L3+
     static constexpr double kSteerGearRatio = 21.428571428571427; // 150/7:1
@@ -32,28 +35,69 @@ namespace MathConstants {
 }
 
 namespace HardwareIDs { 
-    static constexpr int FLsteerID = 10;
-    static constexpr int FLdriveID = 11;
-    static constexpr int FLencoderID = 12;
+    static constexpr int FLsteerID = 5;
+    static constexpr int FLdriveID = 4;
+    static constexpr int FLencoderID = 6;
     
-    static constexpr int FRsteerID = 1;
-    static constexpr int FRdriveID = 2;
-    static constexpr int FRencoderID = 3;
+    static constexpr int FRsteerID = 7;
+    static constexpr int FRdriveID = 8;
+    static constexpr int FRencoderID = 6;
 
-    static constexpr int BLsteerID = 7;
-    static constexpr int BLdriveID = 8;
-    static constexpr int BLencoderID = 9;
+    static constexpr int BLsteerID = 1;
+    static constexpr int BLdriveID = 2;
+    static constexpr int BLencoderID = 3;
 
-    static constexpr int BRsteerID = 4;
-    static constexpr int BRdriveID = 5;
-    static constexpr int BRencoderID = 6;
+    static constexpr int BRsteerID = 11;
+    static constexpr int BRdriveID = 10;
+    static constexpr int BRencoderID = 12;
 
     static constexpr int pigeonID = 0;
 }
 
+
 namespace ControllerConstants {
     static constexpr double deadband = 0.05; //prevents joystick drift
     static constexpr double slewRate = 5.2;
+}
+
+namespace ShooterConstants {
+    static constexpr double SHOOTERWHEELDIAMETER = 0.1; // in meters
+    static constexpr double GRAVITY = 9.81;
+    static constexpr double PI = M_PI;
+    static constexpr double SHOOTEREFFICIENCY = 0.75;
+    static constexpr double MeterConversionFactor = 0.0254f; // inches to meters
+
+    // CAN IDs
+    static constexpr int ShooterID = 36; // Wheel
+    static constexpr int RackMotorID = 27; // Kraken
+    static constexpr int RackEncoderID = 2.0; // ThroughBore
+    static constexpr int FeederID = 21; // Feeder
+
+    // PID Constants Feeder
+    static constexpr double FeederP = 0.5;
+    static constexpr double FeederI = 0.0;
+    static constexpr double FeederD = 0.0;
+    static constexpr double FeederV = 0.0;
+
+    // PID Constants Shooter
+    static constexpr double FlywheelP = 0.05;
+    static constexpr double FlywheelI = 0.0;
+    static constexpr double FlywheelD = 0.0;
+    static constexpr double FlywheelV = 0.01;
+    
+    // PID Constants Rack
+    static constexpr double RackP = 0.025;
+    static constexpr double RackI = 0.0;
+    static constexpr double RackD = 0.001;
+    static constexpr double RackG = 0.01;
+}
+
+namespace IndexerConstants {
+    static constexpr int IndexerMotorID = 42;
+    static constexpr double IndexerP = 0.0;
+    static constexpr double IndexerI = 0.0;
+    static constexpr double IndexerD = 0.0;
+    static constexpr double IndexerV = 0.0;
 }
 
 namespace IntakeConstants {

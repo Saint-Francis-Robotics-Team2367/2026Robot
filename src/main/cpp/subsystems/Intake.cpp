@@ -6,6 +6,7 @@ void Intake::init() {
     pivotConfig.Slot0.kP = 0.05;
     pivotConfig.Slot0.kI = 0.0;
     pivotConfig.Slot0.kD = 0.0;
+    pivotConfig.Slot0.kV = 0.5;
 
     pivotConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
     pivotMotor.GetConfigurator().Apply(pivotConfig);

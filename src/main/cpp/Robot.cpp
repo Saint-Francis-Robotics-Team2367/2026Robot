@@ -19,8 +19,12 @@ Robot::Robot() {}
  * LiveWindow and SmartDashboard integrated updating.
  */
 void Robot::RobotPeriodic() {
-  m_container.drivetrain.updateOdometry();
   frc2::CommandScheduler::GetInstance().Run(); //runs command-based queue
+  frc::SmartDashboard::PutNumber("Rack Position", m_container.HoodedShooter.RackMotor.GetPosition().GetValueAsDouble());
+  frc::SmartDashboard::PutNumber("Offset Position", m_container.HoodedShooter.hoodCenterRot);
+  frc::SmartDashboard::PutNumber("Target Position", m_container.HoodedShooter.targetAbs);
+  frc::SmartDashboard::PutNumber("Motor RPM", m_container.HoodedShooter.ShooterMotor.GetVelocity().GetValueAsDouble() * 60.0);
+  frc::SmartDashboard::PutNumber("Intake Act Rot", m_container.mIntake.pivotMotor.GetPosition().GetValueAsDouble());
 }
 
 /**
@@ -37,11 +41,11 @@ void Robot::DisabledPeriodic() {}
  * RobotContainer} class.
  */
 void Robot::AutonomousInit() {
-  m_autonomousCommand = m_container.GetAutonomousCommand();
+  // m_autonomousCommand = m_container.GetAutonomousCommand();
 
-  if (m_autonomousCommand) {
-    frc2::CommandScheduler::GetInstance().Schedule(m_autonomousCommand.value());
-  }
+  // if (m_autonomousCommand) {
+  //   frc2::CommandScheduler::GetInstance().Schedule(m_autonomousCommand.value());
+  // }
 }
 
 void Robot::AutonomousPeriodic() {}
@@ -51,9 +55,9 @@ void Robot::TeleopInit() {
   // teleop starts running. If you want the autonomous to
   // continue until interrupted by another command, remove
   // this line or comment it out.
-  if (m_autonomousCommand) {
-    m_autonomousCommand->Cancel();
-  }
+  // if (m_autonomousCommand) {
+  //   m_autonomousCommand->Cancel();
+  // }
 }
 
 /**
