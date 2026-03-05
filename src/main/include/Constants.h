@@ -35,24 +35,25 @@ namespace MathConstants {
 }
 
 namespace HardwareIDs { 
-    static constexpr int FLsteerID = 1;
-    static constexpr int FLdriveID = 2;
-    static constexpr int FLencoderID = 9;
+    static constexpr int FLsteerID = 5;
+    static constexpr int FLdriveID = 4;
+    static constexpr int FLencoderID = 6;
     
-    static constexpr int FRsteerID = 3;
-    static constexpr int FRdriveID = 4;
-    static constexpr int FRencoderID = 10;
+    static constexpr int FRsteerID = 7;
+    static constexpr int FRdriveID = 8;
+    static constexpr int FRencoderID = 6;
 
-    static constexpr int BLsteerID = 7;
-    static constexpr int BLdriveID = 8;
-    static constexpr int BLencoderID = 12;
+    static constexpr int BLsteerID = 1;
+    static constexpr int BLdriveID = 2;
+    static constexpr int BLencoderID = 3;
 
-    static constexpr int BRsteerID = 5;
-    static constexpr int BRdriveID = 6;
-    static constexpr int BRencoderID = 11;
+    static constexpr int BRsteerID = 11;
+    static constexpr int BRdriveID = 10;
+    static constexpr int BRencoderID = 12;
 
     static constexpr int pigeonID = 0;
 }
+
 
 namespace ControllerConstants {
     static constexpr double deadband = 0.05; //prevents joystick drift
