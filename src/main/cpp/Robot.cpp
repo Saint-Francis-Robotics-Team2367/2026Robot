@@ -22,7 +22,6 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Offset Position", m_container.HoodedShooter.hoodCenterRot);
   frc::SmartDashboard::PutNumber("Target Position", m_container.HoodedShooter.targetAbs);
   frc::SmartDashboard::PutNumber("Motor RPM", m_container.HoodedShooter.ShooterMotor.GetVelocity().GetValueAsDouble() * 60.0);
-  frc::SmartDashboard::PutNumber("Intake Act Rot", m_container.mIntake.pivotMotor.GetPosition().GetValueAsDouble());
 }
 
 /**

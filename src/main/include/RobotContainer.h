@@ -44,8 +44,8 @@ class RobotContainer {
   Shooter HoodedShooter;
   Feeder BallFeeder;
   Indexer BallIndexer;
-  RunIntake RunIntake;
-  DeployIntake DeployIntake;
+  RunIntake mRunIntake;
+  DeployIntake mDeployIntake;
 
   bool runFirstSequence = true;
 
