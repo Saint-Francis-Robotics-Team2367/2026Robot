@@ -8,7 +8,6 @@
 
 #include <frc2/command/button/Trigger.h>
 #include "frc2/command/button/RobotModeTriggers.h"
-#include "vision/XNavLib.h"
 
 
 #include "subsystems/Turret.h"
@@ -24,21 +23,11 @@ RobotContainer::RobotContainer() {
   HoodedShooter.init(); // Initalize Shooter motors and encoders
   BallFeeder.init(); // Initialize Feeder motors and encoders
   BallIndexer.init(); // Initialize Indexer motors and encoders
-  xnav::XNav Limelight; // Initialize vision system
   
 
   drivetrain.initModules();
   drivetrain.initGyro();
   drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
-  Limelight.Init();
-
-  auto target = Limelight.GetPrimaryTarget();
-  double x_disp = target.x; 
-  double y_disp = target.y;
-
-  frc::SmartDashboard::PutNumber("Limelight X", x_disp);
-  frc::SmartDashboard::PutNumber("Limelight Y", y_disp);
-
 }
 
 
@@ -154,7 +143,7 @@ void RobotContainer::ConfigureBindings() {
       [this] {mDeployIntake.zeroPivot();}
     )
   );
-
+}
 
 
 //************* TURRET TEST COMMANDS **************
