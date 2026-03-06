@@ -4,7 +4,9 @@
 
 #include "Robot.h"
 
+
 #include <frc2/command/CommandScheduler.h>
+
 
 Robot::Robot() {}
 
@@ -18,6 +20,10 @@ Robot::Robot() {}
  */
 void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run(); //runs command-based queue
+  double currAngle = m_container.m_turret.getCurrentMotorAngle();
+  frc::SmartDashboard::PutNumber("Turret Motor Pos", currAngle);
+  frc::SmartDashboard::PutNumber("Turret setpoint", m_container.m_turret.getSetpoint());
+  frc::SmartDashboard::PutBoolean("is turret at angle?", m_container.m_turret.isAtAngle(m_container.m_turret.getSetpoint()));
   frc::SmartDashboard::PutNumber("Rack Position", m_container.HoodedShooter.RackMotor.GetPosition().GetValueAsDouble());
   frc::SmartDashboard::PutNumber("Offset Position", m_container.HoodedShooter.hoodCenterRot);
   frc::SmartDashboard::PutNumber("Target Position", m_container.HoodedShooter.targetAbs);
@@ -60,8 +66,10 @@ void Robot::TeleopInit() {
 /**
  * This function is called periodically during operator control.
  */
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
 
+  //frc::SmartDashboard::PutNumber("encoder angle", m_turret.getCurrentAngle());
+}
 /**
  * This function is called periodically during test mode.
  */

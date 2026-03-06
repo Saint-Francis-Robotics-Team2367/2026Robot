@@ -11,6 +11,11 @@
 #include "vision/XNavLib.h"
 
 
+#include "subsystems/Turret.h"
+#include "frc/smartdashboard/SmartDashboard.h"
+#include <frc2/command/CommandPtr.h>
+
+
 //basically initializes robot
 RobotContainer::RobotContainer() {
   // Initialize all of your commands and subsystems here
@@ -150,15 +155,43 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
-  //stops modules if disabled
-  frc2::RobotModeTriggers::Disabled().WhileTrue(
-    drivetrain.RunOnce(
-      [this] {
-        drivetrain.stopAllModules();
-      }
-    ).IgnoringDisable(true)
-  );
+
+
+//************* TURRET TEST COMMANDS **************
+
+/*
+driverCtr.POVUp().ToggleOnTrue(
+    m_turret.RunOnce(
+        [this] { m_turret.addToSetpoint(45);}   
+    )
+);
+
+driverCtr.POVDown().ToggleOnTrue(
+    m_turret.RunOnce(
+        [this] { m_turret.addToSetpoint(-45); }
+    )
+);
+
+
+driverCtr.Triangle().OnTrue(
+    m_turret.RunOnce(
+        [this] { m_turret.setAngle(180); }    
+    )
+);
+
+driverCtr.Circle().OnTrue(
+    m_turret.RunOnce(
+        [this] { m_turret.setAngle(0); }    
+    )
+);
+
+driverCtr.Square().OnTrue(
+    m_turret.RunOnce(
+        [this] { m_turret.setAngle(m_turret.getSetpoint()); }    
+    )
+);
 }
+*/
 
 
 // frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
