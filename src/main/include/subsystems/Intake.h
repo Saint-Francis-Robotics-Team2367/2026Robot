@@ -29,14 +29,13 @@ public:
     void init();
     frc2::CommandPtr deploySequence();
     frc2::CommandPtr retractSequence();
-    frc2::CommandPtr RunIntake(Intake* intake, double speed);
-    frc2::CommandPtr DeployIntake(Intake* intake);
     void deployIntake();
     void deployHopper();
     void retractHopper();
     void retractIntake();
     void setMotorSpeed(double speed);
     void stop();
+    int getCurrentState();
 
 public:    
     ctre::phoenix6::hardware::TalonFX pivotMotor{IntakeConstants::intakePivotID, "Drivetrain"};

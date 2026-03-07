@@ -34,17 +34,15 @@ frc2::CommandPtr Intake::deploySequence() {
     return frc2::cmd::Sequence(
         frc2::cmd::RunOnce([this] {deployIntake();}),
         frc2::cmd::Wait(0.1_s),
-        frc2::cmd::RunOnce([this] {deployHopper();}), 
-        {this}
+        frc2::cmd::RunOnce([this] {deployHopper();})
     );
 }
 
 frc2::CommandPtr Intake::retractSequence() {
     return frc2::cmd::Sequence (
-        frc2::cmd::RunOnce([this] {retractHopper();}),
+        frc2::cmd::RunOnce([this] {retractHopper();},{this}),
         frc2::cmd::Wait(0.1_s),
-        frc2::cmd::RunOnce([this] {retractIntake();}),
-        {this}
+        frc2::cmd::RunOnce([this] {retractIntake();})
     );
 }
 
@@ -67,10 +65,6 @@ void Intake::retractIntake() {
 }
 
 void Intake::setMotorSpeed(double speed) {
-    rollerMotor.Set(speed);
-}
-
-void Intake::intake(double speed) {
     rollerMotor.Set(speed);
 }
 
