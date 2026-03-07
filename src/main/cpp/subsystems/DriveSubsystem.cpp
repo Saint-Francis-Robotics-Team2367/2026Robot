@@ -69,7 +69,7 @@ void DriveSubsystem::initModules() {
   backLeft.zeroModule();
   backRight.zeroModule();
 
-  backLeft.invertModule(ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive, false, true);
+  frontLeft.invertModule(ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive, false, true);
   backRight.invertModule(ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive, false, true);
 }
 
