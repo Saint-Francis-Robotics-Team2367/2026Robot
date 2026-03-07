@@ -72,7 +72,7 @@ namespace ControllerConstants {
     constexpr double turretTbRatio = 8.77778;
 
 }
-
+}
 
 namespace ShooterConstants {
     static constexpr double SHOOTERWHEELDIAMETER = 0.1; // in meters
