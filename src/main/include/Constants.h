@@ -54,7 +54,7 @@ namespace HardwareIDs {
     static constexpr int pigeonID = 0;
 
     static constexpr int turretEncoderID = 60;
-    static constexpr int turretMotorID = 0;
+    static constexpr int turretMotorID = 18;
 }
 
 
@@ -107,7 +107,7 @@ namespace ShooterConstants {
 }
 
 namespace IndexerConstants {
-    static constexpr int IndexerMotorID = 42;
+    static constexpr int IndexerMotorID = 55;
     static constexpr double IndexerP = 0.0;
     static constexpr double IndexerI = 0.0;
     static constexpr double IndexerD = 0.0;
