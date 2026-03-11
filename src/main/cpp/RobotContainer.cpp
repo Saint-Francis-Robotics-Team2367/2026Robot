@@ -200,27 +200,24 @@ void RobotContainer::ConfigureBindings() {
           frc2::cmd::RunOnce(
           [this] {m_turret.setAngle(45.0);}, {&m_turret}
           ),
-        frc2::cmd::RunOnce(
-          [this] {HoodedShooter.setFlywheelSpeed(-4000);}, {&HoodedShooter}
-        ), 
-        frc2::cmd::Parallel(
-          BallIndexer.RunIndexer(&BallIndexer, -3000),
           frc2::cmd::RunOnce(
-            [this] {BallFeeder.setFeederSpeed(-1*(HoodedShooter.findOptimalRPM(132, 186)));}, {&BallFeeder, &HoodedShooter}
+            [this] {HoodedShooter.setFlywheelSpeed(-4000);}, {&HoodedShooter}
+          ), 
+          frc2::cmd::Parallel(
+            BallIndexer.RunIndexer(&BallIndexer, -3000),
+            frc2::cmd::RunOnce(
+              [this] {BallFeeder.setFeederSpeed(-1*(HoodedShooter.findOptimalRPM(132, 186)));}, {&BallFeeder, &HoodedShooter}
+            )
           )
+        ),
+        frc2::cmd::RunOnce(
+          [this] {BallIndexer.stopIndexer();}, {&BallIndexer}
+        ),
+        frc2::cmd::RunOnce(
+          [this] {BallFeeder.setFeederSpeed(0.0);}
         )
-      ),
-      frc2::cmd::RunOnce(
-        [this] {BallIndexer.stopIndexer();}
-      );
-      frc2::cmd::RunOnce(
-        [this] {BallFeeder.setFeederSpeed(0.0);}
-      );
-  
-
-
-    )
-  );
+      )
+    );
   
 
 //   driverCtr.POVRight().ToggleOnFalse(
