@@ -120,22 +120,23 @@ void RobotContainer::ConfigureBindings() {
   );
 
   codriverCtr.R2().ToggleOnTrue(
-    frc2::cmd::Sequence(
+    frc2::cmd::Parallel(
       HoodedShooter.Run(
         [this] {HoodedShooter.setFlywheelSpeed(-4000);}
       ),
-      frc2::cmd::WaitUntil(
-        [this] {
-          return (HoodedShooter.getShooterVelocity() > 3900);
-        }
-      ).AndThen(
-        [this] {
+      frc2::cmd::Sequence(
+        frc2::cmd::WaitUntil(
+          [this] {
+            return (HoodedShooter.getShooterVelocity() > 3900);
+          }
+        ),
+        frc2::cmd::RunOnce([this] {
           frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
-          frc2::cmd::Parallel(
-            BallIndexer.RunIndexer(&BallIndexer, -3000),
-            BallFeeder.RunFeeder(&BallFeeder, -3000)
-          );
-        }
+        }),
+        frc2::cmd::Parallel(
+          BallIndexer.RunIndexer(&BallIndexer, -3000),
+          BallFeeder.RunFeeder(&BallFeeder, -3000)
+        )
       )
     )
   );
