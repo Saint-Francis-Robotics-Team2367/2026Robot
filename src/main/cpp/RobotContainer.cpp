@@ -97,12 +97,12 @@ void RobotContainer::ConfigureBindings() {
 
   // Run Intake
   driverCtr.R1().ToggleOnTrue(
-    mRunIntake.IntakeCommand(&mRunIntake, 3000)
+    mRunIntake.IntakeCommand(&mRunIntake, 4000)
   );
 
   // Outtake Intake
   driverCtr.L1().ToggleOnTrue(
-    mRunIntake.IntakeCommand(&mRunIntake, -3000)
+    mRunIntake.IntakeCommand(&mRunIntake, -4000)
   );
 
   // // Deploy Intake
@@ -114,24 +114,25 @@ void RobotContainer::ConfigureBindings() {
   // Reverse Indexer and Feeder
   codriverCtr.L2().WhileTrue(
     frc2::cmd::Parallel(
-      BallIndexer.RunIndexer(&BallIndexer, -3000),
-      BallFeeder.RunFeeder(&BallFeeder, -3000)
+      BallIndexer.RunIndexer(&BallIndexer, 3000),
+      BallFeeder.RunFeeder(&BallFeeder, 3000)
     )
   );
 
   codriverCtr.R2().ToggleOnTrue(
     frc2::cmd::Parallel(
       HoodedShooter.Run(
-        [this] {HoodedShooter.setFlywheelSpeed(-4000);}
+        [this] {HoodedShooter.setFlywheelSpeed(-(HoodedShooter.findOptimalRPM(48, 232)));}
       ),
       frc2::cmd::Sequence(
         frc2::cmd::WaitUntil(
           [this] {
-            return (HoodedShooter.getShooterVelocity() > 3900);
+            return (HoodedShooter.getShooterVelocity() > (0.9 * HoodedShooter.findOptimalRPM(48, 232)));
           }
         ),
         frc2::cmd::RunOnce([this] {
           frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
+          HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(48, 232), 48, 232);
         }),
         frc2::cmd::Parallel(
           BallIndexer.RunIndexer(&BallIndexer, -3000),
@@ -163,7 +164,7 @@ void RobotContainer::ConfigureBindings() {
         double leftX = frc::ApplyDeadband(codriverCtr.GetLeftX(), ControllerConstants::deadband);
         leftX = xLimiter.Calculate(leftX);
 
-        m_turret.setAngle(m_turret.getCurrentMotorAngle() + TurretConstants::turretTurnRatio * leftX);
+        m_turret.setAngle(m_turret.getCurrentMotorAngle() + TurretConstants::turretTurnRatio * leftX * 10.0);
       }
     )
   );
@@ -173,10 +174,10 @@ void RobotContainer::ConfigureBindings() {
     HoodedShooter.Run(
       [this] {
         // Make separate turret slew rate limiter if needed
-        double leftX = frc::ApplyDeadband(codriverCtr.GetLeftX(), ControllerConstants::deadband);
-        leftX = xLimiter.Calculate(leftX);
+        double rightY = frc::ApplyDeadband(codriverCtr.GetRightY(), ControllerConstants::deadband);
+        rightY = yLimiter.Calculate(rightY);
 
-        HoodedShooter.setManualHoodPosition(HoodedShooter.findHoodAngle() + ShooterConstants::shooterTurnRatio * leftX);
+        HoodedShooter.setManualHoodPosition(HoodedShooter.findHoodAngle() + ShooterConstants::shooterTurnRatio * rightY * 10.0);
       }
     )
   );
