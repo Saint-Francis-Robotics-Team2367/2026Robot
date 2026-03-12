@@ -93,16 +93,24 @@ void RobotContainer::ConfigureBindings() {
   //   // Targetting Command
   // );
 
-  // Detect Indexer Stall & Outtake
-  IndexerStall.WhileTrue(
-    frc2::cmd::Parallel(
+  // Detect Indexer Stall — reverse for 2s to clear the jam, then pause briefly
+  IndexerStall.OnTrue(
+    frc2::cmd::Sequence(
       frc2::cmd::RunOnce(
         [this] {
-          frc::SmartDashboard::PutBoolean("Indexer Stall", BallIndexer.IndexerStall());
+          frc::SmartDashboard::PutBoolean("Indexer Stall", true);
         }
       ),
-      BallIndexer.RunIndexer(&BallIndexer, 3000),
-      BallFeeder.RunFeeder(&BallFeeder, 3000)
+      frc2::cmd::Parallel(
+        BallIndexer.RunIndexer(&BallIndexer, 3000),
+        BallFeeder.RunFeeder(&BallFeeder, 3000)
+      ).WithTimeout(2_s),
+      frc2::cmd::RunOnce(
+        [this] {
+          frc::SmartDashboard::PutBoolean("Indexer Stall", false);
+        }
+      ),
+      frc2::cmd::Wait(0.25_s)
     )
   );
 

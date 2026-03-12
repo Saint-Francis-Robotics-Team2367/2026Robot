@@ -40,6 +40,8 @@ frc2::CommandPtr Indexer::RunIndexer(Indexer* indexer, double speed) {
 }
 
 bool Indexer::IndexerStall() {
-    double indexerTorque = indexerMotor.GetTorqueCurrent().GetValueAsDouble();
-    return (indexerTorque > IndexerConstants::indexerStallAmps);
+    double statorCurrent = indexerMotor.GetStatorCurrent().GetValueAsDouble();
+    double velocity = indexerMotor.GetVelocity().GetValueAsDouble();
+    return (statorCurrent > IndexerConstants::indexerStallCurrent) &&
+           (std::abs(velocity) < IndexerConstants::indexerStallVelocityThreshold);
 }

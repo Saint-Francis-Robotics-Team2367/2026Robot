@@ -113,7 +113,8 @@ namespace IndexerConstants {
     static constexpr double IndexerD = 0.0;
     static constexpr double IndexerV = 0.0;
 
-    static constexpr double indexerStallAmps = 8.0;
+    static constexpr double indexerStallCurrent = 35.0; // amps — tune based on observed stall current
+    static constexpr double indexerStallVelocityThreshold = 0.5; // turns/sec — near-zero means stalled
 }
 
 namespace IntakeConstants {
