@@ -22,6 +22,7 @@ class Indexer : public frc2::Subsystem {
         void setIndexerSpeed(double speed);
         void stopIndexer();
         frc2::CommandPtr RunIndexer(Indexer* indexer, double speed);
+        bool IndexerStall();
        
     private:
         ctre::phoenix6::hardware::TalonFX indexerMotor{IndexerConstants::IndexerMotorID, "Drivetrain"}; // Use CANivore bus if applicable

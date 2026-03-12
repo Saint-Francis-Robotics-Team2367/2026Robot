@@ -36,3 +36,8 @@ frc2::CommandPtr Indexer::RunIndexer(Indexer* indexer, double speed) {
         {indexer}
     );
 }
+
+bool Indexer::IndexerStall() {
+    double indexerVoltage = indexerMotor.GetMotorVoltage().GetValueAsDouble();
+    return (indexerVoltage > IndexerConstants::indexerStallVoltage);
+}

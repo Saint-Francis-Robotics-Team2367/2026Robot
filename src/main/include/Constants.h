@@ -112,6 +112,8 @@ namespace IndexerConstants {
     static constexpr double IndexerI = 0.0;
     static constexpr double IndexerD = 0.0;
     static constexpr double IndexerV = 0.0;
+
+    static constexpr double indexerStallVoltage = 8.0;
 }
 
 namespace IntakeConstants {
