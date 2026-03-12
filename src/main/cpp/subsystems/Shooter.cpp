@@ -157,13 +157,13 @@ float Shooter::findOptimalRPM(float horizontalOffset, float yOffset) {
     // interpolation table
     struct Entry { float dx; float effectiveRPM; };
     static constexpr std::array<Entry, 7> kTable = {{
-    { 37.0f,        1190.0f },
-    { 50.0f,        1190.0f },
-    { 75.0f,        1255.0f },
-    { 100.0f,       1340.0f },
-    { 125.0f,       1430.0f },
-    { 150.0f,       1510.0f },
-    { 200.0f,       1670.0f },
+    { 37.0f,  1190.0f },
+    { 50.0f,  1190.0f },
+    { 75.0f,  1255.0f },
+    { 100.0f, 1340.0f },
+    { 125.0f, 1430.0f },
+    { 150.0f, 1510.0f },
+    { 200.0f, 1670.0f },
     }};
 
     if (dx < kTable.front().dx) return 0.0f;
