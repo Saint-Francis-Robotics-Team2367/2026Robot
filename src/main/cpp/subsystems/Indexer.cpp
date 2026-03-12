@@ -10,10 +10,12 @@ void Indexer::init(){
     indexerConfigs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
     indexerConfigs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
 
-    indexerConfigs.CurrentLimits.StatorCurrentLimit = 110_A;
+    indexerConfigs.CurrentLimits.StatorCurrentLimit = 65_A;
     indexerConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
-    indexerConfigs.CurrentLimits.SupplyCurrentLimit = 40_A;
+    indexerConfigs.CurrentLimits.SupplyCurrentLimit = 25_A;
     indexerConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+    indexerConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 10_A;
+    indexerConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -10_A;
 
     indexerMotor.GetConfigurator().Apply(indexerConfigs);
 }
@@ -35,4 +37,11 @@ frc2::CommandPtr Indexer::RunIndexer(Indexer* indexer, double speed) {
         [indexer] {indexer->stopIndexer();},
         {indexer}
     );
+}
+
+bool Indexer::IndexerStall() {
+    double statorCurrent = indexerMotor.GetStatorCurrent().GetValueAsDouble();
+    double velocity = indexerMotor.GetVelocity().GetValueAsDouble();
+    return (statorCurrent > IndexerConstants::indexerStallCurrent) &&
+           (std::abs(velocity) < IndexerConstants::indexerStallVelocityThreshold);
 }

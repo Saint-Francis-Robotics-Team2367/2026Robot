@@ -51,6 +51,12 @@ void RobotContainer::ConfigureBindings() {
     }
   };
 
+  frc2::Trigger IndexerStall{
+    [this] {
+      return BallIndexer.IndexerStall();
+    }
+  };
+
   // ******************** DEFAULT COMMANDS ********************
   drivetrain.SetDefaultCommand(
       drivetrain.Run(
@@ -87,6 +93,27 @@ void RobotContainer::ConfigureBindings() {
   //   // Targetting Command
   // );
 
+  // Detect Indexer Stall — reverse for 2s to clear the jam, then pause briefly
+  IndexerStall.OnTrue(
+    frc2::cmd::Sequence(
+      frc2::cmd::RunOnce(
+        [this] {
+          frc::SmartDashboard::PutBoolean("Indexer Stall", true);
+        }
+      ),
+      frc2::cmd::Parallel(
+        BallIndexer.RunIndexer(&BallIndexer, 3000),
+        BallFeeder.RunFeeder(&BallFeeder, 3000)
+      ).WithTimeout(2_s),
+      frc2::cmd::RunOnce(
+        [this] {
+          frc::SmartDashboard::PutBoolean("Indexer Stall", false);
+        }
+      ),
+      frc2::cmd::Wait(0.25_s)
+    )
+  );
+
   // ******************** Driver Controls ********************
   // Zero Gyro
   driverCtr.POVUp().OnTrue(
@@ -104,11 +131,6 @@ void RobotContainer::ConfigureBindings() {
   driverCtr.L1().ToggleOnTrue(
     mRunIntake.IntakeCommand(&mRunIntake, -4000)
   );
-
-  // // Deploy Intake
-  // driverCtr.R2().ToggleOnTrue(
-  //   mDeployIntake.DeployIntakeCommand(&mDeployIntake)
-  // );
 
   // ******************** Co-Driver Controls ********************
   // Reverse Indexer and Feeder
