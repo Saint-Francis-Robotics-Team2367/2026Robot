@@ -51,11 +51,11 @@ void Shooter::init() {
 
 bool Shooter::setFlywheelSpeed(float shooterRPM) {
     // set shooter velocity
-    ShooterMotor.SetControl(ctre::phoenix6::controls::VelocityDutyCycle{units::angular_velocity::turns_per_second_t{shooterRPM / 60.0}});
+    ShooterMotor.SetControl(ctre::phoenix6::controls::VelocityDutyCycle{units::angular_velocity::turns_per_second_t {shooterRPM /((ShooterConstants::SHOOTEREFFICIENCY) * 60.0)}});
 
-    float targetVelocity = shooterRPM / 60.0;
+    float targetVelocity = shooterRPM / (ShooterConstants::SHOOTEREFFICIENCY * 60.0);
     float actualVelocity = ShooterMotor.GetVelocity().GetValue().value();
-    const float tolerance = 0.05; // or whatever tolerance you want
+    const float tolerance = 150; // or whatever tolerance you want
 
     if (std::fabs(targetVelocity - actualVelocity) < tolerance) {
         std::cout << "Shooter at target speed." << std::endl;
@@ -152,33 +152,37 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
 }
 
 float Shooter::findOptimalRPM(float horizontalOffset, float yOffset) {
-    float dx = (10.0f * ShooterConstants::MeterConversionFactor) + std::sqrt(std::pow(horizontalOffset * ShooterConstants::MeterConversionFactor, 2.0f) + std::pow(yOffset* ShooterConstants::MeterConversionFactor, 2.0f));
+    float dx = (7.5f) + std::sqrt(std::pow(horizontalOffset, 2.0f) + std::pow(yOffset, 2.0f));
 
-    if (dx < (25.0f * ShooterConstants::MeterConversionFactor)) {
-        return 0.0f;
-    } else if (dx < (50.0f * ShooterConstants::MeterConversionFactor)) {
-        return 911.3741f / ShooterConstants::SHOOTEREFFICIENCY;
-        
-    } else if (dx < (75.0f * ShooterConstants::MeterConversionFactor)) {
-        return 1005.0751f / ShooterConstants::SHOOTEREFFICIENCY;
+    // interpolation table
+    struct Entry { float dx; float effectiveRPM; };
+    static constexpr std::array<Entry, 7> kTable = {{
+    { 37.0f,        1190.0f },
+    { 50.0f,        1190.0f },
+    { 75.0f,        1255.0f },
+    { 100.0f,       1340.0f },
+    { 125.0f,       1430.0f },
+    { 150.0f,       1510.0f },
+    { 200.0f,       1670.0f },
+    }};
 
-    } else if (dx < (100.0f * ShooterConstants::MeterConversionFactor)) {
-        return 1101.0902f / ShooterConstants::SHOOTEREFFICIENCY;
+    if (dx < kTable.front().dx) return 0.0f;
+    if (dx >= kTable.back().dx) return kTable.back().effectiveRPM;
 
-    } else if (dx < (125.0f * ShooterConstants::MeterConversionFactor)) {
-        return 1193.5726f / ShooterConstants::SHOOTEREFFICIENCY;
+    // i + 1 for no crashing and comparison
+    for (size_t i = 0; i + 1 < kTable.size(); i++) {
 
-    } else if (dx < (150.0f * ShooterConstants::MeterConversionFactor)) {
-        return 1281.3769f / ShooterConstants::SHOOTEREFFICIENCY;
+        // andy's linear interpolation suggestion
+        if (dx >= kTable[i].dx && dx < kTable[i + 1].dx) {
+            float t = (dx - kTable[i].dx) / (kTable[i + 1].dx - kTable[i].dx);
+            float effRPM = kTable[i].effectiveRPM + t * (kTable[i + 1].effectiveRPM - kTable[i].effectiveRPM);
+            return effRPM;
+        }
 
-    } else if (dx < (175.0f * ShooterConstants::MeterConversionFactor)) {
-        return 1364.6042f / ShooterConstants::SHOOTEREFFICIENCY;
-
-    } else {
-        return 1443.6638f / ShooterConstants::SHOOTEREFFICIENCY; 
     }
-}
 
+    return 0.0f;
+}
 
 void Shooter::applyHoodBrake() {
     static ctre::phoenix6::controls::TorqueCurrentFOC holdTorque{0_A};
