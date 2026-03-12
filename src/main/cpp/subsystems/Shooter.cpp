@@ -154,16 +154,17 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
 float Shooter::findOptimalRPM(float horizontalOffset, float yOffset) {
     float dx = (7.5f) + std::sqrt(std::pow(horizontalOffset, 2.0f) + std::pow(yOffset, 2.0f));
 
-    // interpolation table
+    // table
     struct Entry { float dx; float effectiveRPM; };
-    static constexpr std::array<Entry, 7> kTable = {{
-    { 37.0f,  1190.0f },
-    { 50.0f,  1190.0f },
-    { 75.0f,  1255.0f },
-    { 100.0f, 1340.0f },
-    { 125.0f, 1430.0f },
-    { 150.0f, 1510.0f },
-    { 200.0f, 1670.0f },
+    static constexpr std::array<Entry, 8> kTable = {{
+    { 37.0f,        1120.0f },
+    { 50.0f,        1100.0f },
+    { 75.0f,        1160.0f },
+    { 100.0f,       1240.0f },
+    { 125.0f,       1320.0f },
+    { 150.0f,       1398.0f },
+    { 175.0f,       1510.0f },
+    { 200.0f,       1545.0f },
     }};
 
     if (dx < kTable.front().dx) return 0.0f;
