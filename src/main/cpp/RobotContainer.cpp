@@ -71,17 +71,17 @@ void RobotContainer::ConfigureBindings() {
           frc::SmartDashboard::PutNumber("vy", vy);
           frc::SmartDashboard::PutNumber("rot", rot);
 
-          drivetrain.Drive(-vx, vy, -rot, drivetrain.gyroConnected());
+          drivetrain.Drive(vx, -vy, -rot, drivetrain.gyroConnected());
 
         }
       )
   );
 
-  HoodedShooter.SetDefaultCommand(
-    HoodedShooter.Run(
-      [this]() {HoodedShooter.setFlywheelSpeed(1000);}
-    )
-  );
+  // HoodedShooter.SetDefaultCommand(
+  //   HoodedShooter.Run(
+  //     [this]() {HoodedShooter.setFlywheelSpeed(-1000);}
+  //   )
+  // );
 
   // turretAutoTargetingOn.WhileTrue(
   //   // Targetting Command
@@ -96,33 +96,33 @@ void RobotContainer::ConfigureBindings() {
   );
 
   // Run Intake
-  driverCtr.R2().ToggleOnTrue(
-    mRunIntake.IntakeCommand(&mRunIntake, 5000)
+  driverCtr.R1().ToggleOnTrue(
+    mRunIntake.IntakeCommand(&mRunIntake, 3000)
   );
 
   // Outtake Intake
-  driverCtr.L2().ToggleOnTrue(
-    mRunIntake.IntakeCommand(&mRunIntake, -5000)
+  driverCtr.L1().ToggleOnTrue(
+    mRunIntake.IntakeCommand(&mRunIntake, -3000)
   );
 
-  // Deploy Intake
-  driverCtr.R1().ToggleOnTrue(
-    mDeployIntake.DeployIntakeCommand(&mDeployIntake)
-  );
+  // // Deploy Intake
+  // driverCtr.R2().ToggleOnTrue(
+  //   mDeployIntake.DeployIntakeCommand(&mDeployIntake)
+  // );
 
   // ******************** Co-Driver Controls ********************
   // Reverse Indexer and Feeder
   codriverCtr.L2().WhileTrue(
     frc2::cmd::Parallel(
-      BallIndexer.RunIndexer(&BallIndexer, 3000),
-      BallFeeder.RunFeeder(&BallFeeder, 3000)
+      BallIndexer.RunIndexer(&BallIndexer, -3000),
+      BallFeeder.RunFeeder(&BallFeeder, -3000)
     )
   );
 
   codriverCtr.R2().ToggleOnTrue(
     frc2::cmd::Sequence(
       HoodedShooter.Run(
-        [this] {HoodedShooter.setFlywheelSpeed(4000);}
+        [this] {HoodedShooter.setFlywheelSpeed(-4000);}
       ),
       frc2::cmd::WaitUntil(
         [this] {
@@ -130,9 +130,10 @@ void RobotContainer::ConfigureBindings() {
         }
       ).AndThen(
         [this] {
+          frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
           frc2::cmd::Parallel(
             BallIndexer.RunIndexer(&BallIndexer, -3000),
-            BallFeeder.RunFeeder(&BallFeeder, 3000)
+            BallFeeder.RunFeeder(&BallFeeder, -3000)
           );
         }
       )

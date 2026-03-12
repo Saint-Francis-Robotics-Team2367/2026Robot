@@ -33,7 +33,7 @@ void Shooter::init() {
     RackConfig.Slot0.kD = ShooterConstants::RackD;
     RackConfig.Slot0.kG = ShooterConstants::RackG;
 
-    RackConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
+    RackConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
     RackConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
 
     RackConfig.CurrentLimits.SupplyCurrentLimit = 5_A;
@@ -191,7 +191,7 @@ void Shooter::releaseHoodBrake() {
 }
 
 double Shooter::getShooterVelocity() { // rpm
-    return ShooterMotor.GetVelocity().GetValueAsDouble();
+    return std::abs(ShooterMotor.GetVelocity().GetValueAsDouble()) * 60.0;
 }
 
 void Shooter::ZeroHood() {
