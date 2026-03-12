@@ -6,7 +6,7 @@ void Shooter::stop() {
     RackMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0});
 }
 
-void Shooter::zeroHood() {
+void Shooter::moveHoodToZero() {
 
     // Define "center" as wherever the rack motor is RIGHT NOW
     // test this
@@ -188,4 +188,32 @@ void Shooter::applyHoodBrake() {
 
 void Shooter::releaseHoodBrake() {
     RackMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0});
+}
+
+double Shooter::getShooterVelocity() { // rpm
+    return ShooterMotor.GetVelocity().GetValueAsDouble();
+}
+
+void Shooter::ZeroHood() {
+    RackMotor.SetPosition(0_tr);
+}
+
+void Shooter::setManualHoodPosition(float targetAngle) {
+    double initialAngle = findHoodAngle();
+    // Convert chosen projectile angle (radians) -> hood angle (degrees)
+    float hoodAngleDegrees = targetAngle * 180.0f / ShooterConstants::PI;
+
+    // Convert hood angle to motor turns (absolute command)
+    // Assumes MotorGearRatio = motor turns per 1 hood revolution
+    float deltaDeg = hoodAngleDegrees - initialAngle; 
+    double motorTurnsTarget = (deltaDeg / 360.0) * ShooterConstants::motorGearRatio;
+    double targetAbsLocal = hoodCenterRot + motorTurnsTarget;
+
+    targetAbs = targetAbsLocal;
+
+    RackMotor.SetControl(ctre::phoenix6::controls::PositionDutyCycle{units::angle::turn_t{targetAbs}});
+}
+
+double Shooter::findHoodAngle() {
+    return RackMotor.GetPosition().GetValueAsDouble() / ShooterConstants::motorGearRatio;
 }

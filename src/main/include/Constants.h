@@ -7,6 +7,7 @@
 #include <cmath>
 #include "frc2/command/Commands.h"
 #include "frc2/command/CommandPtr.h"
+#include "subsystems/vision/QuestNav.h"
 
 /**
  * The Constants header provides a convenient place for teams to hold robot-wide
@@ -52,9 +53,6 @@ namespace HardwareIDs {
     static constexpr int BRencoderID = 12;
 
     static constexpr int pigeonID = 0;
-
-    static constexpr int turretEncoderID = 60;
-    static constexpr int turretMotorID = 18;
 }
 
 
@@ -80,6 +78,8 @@ namespace ShooterConstants {
     static constexpr double PI = M_PI;
     static constexpr double SHOOTEREFFICIENCY = 0.75;
     static constexpr double MeterConversionFactor = 0.0254f; // inches to meters
+    static constexpr double motorGearRatio = 116.8831;
+    static constexpr double shooterTurnRatio = 1.0;
 
     // CAN IDs
     static constexpr int ShooterID = 36; // Wheel
@@ -118,4 +118,10 @@ namespace IntakeConstants {
     static constexpr int intakePivotID = 13;
     static constexpr int intakeRollerID = 14;
     static constexpr int hopperMotorID = 16;
+}
+
+namespace TurretConstants {
+    static constexpr int turretEncoderID = 60;
+    static constexpr int turretMotorID = 18;
+    static constexpr double turretTurnRatio = 1.0;
 }

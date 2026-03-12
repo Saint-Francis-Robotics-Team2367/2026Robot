@@ -24,16 +24,34 @@ RobotContainer::RobotContainer() {
   BallFeeder.init(); // Initialize Feeder motors and encoders
   BallIndexer.init(); // Initialize Indexer motors and encoders
   
-
   drivetrain.initModules();
   drivetrain.initGyro();
+  QuestNav::getInstance().init();
   drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
 }
 
 
 void RobotContainer::ConfigureBindings() {
-  frc::SmartDashboard::PutString("Shooter Status", "Idle");
+  // ******************** Trigger Functions ********************
+  frc2::Trigger rightStickYMoving{
+    [this] {
+      return std::abs(frc::ApplyDeadband(codriverCtr.GetRightY(), ControllerConstants::deadband)) > 0.0;
+    }
+  };
 
+  frc2::Trigger leftStickXMoving{
+    [this] {
+      return std::abs(frc::ApplyDeadband(codriverCtr.GetLeftX(), ControllerConstants::deadband)) > 0.0;
+    }
+  };
+
+  frc2::Trigger turretAutoTargetingOn{
+    [this] {
+      return autoTargeting;
+    }
+  };
+
+  // ******************** DEFAULT COMMANDS ********************
   drivetrain.SetDefaultCommand(
       drivetrain.Run(
         [this]() {
@@ -58,232 +76,130 @@ void RobotContainer::ConfigureBindings() {
         }
       )
   );
-  
-  // driverCtr.Circle().ToggleOnTrue(
-  //   frc2::cmd::StartEnd(
-  //     // ON
-  //     [this] {
-  //       frc::SmartDashboard::PutString("Shooter Status", "Shooting");
-  //       HoodedShooter.applyHoodBrake(); 
-  //       BallFeeder.setFeederSpeed(-2250);
-  //       HoodedShooter.setFlywheelSpeed(HoodedShooter.findOptimalRPM(132, 186));
 
-  //     },
-  //     // OFF
-  //     [this] {
-  //       frc::SmartDashboard::PutString("Shooter Status", "Idle");
-  //       HoodedShooter.setFlywheelSpeed(0);
-  //       BallFeeder.setFeederSpeed(0);
-  //       HoodedShooter.releaseHoodBrake(); 
-  //     },
-  //     { &HoodedShooter, &BallFeeder } 
-  //   )
-  // );
-
-  // driverCtr.Triangle().OnTrue(
-  //   frc2::cmd::RunOnce(
-  //     [this] {
-  //       frc::SmartDashboard::PutString("Shooter Status", "Aligning");
-  //       HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(132, 186), 132, 186);
-  //     },
-  //     { &HoodedShooter} 
-  //   )
-  // );
-
-  // driverCtr.Square().OnTrue(
-  //   frc2::cmd::RunOnce(
-  //     [this] {
-  //       frc::SmartDashboard::PutString("Shooter Status", "Zeroing Hood");
-  //       HoodedShooter.zeroHood();
-  //     },
-  //     { &HoodedShooter } 
-  //   )
-  // );
-
-  // driverCtr.POVUp().OnTrue(
-  //   drivetrain.RunOnce(
-  //     [this] {drivetrain.resetGyro();}
-  //   )
-  // );
-
-  // driverCtr.POVDown().OnTrue(
-  //   frc2::cmd::StartEnd(
-  //     // ON
-  //     [this] {
-  //       frc::SmartDashboard::PutString("Shooter Status", "Shooting");
-  //       BallFeeder.setFeederSpeed(HoodedShooter.findOptimalRPM(132, 186));
-  //     },
-  //     // OFF
-  //     [this] {
-  //       frc::SmartDashboard::PutString("Shooter Status", "Idle");
-  //       BallFeeder.setFeederSpeed(0);
-  //     },
-  //     {&BallFeeder, &HoodedShooter} 
-  //   )
-  // );
-
-  //NEEDS TO BE TUNED BASED ON DRIVER PREFERENCE
-
-  driverCtr.Triangle().ToggleOnTrue(
-    BallFeeder.RunFeeder(&BallFeeder, -3000)
+  HoodedShooter.SetDefaultCommand(
+    HoodedShooter.Run(
+      [this]() {HoodedShooter.setFlywheelSpeed(1000);}
+    )
   );
 
-  driverCtr.Circle().ToggleOnTrue(
-    BallIndexer.RunIndexer(&BallIndexer, -3000)
+  // turretAutoTargetingOn.WhileTrue(
+  //   // Targetting Command
+  // );
+
+  // ******************** Driver Controls ********************
+  // Zero Gyro
+  driverCtr.POVUp().OnTrue(
+    frc2::cmd::RunOnce(
+      [this] {QuestNav::getInstance().ZeroGyro();}
+    )
   );
 
-  driverCtr.Cross().ToggleOnTrue(
+  // Run Intake
+  driverCtr.R2().ToggleOnTrue(
     mRunIntake.IntakeCommand(&mRunIntake, 5000)
   );
 
-  driverCtr.Square().ToggleOnTrue(
+  // Outtake Intake
+  driverCtr.L2().ToggleOnTrue(
+    mRunIntake.IntakeCommand(&mRunIntake, -5000)
+  );
+
+  // Deploy Intake
+  driverCtr.R1().ToggleOnTrue(
     mDeployIntake.DeployIntakeCommand(&mDeployIntake)
   );
 
-  driverCtr.POVLeft().OnTrue(
-    frc2::cmd::RunOnce(
-      [this] {mDeployIntake.zeroPivot();}
+  // ******************** Co-Driver Controls ********************
+  // Reverse Indexer and Feeder
+  codriverCtr.L2().WhileTrue(
+    frc2::cmd::Parallel(
+      BallIndexer.RunIndexer(&BallIndexer, 3000),
+      BallFeeder.RunFeeder(&BallFeeder, 3000)
     )
   );
 
-  driverCtr.POVRight().ToggleOnTrue(
-    frc2::cmd::RunOnce(
-      [this] {HoodedShooter.setFlywheelSpeed(3000);}
-    )
-  );
-
-  driverCtr.POVDown().ToggleOnTrue(
-    m_turret.RunOnce(
-        [this] { m_turret.setAngle(45); }    
-    )
-  );
-  driverCtr.POVUp().ToggleOnTrue(
-    m_turret.RunOnce(
-        [this] { m_turret.setAngle(-45); }    
-    )
-  );
-
-  HoodedShooter.SetDefaultCommand(
-    frc2::cmd::Run(
-      [this] {HoodedShooter.setFlywheelSpeed(-2500);}
-    )
-  );
-
-  driverCtr.POVRight().ToggleOnTrue(
+  codriverCtr.R2().ToggleOnTrue(
     frc2::cmd::Sequence(
-      frc2::cmd::RunOnce(
-        [this] {m_turret.setAngle(45.0);}, {&m_turret}
+      HoodedShooter.Run(
+        [this] {HoodedShooter.setFlywheelSpeed(4000);}
       ),
-      frc2::cmd::RunOnce(
-        [this] {HoodedShooter.setFlywheelSpeed(-4000);}, {&HoodedShooter}
-      ), 
-      frc2::cmd::Parallel(
-        mRunIntake.IntakeCommand(&mRunIntake, 3000),
-        BallIndexer.RunIndexer(&BallIndexer, -3000),
-        frc2::cmd::RunOnce(
-        [this] {BallFeeder.setFeederSpeed(-1*(HoodedShooter.findOptimalRPM(132, 186)));}, {&BallFeeder, &HoodedShooter}
-      )
-        
-      )
-    )
-  );
-
-  driverCtr.L2().ToggleOnTrue(
-    frc2::cmd::RunOnce(
-      [this] {mRunIntake.IntakeCommand(&mRunIntake, 3000);}, {&mRunIntake}
-    )
-  );
-
-    driverCtr.R2().ToggleOnTrue(
-      frc2::cmd::StartEnd(
-        frc2::cmd::Sequence(
-          frc2::cmd::RunOnce(
-          [this] {m_turret.setAngle(45.0);}, {&m_turret}
-          ),
-          frc2::cmd::RunOnce(
-            [this] {HoodedShooter.setFlywheelSpeed(-4000);}, {&HoodedShooter}
-          ), 
+      frc2::cmd::WaitUntil(
+        [this] {
+          return (HoodedShooter.getShooterVelocity() > 3900);
+        }
+      ).AndThen(
+        [this] {
           frc2::cmd::Parallel(
             BallIndexer.RunIndexer(&BallIndexer, -3000),
-            frc2::cmd::RunOnce(
-              [this] {BallFeeder.setFeederSpeed(-1*(HoodedShooter.findOptimalRPM(132, 186)));}, {&BallFeeder, &HoodedShooter}
-            )
-          )
-        ),
-        frc2::cmd::RunOnce(
-          [this] {BallIndexer.stopIndexer();}, {&BallIndexer}
-        ),
-        frc2::cmd::RunOnce(
-          [this] {BallFeeder.setFeederSpeed(0.0);}
-        )
+            BallFeeder.RunFeeder(&BallFeeder, 3000)
+          );
+        }
       )
-    );
-  
+    )
+  );
 
-//   driverCtr.POVRight().ToggleOnFalse(
-//     frc2::cmd::Sequence(
-  
-//       frc2::cmd::Parallel(
-//         frc2::cmd::RunOnce(
-//           [this] {mRunIntake.stop();}, {&mRunIntake}
-//         ),
+  // Zero Hood Position
+  (codriverCtr.R1() && codriverCtr.Triangle()).OnTrue(
+    HoodedShooter.RunOnce(
+      [this] {HoodedShooter.ZeroHood();}
+    )
+  );
 
-//         BallIndexer.RunIndexer(&BallIndexer, 0),
+  // Zero Turret Position
+  (codriverCtr.R1() && codriverCtr.Circle()).OnTrue(
+    m_turret.RunOnce(
+      [this] {m_turret.ZeroTurret();}
+    )
+  );
 
-//         frc2::cmd::RunOnce(
-//           [this] {BallFeeder.setFeederSpeed(HoodedShooter.findOptimalRPM(132, 186));}, {&BallFeeder, &HoodedShooter}
-//         )  
-//       ),
-//       frc2::cmd::RunOnce(
-//         [this] {m_turret.setAngle(0);}, {&m_turret}
-//       ),
-//       frc2::cmd::RunOnce(
-//         [this] {HoodedShooter.zeroHood();}, {&HoodedShooter}
-//       )
-//     )
-//   );
+  // Co-Driver Manual Turret Movement
+  (codriverCtr.R1() && leftStickXMoving).WhileTrue(
+    m_turret.Run(
+      [this] {
+        // Make separate turret slew rate limiter if needed
+        double leftX = frc::ApplyDeadband(codriverCtr.GetLeftX(), ControllerConstants::deadband);
+        leftX = xLimiter.Calculate(leftX);
 
+        m_turret.setAngle(m_turret.getCurrentMotorAngle() + TurretConstants::turretTurnRatio * leftX);
+      }
+    )
+  );
+
+  // Co-Driver Manual Hood Movement
+  (codriverCtr.R1() && rightStickYMoving).WhileTrue(
+    HoodedShooter.Run(
+      [this] {
+        // Make separate turret slew rate limiter if needed
+        double leftX = frc::ApplyDeadband(codriverCtr.GetLeftX(), ControllerConstants::deadband);
+        leftX = xLimiter.Calculate(leftX);
+
+        HoodedShooter.setManualHoodPosition(HoodedShooter.findHoodAngle() + ShooterConstants::shooterTurnRatio * leftX);
+      }
+    )
+  );
+
+  // Enable Auto Targetting
+  codriverCtr.POVUp().OnTrue(
+    frc2::cmd::RunOnce(
+      [this] {
+        autoTargeting = !autoTargeting;
+      }
+    )
+  );
+
+  // ******************** Robot Disabling ********************
+  frc2::RobotModeTriggers::Disabled().WhileTrue(
+    drivetrain.RunOnce(
+      [this] {
+        drivetrain.stopAllModules();
+      }
+    ).IgnoringDisable(true)
+  );
 }
 
 
-//************* TURRET TEST COMMANDS **************
-
-/*
-driverCtr.POVUp().ToggleOnTrue(
-    m_turret.RunOnce(
-        [this] { m_turret.addToSetpoint(45);}   
-    )
-);
-
-driverCtr.POVDown().ToggleOnTrue(
-    m_turret.RunOnce(
-        [this] { m_turret.addToSetpoint(-45); }
-    )
-);
-
-
-driverCtr.Triangle().OnTrue(
-    m_turret.RunOnce(
-        [this] { m_turret.setAngle(180); }    
-    )
-);
-
-driverCtr.Circle().OnTrue(
-    m_turret.RunOnce(
-        [this] { m_turret.setAngle(0); }    
-    )
-);
-
-driverCtr.Square().OnTrue(
-    m_turret.RunOnce(
-        [this] { m_turret.setAngle(m_turret.getSetpoint()); }    
-    )
-);
+frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
+  // An example command will be run in autonomous
+  //return autos::ExampleAuto(&m_subsystem);
 }
-*/
-
-
-// frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
-//   // An example command will be run in autonomous
-//   //return autos::ExampleAuto(&m_subsystem);
-// }

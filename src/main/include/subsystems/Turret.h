@@ -32,13 +32,14 @@ class Turret : public frc2::Subsystem{
     bool isAtAngle(double targetAngle);
 
     void resetTurretPosition();
+    void ZeroTurret();
   
   private:
 
-    ctre::phoenix6::hardware::TalonFX turretMotor{HardwareIDs::turretMotorID};
+    ctre::phoenix6::hardware::TalonFX turretMotor{TurretConstants::turretMotorID, "Drivetrain"};
     ctre::phoenix6::configs::TalonFXConfiguration turretConfigs{};
 
-    ctre::phoenix6::hardware::CANcoder encoder{HardwareIDs::turretEncoderID, "rio"};  
+    ctre::phoenix6::hardware::CANcoder encoder{TurretConstants::turretEncoderID, "Drivetrain"};  
     ctre::phoenix6::configs::CANcoderConfiguration encoderConfigs{}; 
 
     ctre::phoenix6::controls::PositionVoltage positionVoltage{0_tr}; //turns 

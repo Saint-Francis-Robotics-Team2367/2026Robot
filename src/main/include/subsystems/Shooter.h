@@ -23,12 +23,16 @@ public:
     void stop();
     void init();
     bool setFlywheelSpeed(float rotationsPerMinute);
-    void setHoodPosition(float shooterRPM, float horizontalOffset, float yOffset, float shooterHeight = (34), float initialAngle = 68, float minAngle = 31, float MotorGearRatio = 116.8831, float ThroughBoreGearRatio = 16.32);
-    void zeroHood();
+    void setHoodPosition(float shooterRPM, float horizontalOffset, float yOffset, float shooterHeight = (34), float initialAngle = 68, float minAngle = 31, float MotorGearRatio = ShooterConstants::motorGearRatio, float ThroughBoreGearRatio = 16.32);
+    void setManualHoodPosition(float targetAngle);
+    void moveHoodToZero();
     void applyHoodBrake();
     void releaseHoodBrake(); 
     float findOptimalRPM(float horizontalOffset, float yOffset);
-    
+    double getShooterVelocity();
+    void ZeroHood();
+    double findHoodAngle();
+
     float hoodCenterRot;
     float targetAbs;
 

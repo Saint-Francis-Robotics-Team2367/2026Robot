@@ -20,6 +20,7 @@ Robot::Robot() {}
  */
 void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run(); //runs command-based queue
+  QuestNav::getInstance().periodic();
   double currAngle = m_container.m_turret.getCurrentMotorAngle();
   frc::SmartDashboard::PutNumber("Turret Motor Pos", currAngle);
   frc::SmartDashboard::PutNumber("Turret setpoint", m_container.m_turret.getSetpoint());

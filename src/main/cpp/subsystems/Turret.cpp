@@ -104,3 +104,7 @@ bool Turret::isAtAngle(double targetAngle) {
 void Turret::resetTurretPosition(){
     setAngle(0);
 }
+
+void Turret::ZeroTurret() {
+    turretMotor.SetPosition(0_tr);
+}
