@@ -149,7 +149,7 @@ void RobotContainer::ConfigureBindings() {
       frc2::cmd::Sequence(
         frc2::cmd::WaitUntil(
           [this] {
-            return (HoodedShooter.getShooterVelocity() > (0.9 * HoodedShooter.findOptimalRPM(48, 232)));
+            return (HoodedShooter.getShooterVelocity() > (0.925 * HoodedShooter.findOptimalRPM(48, 232)));
           }
         ),
         frc2::cmd::RunOnce([this] {
