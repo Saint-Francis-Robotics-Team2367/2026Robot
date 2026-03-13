@@ -23,8 +23,10 @@ void Shooter::init() {
 
     FlywheelConfig.CurrentLimits.SupplyCurrentLimit = 20_A;
     FlywheelConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    FlywheelConfig.CurrentLimits.StatorCurrentLimit = 40_A;
+    FlywheelConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
-    FlywheelConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
+    FlywheelConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
 
 
     // Configure PID constants for Rack Motor (Position Control)
@@ -33,7 +35,7 @@ void Shooter::init() {
     RackConfig.Slot0.kD = ShooterConstants::RackD;
     RackConfig.Slot0.kG = ShooterConstants::RackG;
 
-    RackConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
+    RackConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
     RackConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
 
     RackConfig.CurrentLimits.SupplyCurrentLimit = 5_A;

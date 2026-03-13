@@ -84,7 +84,7 @@ void RobotContainer::ConfigureBindings() {
 
   // HoodedShooter.SetDefaultCommand(
   //   HoodedShooter.Run(
-  //     [this]() {HoodedShooter.setFlywheelSpeed(-1000);}
+  //     [this]() {HoodedShooter.setFlywheelSpeed(-500);}
   //   )
   // );
 
@@ -139,6 +139,13 @@ void RobotContainer::ConfigureBindings() {
   // Reverse Indexer and Feeder
   codriverCtr.L2().WhileTrue(
     frc2::cmd::Parallel(
+      BallIndexer.RunIndexer(&BallIndexer, -3000),
+      BallFeeder.RunFeeder(&BallFeeder, -3000)
+    )
+  );
+
+  codriverCtr.L1().WhileTrue(
+    frc2::cmd::Parallel(
       BallIndexer.RunIndexer(&BallIndexer, 3000),
       BallFeeder.RunFeeder(&BallFeeder, 3000)
     )
@@ -165,11 +172,15 @@ void RobotContainer::ConfigureBindings() {
       frc2::cmd::Parallel(
         HoodedShooter.Run(
           [this] {
-            HoodedShooter.setFlywheelSpeed(-(HoodedShooter.findOptimalRPM(122, 135)));
+            HoodedShooter.setFlywheelSpeed(-(HoodedShooter.findOptimalRPM(122, 135))); // QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::meterToInches, QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::meterToInches
           }
         ),
         frc2::cmd::Sequence(
-          frc2::cmd::Wait(4_s),
+          frc2::cmd::WaitUntil(
+            [this] {
+              return (HoodedShooter.getShooterVelocity() > (0.85 * (1/ShooterConstants::SHOOTEREFFICIENCY) * HoodedShooter.findOptimalRPM(122, 135)));
+            }
+          ),
           // Step 3: Run indexer and feeder while flywheel is still spinning
           frc2::cmd::RunOnce([this] {
             frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
@@ -179,6 +190,21 @@ void RobotContainer::ConfigureBindings() {
             BallFeeder.RunFeeder(&BallFeeder, -3000)
           )
         )
+      )
+    )
+  );
+
+  codriverCtr.Triangle().OnTrue(
+    frc2::cmd::Sequence(
+      HoodedShooter.RunOnce(
+        [this] {
+          HoodedShooter.setFlywheelSpeed(0);
+        }
+      ),
+      HoodedShooter.RunOnce(
+        [this] {
+          HoodedShooter.moveHoodToZero();
+        }
       )
     )
   );
@@ -197,7 +223,7 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
-  // Co-Driver Manual Turret Movement
+  // Co-Driver Manual Turret Movement (NEEDS TO BE TESTED)
   (codriverCtr.R1() && leftStickXMoving).WhileTrue(
     m_turret.Run(
       [this] {
@@ -212,7 +238,7 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
-  // Co-Driver Manual Hood Movement
+  // Co-Driver Manual Hood Movement (NEEDS TO BE TESTED)
   (codriverCtr.R1() && rightStickYMoving).WhileTrue(
     HoodedShooter.Run(
       [this] {

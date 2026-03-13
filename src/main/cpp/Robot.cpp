@@ -29,6 +29,7 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Offset Position", m_container.HoodedShooter.hoodCenterRot);
   frc::SmartDashboard::PutNumber("Target Position", m_container.HoodedShooter.targetAbs);
   frc::SmartDashboard::PutNumber("Motor RPM", m_container.HoodedShooter.getShooterVelocity());
+  m_container.BallIndexer.DisplayValues();
 }
 
 /**

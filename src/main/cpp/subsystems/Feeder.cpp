@@ -12,12 +12,12 @@ void Feeder::init() {
     FeederConfig.Slot0.kD = ShooterConstants::FeederD;
     FeederConfig.Slot0.kV = ShooterConstants::FeederV;
 
-    FeederConfig.CurrentLimits.SupplyCurrentLimit = 20_A; 
+    FeederConfig.CurrentLimits.SupplyCurrentLimit = 10_A; 
     FeederConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    FeederConfig.CurrentLimits.StatorCurrentLimit = 70_A;
+    FeederConfig.CurrentLimits.StatorCurrentLimit = 40_A;
     FeederConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
-    FeederConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
+    FeederConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
 
     // Apply configuration
     FeederMotor.GetConfigurator().Apply(FeederConfig);
