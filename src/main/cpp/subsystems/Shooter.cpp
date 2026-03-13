@@ -80,7 +80,7 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
     float exitVelo = shooterVelocity;
 
     // Target point (dx, dy) in meters
-    // Alter (10) to make it shoot farther or closer to the center of the goal
+    // Alter (7.5) to make it shoot farther or closer to the center of the goal
     float dx = (7.5 * ShooterConstants::MeterConversionFactor) + std::sqrt(std::pow(horizontalOffset * ShooterConstants::MeterConversionFactor, 2.0f) + std::pow(yOffset * ShooterConstants::MeterConversionFactor, 2.0f));
     const float dy = 72.0f * ShooterConstants::MeterConversionFactor;
     const float verticalOffset = dy - (shooterHeight * ShooterConstants::MeterConversionFactor);
@@ -182,7 +182,6 @@ float Shooter::findOptimalRPM(float horizontalOffset, float yOffset) {
         }
 
     }
-
     return 0.0f;
 }
 
