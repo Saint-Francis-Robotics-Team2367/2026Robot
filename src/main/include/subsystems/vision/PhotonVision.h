@@ -6,7 +6,7 @@
 #include <photon/PhotonCamera.h>
 #include <photon/PhotonPoseEstimator.h>
 
-#include <frc/AprilTagFieldLayout.h>
+#include <frc/apriltag/AprilTagFieldLayout.h>
 #include <frc/geometry/Pose2d.h>
 #include <frc/geometry/Pose3d.h>
 #include <frc/geometry/Transform3d.h>

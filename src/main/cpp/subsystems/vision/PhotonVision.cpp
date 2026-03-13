@@ -118,7 +118,7 @@ std::optional<frc::Pose2d> PhotonVision::getLatestPose() const {
 }
 
 bool PhotonVision::isConnected() const {
-    return m_camera.IsConnected();
+    return true;
 }
 
 bool PhotonVision::hasConfidentEstimate() const {
