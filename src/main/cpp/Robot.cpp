@@ -21,6 +21,22 @@ Robot::Robot() {}
 void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run(); //runs command-based queue
   QuestNav::getInstance().periodic();
+
+  // Run PhotonVision – auto-calibrates questNavCalibration on first confident
+  // AprilTag estimate, then continues updating the latest pose.
+  m_container.photonVision.periodic(m_container.questNavCalibration);
+
+  // Once calibrated, seed drivetrain odometry with the field-absolute pose so
+  // path-following and auto routines start from the correct position.
+  if (m_container.questNavCalibration.isCalibrated()) {
+    static bool odometrySeeded = false;
+    if (!odometrySeeded) {
+      frc::Pose2d seedPose = m_container.questNavCalibration.getCorrectedPose(
+          QuestNav::getInstance().getPose2d());
+      m_container.drivetrain.resetOdometry(seedPose);
+      odometrySeeded = true;
+    }
+  }
   double currAngle = m_container.m_turret.getCurrentMotorAngle();
   frc::SmartDashboard::PutNumber("Turret Motor Pos", currAngle);
   frc::SmartDashboard::PutNumber("Turret setpoint", m_container.m_turret.getSetpoint());

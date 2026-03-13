@@ -1,0 +1,54 @@
+{
+    "fileName": "photonlib.json",
+    "name": "PhotonLib",
+    "version": "v2026.3.1",
+    "frcYear": "2026",
+    "uuid": "515fe07e-bfb6-4621-a7e0-9d5ec366e1a3",
+    "mavenUrls": [
+        "https://maven.photonvision.org/repository/internal",
+        "https://maven.photonvision.org/repository/snapshots"
+    ],
+    "jsonUrl": "https://maven.photonvision.org/repository/internal/org/photonvision/photonlib-json/1.0/photonlib-json-1.0.json",
+    "javaDependencies": [
+        {
+            "groupId": "org.photonvision",
+            "artifactId": "photonlib-java",
+            "version": "v2026.3.1"
+        }
+    ],
+    "jniDependencies": [
+        {
+            "groupId": "org.photonvision",
+            "artifactId": "photonlib-cpp",
+            "version": "v2026.3.1",
+            "isJar": false,
+            "skipInvalidPlatforms": true,
+            "validPlatforms": [
+                "windowsx86-64",
+                "linuxx86-64",
+                "linuxarm64",
+                "osxuniversal",
+                "linuxathena"
+            ],
+            "simMode": "hwsim"
+        }
+    ],
+    "cppDependencies": [
+        {
+            "groupId": "org.photonvision",
+            "artifactId": "photonlib-cpp",
+            "version": "v2026.3.1",
+            "libName": "photonlibcpp",
+            "headerClassifier": "headers",
+            "sharedLibrary": false,
+            "skipInvalidPlatforms": true,
+            "binaryPlatforms": [
+                "windowsx86-64",
+                "linuxx86-64",
+                "linuxarm64",
+                "osxuniversal",
+                "linuxathena"
+            ]
+        }
+    ]
+}

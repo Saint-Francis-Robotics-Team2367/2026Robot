@@ -17,6 +17,8 @@
 #include "subsystems/Intake/DeployIntake.h"
 
 #include "subsystems/DriveSubsystem.h"
+#include "subsystems/vision/PhotonVision.h"
+#include "subsystems/vision/QuestNavCalibration.h"
 
 #include "frc/filter/SlewRateLimiter.h"
 #include "frc/MathUtil.h"
@@ -38,6 +40,8 @@ class RobotContainer {
 
   DriveSubsystem drivetrain;
   Turret m_turret;
+  PhotonVision photonVision;
+  QuestNavCalibration questNavCalibration;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   frc2::CommandPS5Controller driverCtr{0}; //drive controller should be first controller that is plugged in

@@ -52,6 +52,10 @@ void DriveSubsystem::resetOdometry(frc::Pose2d pose) {
   );
 }
 
+void DriveSubsystem::addVisionMeasurement(frc::Pose2d pose, units::second_t timestamp) {
+  odometry.AddVisionMeasurement(pose, timestamp);
+}
+
 //gets robot position
 frc::Pose2d DriveSubsystem::getPose() {
   return odometry.GetEstimatedPosition();

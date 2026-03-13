@@ -13,6 +13,7 @@
 
 #include "frc/geometry/Translation2d.h"
 #include "frc/geometry/Pose2d.h"
+#include <units/time.h>
 
 #include "subsystems/SwerveModule.h"
 #include "ctre/phoenix6/Pigeon2.hpp"
@@ -25,6 +26,7 @@ public:
   void initModules();
   void updateOdometry();
   void resetOdometry(frc::Pose2d pose);
+  void addVisionMeasurement(frc::Pose2d pose, units::second_t timestamp);
   frc::Pose2d getPose();
   void resetGyro();
   bool gyroConnected();

@@ -27,6 +27,7 @@ RobotContainer::RobotContainer() {
   drivetrain.initModules();
   drivetrain.initGyro();
   QuestNav::getInstance().init();
+  photonVision.init();
   drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
 
   autoTargeting = true;
