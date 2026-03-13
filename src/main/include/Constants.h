@@ -123,9 +123,9 @@ namespace TurretConstants {
     
     //TURRET CONSTANTS
     //need to tune
-    static constexpr double turretkP = 1.05;
-    static constexpr double turretkI = 0.02;
-    static constexpr double turretkD = 0.10;
+    static constexpr double turretkP = 0.5;
+    static constexpr double turretkI = 0.00;
+    static constexpr double turretkD = 0.00;
 
     constexpr double turretPulleyRatio = 44; //big wheel to small wheel (encoder) ratio
     constexpr double turretTbRatio = 8.77778;

@@ -6,8 +6,10 @@ Turret::Turret() {
     turretConfigs.Slot0.kI = TurretConstants::turretkI;
     turretConfigs.Slot0.kD = TurretConstants::turretkD;
 
-    turretConfigs.CurrentLimits.SupplyCurrentLimit = 10_A;
+    turretConfigs.CurrentLimits.SupplyCurrentLimit = 15_A;
     turretConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+    turretConfigs.CurrentLimits.StatorCurrentLimit = 40_A;
+    turretConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
     //turretConfigs.MagnetSensor.SensorDirection = ctre::phoenix6::signals::SensorDirectionValue::CounterClockwise_Positive;
     turretConfigs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
     turretMotor.SetPosition(0_tr);

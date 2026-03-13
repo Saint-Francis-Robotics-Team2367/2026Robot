@@ -50,7 +50,7 @@ class RobotContainer {
   RunIntake mRunIntake;
   DeployIntake mDeployIntake;
 
-  bool autoTargeting = true;
+  bool autoTargeting = false;
 
   frc::SlewRateLimiter<units::scalar> xLimiter{ControllerConstants::slewRate / 1_s};
   frc::SlewRateLimiter<units::scalar> yLimiter{ControllerConstants::slewRate / 1_s};

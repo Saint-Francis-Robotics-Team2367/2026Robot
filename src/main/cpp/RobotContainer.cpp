@@ -28,6 +28,8 @@ RobotContainer::RobotContainer() {
   drivetrain.initGyro();
   QuestNav::getInstance().init();
   drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
+
+  autoTargeting = true;
 }
 
 
