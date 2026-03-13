@@ -8,13 +8,15 @@ Turret::Turret() {
 
     turretConfigs.CurrentLimits.SupplyCurrentLimit = 10_A;
     turretConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+    turretConfigs.CurrentLimits.StatorCurrentLimit = 40_A;
+    turretConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
     //turretConfigs.MagnetSensor.SensorDirection = ctre::phoenix6::signals::SensorDirectionValue::CounterClockwise_Positive;
+    turretConfigs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
     turretConfigs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
     turretMotor.SetPosition(0_tr);
 
     turretMotor.GetConfigurator().Apply(turretConfigs);
     encoder.GetConfigurator().Apply(encoderConfigs);
-
 }
 
 //set speed
@@ -69,7 +71,7 @@ void Turret::autoMoveToTarget() {
 
 void Turret::setAngle(double targetAngle) {
     if (targetAngle > 45 || targetAngle < -45){
-        frc::SmartDashboard::PutBoolean("is angle in range?", false);
+        frc::SmartDashboard::PutBoolean("angle is not in range", false);
     }
     else{
         frc::SmartDashboard::PutBoolean("is angle in range?", true);
