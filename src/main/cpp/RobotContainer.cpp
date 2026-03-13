@@ -167,14 +167,14 @@ void RobotContainer::ConfigureBindings() {
       // Step 1: Set hood position
       HoodedShooter.RunOnce(
         [this] {
-          HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(122, 135), 122, 135);
+          HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::meterToInches, QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::meterToInches), 122, 135);
         }
       ),
       // Step 2: Spin up flywheel and wait 4 seconds, then feed while flywheel keeps spinning
       frc2::cmd::Parallel(
         HoodedShooter.Run(
           [this] {
-            HoodedShooter.setFlywheelSpeed(-(HoodedShooter.findOptimalRPM(122, 135))); // QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::meterToInches, QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::meterToInches
+            HoodedShooter.setFlywheelSpeed(-(HoodedShooter.findOptimalRPM(QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::meterToInches, QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::meterToInches))); 
           }
         ),
         frc2::cmd::Sequence(
