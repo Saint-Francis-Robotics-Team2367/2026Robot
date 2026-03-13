@@ -27,8 +27,55 @@ RobotContainer::RobotContainer() {
   drivetrain.initModules();
   drivetrain.initGyro();
   QuestNav::getInstance().init();
-  drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
 
+  allianceChooser.SetDefaultOption("Blue Alliance", blueAlliance);
+  allianceChooser.AddOption("Red Alliance", redAlliance);
+  frc::SmartDashboard::PutData("Alliance Color", &allianceChooser);
+
+  positionChooser.SetDefaultOption("Bottom Trench", bottomTrench);
+  positionChooser.AddOption("Bottom Bump", bottomBump);
+  positionChooser.AddOption("Front Hub", frontHub);
+  positionChooser.AddOption("Top Bump", topBump);
+  positionChooser.AddOption("Top Trench", topTrench);
+  frc::SmartDashboard::PutData("Field Position", &positionChooser);
+
+  std::string fieldPosition = positionChooser.GetSelected();
+  std::string allianceColor = allianceChooser.GetSelected();
+
+  if (allianceColor == "Red") {
+    alliancePositionOffset = 330.0;
+  }
+  else {
+    alliancePositionOffset = 0.0;
+  }
+
+  if (fieldPosition == "Top Trench") {
+    startPose = frc::Pose2d{units::inch_t(317.7 - 25.17).convert<units::meter>(),
+                            units::inch_t(158.6 + alliancePositionOffset).convert<units::meter>(),
+                            frc::Rotation2d{0_rad}};
+  }
+  else if (fieldPosition == "Top Bump") {
+    startPose = frc::Pose2d{units::inch_t(317.7 - (65.65 + 73/2)).convert<units::meter>(),
+                            units::inch_t(158.6 + alliancePositionOffset).convert<units::meter>(),
+                            frc::Rotation2d{0_rad}};
+  }
+  else if (fieldPosition == "Front Hub") {
+    startPose = frc::Pose2d{units::inch_t(317.7/2).convert<units::meter>(),
+                            units::inch_t(158.6 + alliancePositionOffset).convert<units::meter>(),
+                            frc::Rotation2d{0_rad}};
+  }
+  else if (fieldPosition == "Bottom Bump") {
+    startPose = frc::Pose2d{units::inch_t(65.65 + 73/2).convert<units::meter>(),
+                            units::inch_t(158.6 + alliancePositionOffset).convert<units::meter>(),
+                            frc::Rotation2d{0_rad}};
+  }
+  else if (fieldPosition == "Bottom Trench") {
+    startPose = frc::Pose2d{units::inch_t(25.17).convert<units::meter>(),
+                            units::inch_t(158.6 + alliancePositionOffset).convert<units::meter>(),
+                            frc::Rotation2d{0_rad}};
+  }
+  
+  drivetrain.resetOdometry(startPose);
   autoTargeting = true;
 }
 
@@ -167,7 +214,7 @@ void RobotContainer::ConfigureBindings() {
       // Step 1: Set hood position
       HoodedShooter.RunOnce(
         [this] {
-          HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::meterToInches, QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::meterToInches), 122, 135);
+          HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(182.11 - QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::meterToInches, 158.85 - QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::meterToInches), 182.11 - QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::meterToInches, 158.85 - QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::meterToInches);
         }
       ),
       // Step 2: Spin up flywheel and wait 4 seconds, then feed while flywheel keeps spinning

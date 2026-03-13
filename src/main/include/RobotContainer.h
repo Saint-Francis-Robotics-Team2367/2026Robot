@@ -7,6 +7,7 @@
 #include <frc2/command/CommandPtr.h>
 #include "frc2/command/Commands.h"
 #include <frc2/command/button/CommandPS5Controller.h>
+#include "frc/smartdashboard/SendableChooser.h"
 
 #include "Constants.h"
 
@@ -51,6 +52,20 @@ class RobotContainer {
   DeployIntake mDeployIntake;
 
   bool autoTargeting = false;
+
+  frc::SendableChooser<std::string> positionChooser;
+  const std::string topTrench = "Top Trench";
+  const std::string topBump = "Top Bump";
+  const std::string frontHub = "Front Hub";
+  const std::string bottomBump = "Bottom Bump";
+  const std::string bottomTrench = "Bottom Trench";
+
+  frc::SendableChooser<std::string> allianceChooser;
+  const std::string blueAlliance = "Blue Alliance";
+  const std::string redAlliance = "Red Alliance";
+
+  frc::Pose2d startPose{};
+  double alliancePositionOffset = 0.0;
 
   frc::SlewRateLimiter<units::scalar> xLimiter{ControllerConstants::slewRate / 1_s};
   frc::SlewRateLimiter<units::scalar> yLimiter{ControllerConstants::slewRate / 1_s};
