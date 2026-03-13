@@ -89,11 +89,15 @@ void RobotContainer::ConfigureBindings() {
   //   )
   // );
 
-  // turretAutoTargetingOn.WhileTrue(
-  //   // Targetting Command
-  // );
+  turretAutoTargetingOn.WhileTrue(
+    frc2::cmd::Run(
+      [this] {
+        m_turret.autoTarget();
+      }
+    )
+  );
 
-  // Detect Indexer Stall — reverse for 2s to clear the jam, then pause briefly
+  // Detect Indexer Stall
   IndexerStall.OnTrue(
     frc2::cmd::Sequence(
       frc2::cmd::RunOnce(
@@ -186,6 +190,8 @@ void RobotContainer::ConfigureBindings() {
         double leftX = frc::ApplyDeadband(codriverCtr.GetLeftX(), ControllerConstants::deadband);
         leftX = xLimiter.Calculate(leftX);
 
+        frc::SmartDashboard::PutNumber("Turret Controller Left X", leftX);
+
         m_turret.setAngle(m_turret.getCurrentMotorAngle() + TurretConstants::turretTurnRatio * leftX * 10.0);
       }
     )
@@ -198,6 +204,8 @@ void RobotContainer::ConfigureBindings() {
         // Make separate turret slew rate limiter if needed
         double rightY = frc::ApplyDeadband(codriverCtr.GetRightY(), ControllerConstants::deadband);
         rightY = yLimiter.Calculate(rightY);
+
+        frc::SmartDashboard::PutNumber("Shooter Hood Right Y", rightY);
 
         HoodedShooter.setManualHoodPosition(HoodedShooter.findHoodAngle() + ShooterConstants::shooterTurnRatio * rightY * 10.0);
       }

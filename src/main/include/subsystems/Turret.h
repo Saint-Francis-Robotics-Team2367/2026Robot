@@ -33,6 +33,7 @@ class Turret : public frc2::Subsystem{
 
     void resetTurretPosition();
     void ZeroTurret();
+    void autoTarget();
   
   private:
 

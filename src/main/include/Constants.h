@@ -59,16 +59,6 @@ namespace HardwareIDs {
 namespace ControllerConstants {
     static constexpr double deadband = 0.05; //prevents joystick drift
     static constexpr double slewRate = 5.2;
-
-    //TURRET CONSTANTS
-    //need to tune
-    static constexpr double turretkP = 1.05;
-    static constexpr double turretkI = 0.02;
-    static constexpr double turretkD = 0.10;
-
-    constexpr double turretPulleyRatio = 44; //big wheel to small wheel (encoder) ratio
-    constexpr double turretTbRatio = 8.77778;
-
 }
 
 
@@ -127,4 +117,16 @@ namespace TurretConstants {
     static constexpr int turretEncoderID = 60;
     static constexpr int turretMotorID = 18;
     static constexpr double turretTurnRatio = 1.0;
+    
+    static constexpr double hubHeading = 0.0; // deg
+    
+    //TURRET CONSTANTS
+    //need to tune
+    static constexpr double turretkP = 1.05;
+    static constexpr double turretkI = 0.02;
+    static constexpr double turretkD = 0.10;
+
+    constexpr double turretPulleyRatio = 44; //big wheel to small wheel (encoder) ratio
+    constexpr double turretTbRatio = 8.77778;
+
 }
