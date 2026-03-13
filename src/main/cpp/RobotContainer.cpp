@@ -91,7 +91,7 @@ void RobotContainer::ConfigureBindings() {
   turretAutoTargetingOn.WhileTrue(
     frc2::cmd::Run(
       [this] {
-        m_turret.autoTarget();
+        m_turret.autoMoveToTarget();
       }
     )
   );

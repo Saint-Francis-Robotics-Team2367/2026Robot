@@ -63,19 +63,25 @@ double Turret::getSetpoint(){
 void Turret::autoMoveToTarget() {
     double angleToHub = atan((102.8-QuestNav::getInstance().getPose2d().Y().value())/(158.85-QuestNav::getInstance().getPose2d().X().value()));
     double robotHeading = QuestNav::getInstance().getPose2d().Rotation().Degrees().value();
+    frc::SmartDashboard::PutNumber("turret angle", (angleToHub * 180.0 / M_PI) - robotHeading);
     setAngle((angleToHub * 180.0 / M_PI) - robotHeading);
 }
 
 void Turret::setAngle(double targetAngle) {
-    
-    if (targetAngle > 180) {
-        targetAngle = std::fmod(targetAngle, 360) - 360;
-    } 
+    if (targetAngle > 45 || targetAngle < -45){
+        frc::SmartDashboard::PutBoolean("is angle in range?", false);
+    }
+    else{
+        frc::SmartDashboard::PutBoolean("is angle in range?", true);
+        if (targetAngle > 180) {
+            targetAngle = std::fmod(targetAngle, 360) - 360;
+        } 
 
-    else if (targetAngle < -180) {
-        targetAngle = std::fmod(targetAngle, -360) + 360;
-    } 
-    turretMotor.SetControl(positionVoltage.WithPosition(units::angle::turn_t(targetAngle/360 * TurretConstants::turretPulleyRatio)).WithSlot(0));
+        else if (targetAngle < -180) {
+            targetAngle = std::fmod(targetAngle, -360) + 360;
+        } 
+        turretMotor.SetControl(positionVoltage.WithPosition(units::angle::turn_t(targetAngle/360 * TurretConstants::turretPulleyRatio)).WithSlot(0));
+    }
 
 //Not yet tested! I need to test the encoder values first, and this is just a backup when skipping happens
 
