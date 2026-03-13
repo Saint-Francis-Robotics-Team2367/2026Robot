@@ -23,7 +23,7 @@ RobotContainer::RobotContainer() {
   HoodedShooter.init(); // Initalize Shooter motors and encoders
   BallFeeder.init(); // Initialize Feeder motors and encoders
   BallIndexer.init(); // Initialize Indexer motors and encoders
-  
+
   drivetrain.initModules();
   drivetrain.initGyro();
   QuestNav::getInstance().init();
@@ -59,28 +59,27 @@ void RobotContainer::ConfigureBindings() {
 
   // ******************** DEFAULT COMMANDS ********************
   drivetrain.SetDefaultCommand(
-      drivetrain.Run(
-        [this]() {
-          double x = frc::ApplyDeadband(driverCtr.GetLeftX(), ControllerConstants::deadband);
-          double y = frc::ApplyDeadband(driverCtr.GetLeftY(), ControllerConstants::deadband);
-          double rot = frc::ApplyDeadband(driverCtr.GetRightX(), ControllerConstants::deadband);
+    drivetrain.Run(
+      [this]() {
+        double x = frc::ApplyDeadband(driverCtr.GetLeftX(), ControllerConstants::deadband);
+        double y = frc::ApplyDeadband(driverCtr.GetLeftY(), ControllerConstants::deadband);
+        double rot = frc::ApplyDeadband(driverCtr.GetRightX(), ControllerConstants::deadband);
 
-          x = xLimiter.Calculate(x);
-          y = yLimiter.Calculate(y);
-          rot = rotLimiter.Calculate(rot);
+        x = xLimiter.Calculate(x);
+        y = yLimiter.Calculate(y);
+        rot = rotLimiter.Calculate(rot);
 
-          double vx = x * ModuleConstants::moduleMaxMPS;
-          double vy = y * ModuleConstants::moduleMaxMPS;
-          rot = rot * ModuleConstants::moduleMaxRot * 2;
+        double vx = x * ModuleConstants::moduleMaxMPS;
+        double vy = y * ModuleConstants::moduleMaxMPS;
+        rot = rot * ModuleConstants::moduleMaxRot * 2;
 
-          frc::SmartDashboard::PutNumber("vx", vx);
-          frc::SmartDashboard::PutNumber("vy", vy);
-          frc::SmartDashboard::PutNumber("rot", rot);
+        frc::SmartDashboard::PutNumber("vx", vx);
+        frc::SmartDashboard::PutNumber("vy", vy);
+        frc::SmartDashboard::PutNumber("rot", rot);
 
-          drivetrain.Drive(vx, -vy, -rot, drivetrain.gyroConnected());
-
-        }
-      )
+        drivetrain.Drive(vx, -vy, -rot, drivetrain.gyroConnected());
+      }
+    )
   );
 
   // HoodedShooter.SetDefaultCommand(
@@ -89,11 +88,15 @@ void RobotContainer::ConfigureBindings() {
   //   )
   // );
 
-  // turretAutoTargetingOn.WhileTrue(
-  //   // Targetting Command
-  // );
+  turretAutoTargetingOn.WhileTrue(
+    frc2::cmd::Run(
+      [this] {
+        m_turret.autoTarget();
+      }
+    )
+  );
 
-  // Detect Indexer Stall — reverse for 2s to clear the jam, then pause briefly
+  // Detect Indexer Stall
   IndexerStall.OnTrue(
     frc2::cmd::Sequence(
       frc2::cmd::RunOnce(
@@ -141,24 +144,40 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
+  // Apply Hood Brake
+  /*
+  codriverCtr.Triangle().OnTrue(
+    HoodedShooter.RunOnce(
+      [this] {HoodedShooter.applyHoodBrake();}
+    )
+  );
+  */
+
   codriverCtr.R2().ToggleOnTrue(
-    frc2::cmd::Parallel(
-      HoodedShooter.Run(
-        [this] {HoodedShooter.setFlywheelSpeed(-(HoodedShooter.findOptimalRPM(48, 232)));}
+    frc2::cmd::Sequence(
+      // Step 1: Set hood position
+      HoodedShooter.RunOnce(
+        [this] {
+          HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(122, 135), 122, 135);
+        }
       ),
-      frc2::cmd::Sequence(
-        frc2::cmd::WaitUntil(
+      // Step 2: Spin up flywheel and wait 4 seconds, then feed while flywheel keeps spinning
+      frc2::cmd::Parallel(
+        HoodedShooter.Run(
           [this] {
-            return (HoodedShooter.getShooterVelocity() > (0.925 * HoodedShooter.findOptimalRPM(48, 232)));
+            HoodedShooter.setFlywheelSpeed(-(HoodedShooter.findOptimalRPM(122, 135)));
           }
         ),
-        frc2::cmd::RunOnce([this] {
-          frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
-          HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(48, 232), 48, 232);
-        }),
-        frc2::cmd::Parallel(
-          BallIndexer.RunIndexer(&BallIndexer, -3000),
-          BallFeeder.RunFeeder(&BallFeeder, -3000)
+        frc2::cmd::Sequence(
+          frc2::cmd::Wait(4_s),
+          // Step 3: Run indexer and feeder while flywheel is still spinning
+          frc2::cmd::RunOnce([this] {
+            frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
+          }),
+          frc2::cmd::Parallel(
+            BallIndexer.RunIndexer(&BallIndexer, -3000),
+            BallFeeder.RunFeeder(&BallFeeder, -3000)
+          )
         )
       )
     )
@@ -186,6 +205,8 @@ void RobotContainer::ConfigureBindings() {
         double leftX = frc::ApplyDeadband(codriverCtr.GetLeftX(), ControllerConstants::deadband);
         leftX = xLimiter.Calculate(leftX);
 
+        frc::SmartDashboard::PutNumber("Turret Controller Left X", leftX);
+
         m_turret.setAngle(m_turret.getCurrentMotorAngle() + TurretConstants::turretTurnRatio * leftX * 10.0);
       }
     )
@@ -198,6 +219,8 @@ void RobotContainer::ConfigureBindings() {
         // Make separate turret slew rate limiter if needed
         double rightY = frc::ApplyDeadband(codriverCtr.GetRightY(), ControllerConstants::deadband);
         rightY = yLimiter.Calculate(rightY);
+
+        frc::SmartDashboard::PutNumber("Shooter Hood Right Y", rightY);
 
         HoodedShooter.setManualHoodPosition(HoodedShooter.findHoodAngle() + ShooterConstants::shooterTurnRatio * rightY * 10.0);
       }

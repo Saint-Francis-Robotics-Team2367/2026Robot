@@ -2,9 +2,9 @@
 
 Turret::Turret() {
     //pids
-    turretConfigs.Slot0.kP = ControllerConstants::turretkP; 
-    turretConfigs.Slot0.kI = ControllerConstants::turretkI;
-    turretConfigs.Slot0.kD = ControllerConstants::turretkD;
+    turretConfigs.Slot0.kP = TurretConstants::turretkP; 
+    turretConfigs.Slot0.kI = TurretConstants::turretkI;
+    turretConfigs.Slot0.kD = TurretConstants::turretkD;
 
     turretConfigs.CurrentLimits.SupplyCurrentLimit = 10_A;
     turretConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -44,14 +44,14 @@ void Turret::stop(){
 //angle of the turret found from the relative position of the motor
 double Turret::getCurrentMotorAngle() {
     double motorPos = turretMotor.GetPosition().GetValueAsDouble() * 360; //find pos in degrees
-    double currentAngle = std::fmod(motorPos/ControllerConstants::turretPulleyRatio, 360.0);//pullyRatio = 44
+    double currentAngle = std::fmod(motorPos/TurretConstants::turretPulleyRatio, 360.0);//pullyRatio = 44
     return currentAngle;
 }
 
 //Not yet tested; We can get the relative value from the encoder, which makes life easier
 double Turret::getCurrentEncoderAngle() {
     double encoderPos = encoder.GetPosition().GetValueAsDouble() * 360; //find pos in degrees
-    double currentAngle = std::fmod(encoderPos/ControllerConstants::turretTbRatio, 360.0);//tb to turret ratio = 8.7777
+    double currentAngle = std::fmod(encoderPos/TurretConstants::turretTbRatio, 360.0);//tb to turret ratio = 8.7777
     return currentAngle;
 }
 
@@ -68,7 +68,7 @@ void Turret::setAngle(double targetAngle) {
     else if (targetAngle < -180) {
         targetAngle = std::fmod(targetAngle, -360) + 360;
     } 
-    turretMotor.SetControl(positionVoltage.WithPosition(units::angle::turn_t(targetAngle/360 * ControllerConstants::turretPulleyRatio)).WithSlot(0));
+    turretMotor.SetControl(positionVoltage.WithPosition(units::angle::turn_t(targetAngle/360 * TurretConstants::turretPulleyRatio)).WithSlot(0));
 
 //Not yet tested! I need to test the encoder values first, and this is just a backup when skipping happens
 
@@ -107,4 +107,10 @@ void Turret::resetTurretPosition(){
 
 void Turret::ZeroTurret() {
     turretMotor.SetPosition(0_tr);
+}
+
+void Turret::autoTarget() {
+    double heading = QuestNav::getInstance().getPose2d().Rotation().Degrees().value();
+    double targetDeg = (heading - TurretConstants::hubHeading);
+    setAngle(targetDeg);
 }
