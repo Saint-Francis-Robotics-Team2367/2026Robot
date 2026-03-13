@@ -59,10 +59,10 @@ bool Shooter::setFlywheelSpeed(float shooterRPM) {
     const float tolerance = 150; // or whatever tolerance you want
 
     if (std::fabs(targetVelocity - actualVelocity) < tolerance) {
-        std::cout << "Shooter at target speed." << std::endl;
+        // std::cout << "Shooter at target speed." << std::endl;
         return true;
     } else {
-        std::cout << "Shooter NOT at target speed." << std::endl;
+        // std::cout << "Shooter NOT at target speed." << std::endl;
         return false;
     }
 }
