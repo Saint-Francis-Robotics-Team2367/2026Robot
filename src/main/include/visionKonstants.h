@@ -10,6 +10,9 @@
 
 namespace VisionConstants {
 
+    // Toggle this boolean before the match to switch between PhotonVision and Limelight libraries
+    constexpr bool usePhotonVision = true;
+
     // Define offset points relative to specific AprilTags (fiducial IDs)
     // Map format: <Tag ID, Map<Offset Name, Transform3d from Tag Center>>
     // +X is forward (out of the tag face), +Y is left relative to the tag face, +Z is up relative to the tag face.

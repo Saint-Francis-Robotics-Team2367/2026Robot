@@ -6,6 +6,8 @@
 #include <units/angle.h>
 #include <string>
 #include <optional>
+#include <memory>
+#include <photon/PhotonCamera.h>
 
 class Lemonlight : public frc2::SubsystemBase {
  public:
@@ -35,4 +37,8 @@ class Lemonlight : public frc2::SubsystemBase {
 
  private:
   std::string m_limelightName = "lemonlight";
+  std::unique_ptr<photon::PhotonCamera> m_photonCamera;
+
+  // Helper method to retrieve the target pose dynamically based on the current vision provider
+  std::optional<frc::Pose3d> GetTargetPoseCameraSpace();
 };

@@ -5,9 +5,11 @@
 #include <cmath>
 
 Lemonlight::Lemonlight() {
-    // Initialization code
-    // Assuming pipeline 0 is configured for AprilTags
-    LimelightHelpers::setPipelineIndex(m_limelightName, 0); 
+    if (VisionConstants::usePhotonVision) {
+        m_photonCamera = std::make_unique<photon::PhotonCamera>(m_limelightName);
+    } else {
+        LimelightHelpers::setPipelineIndex(m_limelightName, 0); 
+    }
 }
 
 void Lemonlight::Periodic() {
@@ -45,15 +47,39 @@ void Lemonlight::Periodic() {
 }
 
 bool Lemonlight::HasTarget() {
-    return LimelightHelpers::getTV(m_limelightName);
+    if (VisionConstants::usePhotonVision) {
+        return m_photonCamera->GetLatestResult().HasTargets();
+    } else {
+        return LimelightHelpers::getTV(m_limelightName);
+    }
 }
 
 int Lemonlight::GetPrimaryTagID() {
-    return static_cast<int>(LimelightHelpers::getFiducialID(m_limelightName));
+    if (VisionConstants::usePhotonVision) {
+        auto result = m_photonCamera->GetLatestResult();
+        if (result.HasTargets()) {
+            return result.GetBestTarget().GetFiducialId();
+        }
+        return -1;
+    } else {
+        return static_cast<int>(LimelightHelpers::getFiducialID(m_limelightName));
+    }
+}
+
+std::optional<frc::Pose3d> Lemonlight::GetTargetPoseCameraSpace() {
+    if (VisionConstants::usePhotonVision) {
+        auto result = m_photonCamera->GetLatestResult();
+        if (!result.HasTargets()) return std::nullopt;
+        // Transform3d from camera to target is exactly the pose of the target in camera space
+        return frc::Pose3d() + result.GetBestTarget().GetBestCameraToTarget();
+    } else {
+        if (!LimelightHelpers::getTV(m_limelightName)) return std::nullopt;
+        return LimelightHelpers::getTargetPose3d_CameraSpace(m_limelightName);
+    }
 }
 
 std::optional<units::meter_t> Lemonlight::GetDistanceToOffset(int tagID, const std::string& offsetName) {
-    if (!HasTarget() || GetPrimaryTagID() != tagID) return std::nullopt;
+    if (GetPrimaryTagID() != tagID) return std::nullopt;
 
     auto it = VisionConstants::tagOffsets.find(tagID);
     if (it == VisionConstants::tagOffsets.end()) return std::nullopt;
@@ -61,21 +87,19 @@ std::optional<units::meter_t> Lemonlight::GetDistanceToOffset(int tagID, const s
     auto offsetIt = it->second.find(offsetName);
     if (offsetIt == it->second.end()) return std::nullopt;
 
-    // Get the transform for this offset relative to the tag
     frc::Transform3d offsetTransform = offsetIt->second;
 
-    // Get tag pose in camera space
-    frc::Pose3d tagPose_CameraSpace = LimelightHelpers::getTargetPose3d_CameraSpace(m_limelightName);
+    auto tagPoseOpt = GetTargetPoseCameraSpace();
+    if (!tagPoseOpt) return std::nullopt;
+    frc::Pose3d tagPose_CameraSpace = tagPoseOpt.value();
 
-    // Apply the offset transform to the tag pose to get the offset pose in camera space
     frc::Pose3d offsetPose_CameraSpace = tagPose_CameraSpace + offsetTransform;
 
-    // Distance is the 3D norm of the translation
     return offsetPose_CameraSpace.Translation().Norm();
 }
 
 std::optional<units::degree_t> Lemonlight::GetHeadingErrorToOffset(int tagID, const std::string& offsetName) {
-    if (!HasTarget() || GetPrimaryTagID() != tagID) return std::nullopt;
+    if (GetPrimaryTagID() != tagID) return std::nullopt;
 
     auto it = VisionConstants::tagOffsets.find(tagID);
     if (it == VisionConstants::tagOffsets.end()) return std::nullopt;
@@ -84,10 +108,13 @@ std::optional<units::degree_t> Lemonlight::GetHeadingErrorToOffset(int tagID, co
     if (offsetIt == it->second.end()) return std::nullopt;
 
     frc::Transform3d offsetTransform = offsetIt->second;
-    frc::Pose3d tagPose_CameraSpace = LimelightHelpers::getTargetPose3d_CameraSpace(m_limelightName);
+
+    auto tagPoseOpt = GetTargetPoseCameraSpace();
+    if (!tagPoseOpt) return std::nullopt;
+    frc::Pose3d tagPose_CameraSpace = tagPoseOpt.value();
+
     frc::Pose3d offsetPose_CameraSpace = tagPose_CameraSpace + offsetTransform;
 
-    // X is forward out of the camera, Y is left. Angle to face the point is atan2(Y, X)
     double x = offsetPose_CameraSpace.X().value();
     double y = offsetPose_CameraSpace.Y().value();
     
@@ -103,18 +130,17 @@ std::optional<units::degree_t> Lemonlight::GetTargetTurretHeading(units::degree_
 }
 
 std::optional<units::meter_t> Lemonlight::GetDistanceToTag() {
-    if (!HasTarget()) return std::nullopt;
-    frc::Pose3d tagPose_CameraSpace = LimelightHelpers::getTargetPose3d_CameraSpace(m_limelightName);
-    return tagPose_CameraSpace.Translation().Norm();
+    auto tagPoseOpt = GetTargetPoseCameraSpace();
+    if (!tagPoseOpt) return std::nullopt;
+    return tagPoseOpt.value().Translation().Norm();
 }
 
 std::optional<units::degree_t> Lemonlight::GetHeadingErrorToTag() {
-    if (!HasTarget()) return std::nullopt;
-    frc::Pose3d tagPose_CameraSpace = LimelightHelpers::getTargetPose3d_CameraSpace(m_limelightName);
+    auto tagPoseOpt = GetTargetPoseCameraSpace();
+    if (!tagPoseOpt) return std::nullopt;
     
-    // X is forward, Y is left.
-    double x = tagPose_CameraSpace.X().value();
-    double y = tagPose_CameraSpace.Y().value();
+    double x = tagPoseOpt.value().X().value();
+    double y = tagPoseOpt.value().Y().value();
     
     return units::radian_t{std::atan2(y, x)};
 }
