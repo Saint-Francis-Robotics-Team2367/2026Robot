@@ -59,6 +59,13 @@ double Turret::getSetpoint(){
     return setpoint;
 }
 
+//updated code for it, incorrect heading in original one
+void Turret::autoMoveToTarget() {
+    double angleToHub = atan((102.8-QuestNav::getInstance().getPose2d().Y().value())/(158.85-QuestNav::getInstance().getPose2d().X().value()));
+    double robotHeading = QuestNav::getInstance().getPose2d().Rotation().Degrees().value();
+    setAngle((angleToHub * 180.0 / M_PI) - robotHeading);
+}
+
 void Turret::setAngle(double targetAngle) {
     
     if (targetAngle > 180) {
