@@ -50,7 +50,7 @@ private:
 
   frc::SwerveDrivePoseEstimator<4> odometry{
         kinematics, 
-        pigeon.GetRotation2d(), 
+        QuestNav::getInstance().getRotation2d(), 
         { 
           frontLeft.getPosition(),
           frontRight.getPosition(),

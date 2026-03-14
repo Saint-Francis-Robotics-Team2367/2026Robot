@@ -29,7 +29,7 @@ void DriveSubsystem::Drive(double vx, double vy, double rot, bool fieldRelative)
 
 void DriveSubsystem::updateOdometry() {
   odometry.Update(
-    pigeon.GetRotation2d(), 
+    QuestNav::getInstance().getRotation2d(), 
     { 
       frontLeft.getPosition(),
       frontRight.getPosition(),
@@ -41,7 +41,7 @@ void DriveSubsystem::updateOdometry() {
 //resets origin
 void DriveSubsystem::resetOdometry(frc::Pose2d pose) {
   odometry.ResetPosition(
-    pigeon.GetRotation2d(),
+    QuestNav::getInstance().getRotation2d(),
     {
       frontLeft.getPosition(),
       frontRight.getPosition(),
@@ -76,11 +76,11 @@ void DriveSubsystem::initModules() {
 }
 
 void DriveSubsystem::resetGyro() {
-  pigeon.Reset();
+  QuestNav::getInstance().ZeroGyro();
 }
 
 bool DriveSubsystem::gyroConnected() {
-  return pigeon.IsConnected();
+  return QuestNav::getInstance().isConnected();
 }
 
 void DriveSubsystem::stopAllModules() {

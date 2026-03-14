@@ -23,6 +23,7 @@ RobotContainer::RobotContainer() {
   HoodedShooter.init(); // Initalize Shooter motors and encoders
   BallFeeder.init(); // Initialize Feeder motors and encoders
   BallIndexer.init(); // Initialize Indexer motors and encoders
+  m_turret.init();
 
   drivetrain.initModules();
   drivetrain.initGyro();
@@ -87,7 +88,7 @@ void RobotContainer::InitializeStartPose() {
                             frc::Rotation2d{0_rad}};
   }
 
-  QuestNav::getInstance().SetStartPose(startPose);
+  drivetrain.resetOdometry(startPose);
 }
 
 void RobotContainer::ConfigureBindings() {
@@ -224,20 +225,20 @@ void RobotContainer::ConfigureBindings() {
       // Step 1: Set hood position
       HoodedShooter.RunOnce(
         [this] {
-          HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(TurretConstants::hubX - QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::MeterToInches), TurretConstants::hubX - QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::MeterToInches);
+          HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches), TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches);
         }
       ),
       // Step 2: Spin up flywheel and wait 4 seconds, then feed while flywheel keeps spinning
       frc2::cmd::Parallel(
         HoodedShooter.Run(
           [this] {
-            HoodedShooter.setFlywheelSpeed(-(HoodedShooter.findOptimalRPM(TurretConstants::hubX - QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::MeterToInches)));
+            HoodedShooter.setFlywheelSpeed(-(HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches)));
           }
         ),
         frc2::cmd::Sequence(
           frc2::cmd::WaitUntil(
             [this] {
-              return (HoodedShooter.getShooterVelocity() > (0.85 * (1/ShooterConstants::SHOOTEREFFICIENCY) * HoodedShooter.findOptimalRPM(TurretConstants::hubX - QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::MeterToInches)));
+              return (HoodedShooter.getShooterVelocity() > (0.85 * (1/ShooterConstants::SHOOTEREFFICIENCY) * HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches)));
             }
           ),
           // Step 3: Run indexer and feeder while flywheel is still spinning

@@ -1,7 +1,7 @@
 #include "subsystems/Turret.h"
 #include "subsystems/vision/QuestNav.h"
 
-Turret::Turret() {
+void Turret::init() {
     //pids
     turretConfigs.Slot0.kP = TurretConstants::turretkP; 
     turretConfigs.Slot0.kI = TurretConstants::turretkI;
@@ -71,8 +71,8 @@ double Turret::getSetpoint(){
 void Turret::autoMoveToTarget() {
     
     // Convert robot pose from meters to inches to match hub coordinate constants
-    double robotX_in = QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::MeterToInches;
-    double robotY_in = QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::MeterToInches;
+    double robotX_in = mDrive.getPose().X().value() * ShooterConstants::MeterToInches;
+    double robotY_in = mDrive.getPose().Y().value() * ShooterConstants::MeterToInches;
     double dx = TurretConstants::hubX - robotX_in;
     double dy = TurretConstants::hubY - robotY_in;
 

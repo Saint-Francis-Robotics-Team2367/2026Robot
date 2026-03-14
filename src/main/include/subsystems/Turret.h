@@ -13,11 +13,13 @@
 #include <iostream>
 
 #include "Constants.h"
+#include "subsystems/DriveSubsystem.h"
 
 class Turret : public frc2::Subsystem{
   public:
      
-    Turret();
+    Turret(DriveSubsystem &driveInput) : mDrive(driveInput) {};
+    void init();
     void setSpeed(double speed);
     void changeSpeed(double increment);
     double getSpeed();
@@ -36,6 +38,7 @@ class Turret : public frc2::Subsystem{
     void autoMoveToTarget();
   
   private:
+    DriveSubsystem &mDrive;
 
     ctre::phoenix6::hardware::TalonFX turretMotor{TurretConstants::turretMotorID, "Drivetrain"};
     ctre::phoenix6::configs::TalonFXConfiguration turretConfigs{};

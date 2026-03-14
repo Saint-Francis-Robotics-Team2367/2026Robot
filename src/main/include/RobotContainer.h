@@ -38,7 +38,7 @@ class RobotContainer {
   frc2::CommandPtr GetAutonomousCommand();
 
   DriveSubsystem drivetrain;
-  Turret m_turret;
+  Turret m_turret = Turret(drivetrain);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   frc2::CommandPS5Controller driverCtr{0}; //drive controller should be first controller that is plugged in
