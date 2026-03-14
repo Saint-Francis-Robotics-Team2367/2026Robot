@@ -92,8 +92,16 @@ public:
         yOffset = pose.Y();
     }
 
+    // Calibrates QuestNav so getPose2d() and getRotation2d() match a known field pose.
+    // Use this at match start with an AprilTag-derived pose.
+    void CalibrateToFieldPose(frc::Pose2d fieldPose) {
+        xOffset = fieldPose.X() - robotPose.X();
+        yOffset = fieldPose.Y() - robotPose.Y();
+        yawOffset = robotPose.Rotation().Z() - fieldPose.Rotation().Radians();
+    }
+
     void ZeroGyro(double offset = 0.0) { // radians
-        yawOffset = robotPose.Rotation().Z() + units::radian_t(offset); 
+        yawOffset = robotPose.Rotation().Z() + units::radian_t(offset);
     }
 
     frc::Rotation2d getRotation2d() {

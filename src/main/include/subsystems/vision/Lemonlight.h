@@ -34,6 +34,10 @@ class Lemonlight : public frc2::SubsystemBase {
   // Feed the current turret heading, and get the target turret heading to aim at the offset point.
   std::optional<units::degree_t> GetTargetTurretHeading(units::degree_t currentTurretHeading, int tagID, const std::string& offsetName);
 
+  // Returns a field-space robot pose estimate from the latest AprilTag result.
+  // Returns nullopt if PhotonVision is disabled or no tags are visible.
+  std::optional<frc::Pose2d> GetEstimatedFieldPose();
+
   // For debugging, get the raw distance to the tag itself
   std::optional<units::meter_t> GetDistanceToTag();
 

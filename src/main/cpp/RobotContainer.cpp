@@ -331,6 +331,20 @@ void RobotContainer::ConfigureBindings() {
 }
 
 
+void RobotContainer::CalibrateQuestNavWithAprilTag() {
+  auto fieldPose = m_lemonlight.GetEstimatedFieldPose();
+  if (!fieldPose.has_value()) {
+    frc::SmartDashboard::PutBoolean("QuestNav/AprilTagCalibrated", false);
+    return;
+  }
+
+  QuestNav::getInstance().CalibrateToFieldPose(fieldPose.value());
+  drivetrain.resetOdometry(fieldPose.value());
+  frc::SmartDashboard::PutBoolean("QuestNav/AprilTagCalibrated", true);
+  frc::SmartDashboard::PutNumber("QuestNav/CalibPoseX", fieldPose->X().value());
+  frc::SmartDashboard::PutNumber("QuestNav/CalibPoseY", fieldPose->Y().value());
+}
+
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
   // An example command will be run in autonomous
   //return autos::ExampleAuto(&m_subsystem);

@@ -52,6 +52,7 @@ void Robot::DisabledPeriodic() {}
  * RobotContainer} class.
  */
 void Robot::AutonomousInit() {
+  m_container.CalibrateQuestNavWithAprilTag();
 
   // m_autonomousCommand = m_container.GetAutonomousCommand();
 
@@ -63,7 +64,8 @@ void Robot::AutonomousInit() {
 void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {
-  m_container.InitializeStartPose();
+  m_container.InitializeStartPose();       // sets pose from dashboard selector (fallback)
+  m_container.CalibrateQuestNavWithAprilTag(); // overrides with AprilTag if visible
 
   // This makes sure that the autonomous stops running when
   // teleop starts running. If you want the autonomous to

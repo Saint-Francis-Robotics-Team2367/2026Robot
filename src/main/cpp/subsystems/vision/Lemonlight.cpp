@@ -158,6 +158,24 @@ std::optional<units::degree_t> Lemonlight::GetHeadingErrorToTag() {
     return units::radian_t{std::atan2(y, x)};
 }
 
+std::optional<frc::Pose2d> Lemonlight::GetEstimatedFieldPose() {
+    if (!VisionConstants::usePhotonVision || !m_photonCamera || !m_poseEstimator)
+        return std::nullopt;
+
+    auto result = m_photonCamera->GetLatestResult();
+    if (!result.HasTargets()) return std::nullopt;
+
+    auto estimatedPose = m_poseEstimator->EstimateCoprocMultiTagPose(result);
+    if (!estimatedPose.has_value()) {
+        estimatedPose = m_poseEstimator->EstimateLowestAmbiguityPose(result);
+    }
+
+    if (estimatedPose.has_value()) {
+        return estimatedPose->estimatedPose.ToPose2d();
+    }
+    return std::nullopt;
+}
+
 void Lemonlight::UpdateDrivePose() {
     if (!m_photonCamera || !m_poseEstimator) return;
 
