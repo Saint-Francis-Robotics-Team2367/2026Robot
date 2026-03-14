@@ -231,7 +231,7 @@ void RobotContainer::ConfigureBindings() {
       frc2::cmd::Parallel(
         frc2::cmd::StartEnd (
           [this] {
-            HoodedShooter.setFlywheelSpeed(-1500);
+            HoodedShooter.setFlywheelSpeed(HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches));
           },
           [this] {
             HoodedShooter.ShooterMotor.Set(0);
@@ -241,7 +241,7 @@ void RobotContainer::ConfigureBindings() {
         frc2::cmd::Sequence(
           frc2::cmd::WaitUntil(
             [this] {
-              return (HoodedShooter.getShooterVelocity() > 1400);
+              return (HoodedShooter.getShooterVelocity() > (0.85 * (1/ShooterConstants::SHOOTEREFFICIENCY) * HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches)));
             }
           ),
           // Step 3: Run indexer and feeder while flywheel is still spinning
