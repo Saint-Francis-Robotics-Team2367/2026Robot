@@ -54,7 +54,7 @@ void Shooter::init() {
 
 bool Shooter::setFlywheelSpeed(float shooterRPM) {
     // set shooter velocity
-    // float efficientRPM = shooterRPM / ShooterConstants::SHOOTEREFFICIENCY;
+    float efficientRPM = shooterRPM / ShooterConstants::SHOOTEREFFICIENCY;
     ShooterMotor.SetControl(ctre::phoenix6::controls::VelocityVoltage{units::angular_velocity::turns_per_second_t{shooterRPM / 60.0}});
 
     // float targetVelocity = efficientRPM / 60.0;
