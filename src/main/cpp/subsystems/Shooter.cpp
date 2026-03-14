@@ -39,9 +39,9 @@ void Shooter::init() {
     RackConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
     RackConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
 
-    RackConfig.CurrentLimits.SupplyCurrentLimit = 5_A;
+    RackConfig.CurrentLimits.SupplyCurrentLimit = 10_A;
     RackConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    RackConfig.CurrentLimits.StatorCurrentLimit = 10_A;
+    RackConfig.CurrentLimits.StatorCurrentLimit = 20_A;
     RackConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     // Apply configurations
@@ -83,6 +83,7 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
     // Target point (dx, dy) in meters
     // Alter (7.5) to make it shoot farther or closer to the center of the goal
     float dx = (7.5 * ShooterConstants::InchesToMeters) + std::sqrt(std::pow(horizontalOffset * ShooterConstants::InchesToMeters, 2.0f) + std::pow(yOffset * ShooterConstants::InchesToMeters, 2.0f));
+    frc::SmartDashboard::PutNumber("Shooter Distance (dx)", dx);
     const float dy = 72.0f * ShooterConstants::InchesToMeters;
     const float verticalOffset = dy - (shooterHeight * ShooterConstants::InchesToMeters);
 

@@ -92,9 +92,9 @@ namespace ShooterConstants {
     static constexpr double FlywheelS = 0.1;
     
     // PID Constants Rack
-    static constexpr double RackP = 0.025;
+    static constexpr double RackP = 0.2;
     static constexpr double RackI = 0.0;
-    static constexpr double RackD = 0.001;
+    static constexpr double RackD = 0.0;
     static constexpr double RackG = 0.01;
 }
 

@@ -229,9 +229,13 @@ void RobotContainer::ConfigureBindings() {
       ),
       // Step 2: Spin up flywheel and wait 4 seconds, then feed while flywheel keeps spinning
       frc2::cmd::Parallel(
-        HoodedShooter.Run(
+        frc2::cmd::StartEnd (
           [this] {
             HoodedShooter.setFlywheelSpeed(-(HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches)));
+          },
+          [this] {
+            HoodedShooter.ShooterMotor.Set(0);
+            HoodedShooter.moveHoodToZero();
           }
         ),
         frc2::cmd::Sequence(
@@ -249,21 +253,6 @@ void RobotContainer::ConfigureBindings() {
             BallFeeder.RunFeeder(&BallFeeder, -3000)
           )
         )
-      )
-    )
-  );
-
-  codriverCtr.Triangle().OnTrue(
-    frc2::cmd::Sequence(
-      HoodedShooter.RunOnce(
-        [this] {
-          HoodedShooter.setFlywheelSpeed(0);
-        }
-      ),
-      HoodedShooter.RunOnce(
-        [this] {
-          HoodedShooter.moveHoodToZero();
-        }
       )
     )
   );
