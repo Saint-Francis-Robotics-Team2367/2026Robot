@@ -3,7 +3,7 @@
 
 void RunIntake::init() {
     //config for roller motor
-    rollerConfig.Slot0.kP = 0.05;
+    rollerConfig.Slot0.kP = 0.5;
     rollerConfig.Slot0.kI = 0.0;
     rollerConfig.Slot0.kD = 0.0;
 
