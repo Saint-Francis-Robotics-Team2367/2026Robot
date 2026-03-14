@@ -47,44 +47,43 @@ RobotContainer::RobotContainer() {
 
 void RobotContainer::InitializeStartPose() {
   std::string fieldPosition = positionChooser.GetSelected();
-
-  /*
-  redundant, local pose is the same regardless of alliance
   std::string allianceColor = allianceChooser.GetSelected();
 
   if (allianceColor == "Red Alliance") {
-    alliancePositionOffset = 330.0;
+    allianceXPositionOffset = 334.0;
+    hubXPositionOffset = 287.0;
   }
   else {
-    alliancePositionOffset = 0.0;
+    allianceXPositionOffset = 0.0;
   }
-  */
+  
 
-  double startX = 158.61; // constant: tape line in front of hub (inches) (182.11 - 23.5)
+  double startX = 158.61 + allianceXPositionOffset; // constant: tape line in front of hub (inches) (182.11 - 23.5)
+  TurretConstants::hubX += hubXPositionOffset;
 
   if (fieldPosition == "Top Trench") {
     startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
-                            units::inch_t(317.7 - 25.17 + alliancePositionOffset).convert<units::meter>(),
+                            units::inch_t(317.7 - 25.17).convert<units::meter>(),
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Top Bump") {
     startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
-                            units::inch_t(317.7 - (65.65 + 73/2) + alliancePositionOffset).convert<units::meter>(),
+                            units::inch_t(317.7 - (65.65 + 73/2)).convert<units::meter>(),
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Front Hub") {
     startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
-                            units::inch_t(317.7/2 + alliancePositionOffset).convert<units::meter>(),
+                            units::inch_t(317.7/2).convert<units::meter>(),
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Bottom Bump") {
     startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
-                            units::inch_t(65.65 + 73/2 + alliancePositionOffset).convert<units::meter>(),
+                            units::inch_t(65.65 + 73/2).convert<units::meter>(),
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Bottom Trench") {
     startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
-                            units::inch_t(25.17 + alliancePositionOffset).convert<units::meter>(),
+                            units::inch_t(25.17).convert<units::meter>(),
                             frc::Rotation2d{0_rad}};
   }
 

@@ -121,8 +121,8 @@ namespace TurretConstants {
     static constexpr double turretTurnRatio = 1.0;
 
     // Hub target position on the field (inches, origin = back-left, X = right, Y = forward)
-    static constexpr double hubX = 182.11;  // from field diagram left-wall measurement
-    static constexpr double hubY = 158.85;  // (317.69 / 2) confirmed by 158.84 dims each side
+    inline static double hubX = 182.11;  // from field diagram left-wall measurement
+    inline static double hubY = 158.85;  // (317.69 / 2) confirmed by 158.84 dims each side
 
     //TURRET CONSTANTS
     //need to tune
