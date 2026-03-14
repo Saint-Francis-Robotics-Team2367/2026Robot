@@ -48,10 +48,7 @@ public:
         frc::SmartDashboard::PutBoolean("Quest Connected?", questConnected);
 
         bool topicConnected = inst.GetTopic("/QuestNav/frameData").Exists();
-        frc::SmartDashboard::PutBoolean("QuestNav Topic Exists", topicConnected);
-
         auto lastUpdate = m_questNavSub.GetLastChange();
-        frc::SmartDashboard::PutNumber("QuestNav Last Update", lastUpdate);
 
         std::vector<uint8_t> rawBytes = m_questNavSub.Get({});
 
@@ -84,8 +81,8 @@ public:
             
             robotQuaternion = frc::Quaternion(protoRot.q().w(), protoRot.q().x(), protoRot.q().y(), protoRot.q().z());
 
-            frc::SmartDashboard::PutNumber("Robot Pose X", robotPose.X().value());
-            frc::SmartDashboard::PutNumber("Robot Pose Y", robotPose.Y().value());
+            // frc::SmartDashboard::PutNumber("Robot Pose X", robotPose.X().value());
+            // frc::SmartDashboard::PutNumber("Robot Pose Y", robotPose.Y().value());
         }
         }
     }

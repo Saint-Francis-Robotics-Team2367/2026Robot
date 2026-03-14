@@ -95,6 +95,7 @@ void Turret::autoMoveToTarget() {
 
 
 void Turret::setAngle(double targetAngle) {
+    double clampedTarget = std::clamp(targetAngle, -TurretConstants::turretMaxAngle, TurretConstants::turretMaxAngle);
     turretMotor.SetControl(positionVoltage.WithPosition(units::angle::turn_t(targetAngle/360 * TurretConstants::turretPulleyRatio)).WithSlot(0));
 }
 

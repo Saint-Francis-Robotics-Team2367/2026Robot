@@ -41,14 +41,14 @@ RobotContainer::RobotContainer() {
   positionChooser.AddOption("Top Trench", topTrench);
   frc::SmartDashboard::PutData("Field Position", &positionChooser);
 
+  fieldPosition = positionChooser.GetSelected();
+  allianceColor = allianceChooser.GetSelected();
+
   autoTargeting = true;
 }
 
 
 void RobotContainer::InitializeStartPose() {
-  std::string fieldPosition = positionChooser.GetSelected();
-  std::string allianceColor = allianceChooser.GetSelected();
-
   if (allianceColor == "Red Alliance") {
     allianceXPositionOffset = 334.0;
     hubXPositionOffset = 287.0;
@@ -281,6 +281,13 @@ void RobotContainer::ConfigureBindings() {
 
         frc::SmartDashboard::PutNumber("Turret Controller Left X", leftX);
 
+        if (leftX > 0.5){
+          m_turret.setAngle(m_turret.getCurrentMotorAngle() + 5.0);
+        }
+        else if (leftX <= -0.5){
+          m_turret.setAngle(m_turret.getCurrentMotorAngle() - 5.0);
+        }
+
         m_turret.setAngle(m_turret.getCurrentMotorAngle() + TurretConstants::turretTurnRatio * leftX * 1.0);
       }
     )
@@ -297,6 +304,9 @@ void RobotContainer::ConfigureBindings() {
         frc::SmartDashboard::PutNumber("Shooter Hood Right Y", rightY);
 
         HoodedShooter.setManualHoodPosition(HoodedShooter.findHoodAngle() + ShooterConstants::shooterTurnRatio * rightY * 10.0);
+
+        if (rightY > 0.5) HoodedShooter.setManualHoodPosition(HoodedShooter.findHoodAngle()+1.0);
+        else if (rightY < -0.5) HoodedShooter.setManualHoodPosition(HoodedShooter.findHoodAngle() - 1.0);
       }
     )
   );
