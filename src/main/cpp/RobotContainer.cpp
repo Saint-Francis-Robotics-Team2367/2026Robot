@@ -27,6 +27,7 @@ RobotContainer::RobotContainer() {
   drivetrain.initModules();
   drivetrain.initGyro();
   QuestNav::getInstance().init();
+  drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
 
   allianceChooser.SetDefaultOption("Blue Alliance", blueAlliance);
   allianceChooser.AddOption("Red Alliance", redAlliance);
@@ -39,46 +40,55 @@ RobotContainer::RobotContainer() {
   positionChooser.AddOption("Top Trench", topTrench);
   frc::SmartDashboard::PutData("Field Position", &positionChooser);
 
+  autoTargeting = true;
+}
+
+
+void RobotContainer::InitializeStartPose() {
   std::string fieldPosition = positionChooser.GetSelected();
+
+  /*
+  redundant, local pose is the same regardless of alliance
   std::string allianceColor = allianceChooser.GetSelected();
 
-  if (allianceColor == "Red") {
+  if (allianceColor == "Red Alliance") {
     alliancePositionOffset = 330.0;
   }
   else {
     alliancePositionOffset = 0.0;
   }
+  */
+
+  double startX = 158.61; // constant: tape line in front of hub (inches) (182.11 - 23.5)
 
   if (fieldPosition == "Top Trench") {
-    startPose = frc::Pose2d{units::inch_t(317.7 - 25.17).convert<units::meter>(),
-                            units::inch_t(158.6 + alliancePositionOffset).convert<units::meter>(),
+    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
+                            units::inch_t(317.7 - 25.17 + alliancePositionOffset).convert<units::meter>(),
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Top Bump") {
-    startPose = frc::Pose2d{units::inch_t(317.7 - (65.65 + 73/2)).convert<units::meter>(),
-                            units::inch_t(158.6 + alliancePositionOffset).convert<units::meter>(),
+    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
+                            units::inch_t(317.7 - (65.65 + 73/2) + alliancePositionOffset).convert<units::meter>(),
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Front Hub") {
-    startPose = frc::Pose2d{units::inch_t(317.7/2).convert<units::meter>(),
-                            units::inch_t(158.6 + alliancePositionOffset).convert<units::meter>(),
+    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
+                            units::inch_t(317.7/2 + alliancePositionOffset).convert<units::meter>(),
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Bottom Bump") {
-    startPose = frc::Pose2d{units::inch_t(65.65 + 73/2).convert<units::meter>(),
-                            units::inch_t(158.6 + alliancePositionOffset).convert<units::meter>(),
+    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
+                            units::inch_t(65.65 + 73/2 + alliancePositionOffset).convert<units::meter>(),
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Bottom Trench") {
-    startPose = frc::Pose2d{units::inch_t(25.17).convert<units::meter>(),
-                            units::inch_t(158.6 + alliancePositionOffset).convert<units::meter>(),
+    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
+                            units::inch_t(25.17 + alliancePositionOffset).convert<units::meter>(),
                             frc::Rotation2d{0_rad}};
   }
-  
-  drivetrain.resetOdometry(startPose);
-  autoTargeting = true;
-}
 
+  QuestNav::getInstance().SetStartPose(startPose);
+}
 
 void RobotContainer::ConfigureBindings() {
   // ******************** Trigger Functions ********************

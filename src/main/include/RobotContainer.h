@@ -72,4 +72,5 @@ class RobotContainer {
   frc::SlewRateLimiter<units::scalar> rotLimiter{ControllerConstants::slewRate / 1_s};
 
   void ConfigureBindings();
+  void InitializeStartPose();
 };
