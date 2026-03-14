@@ -20,6 +20,7 @@ void Shooter::init() {
     FlywheelConfig.Slot0.kI = ShooterConstants::FlywheelI;
     FlywheelConfig.Slot0.kD = ShooterConstants::FlywheelD;
     FlywheelConfig.Slot0.kV = ShooterConstants::FlywheelV;
+    FlywheelConfig.Slot0.kS = ShooterConstants::FlywheelS;
 
     FlywheelConfig.CurrentLimits.SupplyCurrentLimit = 20_A;
     FlywheelConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -58,7 +59,7 @@ bool Shooter::setFlywheelSpeed(float shooterRPM) {
 
     float targetVelocity = efficientRPM / 60.0;
     float actualVelocity = ShooterMotor.GetVelocity().GetValue().value();
-    const float tolerance = 150; // or whatever tolerance you want
+    const float tolerance = 3; // 2.5 TPS ≈ 150 RPM
 
     if (std::fabs(targetVelocity - actualVelocity) < tolerance) {
         // std::cout << "Shooter at target speed." << std::endl;

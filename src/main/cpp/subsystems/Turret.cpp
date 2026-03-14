@@ -27,6 +27,7 @@ void Turret::setSpeed(double spd){
 
 void Turret::changeSpeed(double increment){
     speed += increment;
+    turretMotor.Set(speed);
 }
 
 double Turret::getSpeed(){
@@ -47,6 +48,8 @@ void Turret::stop(){
 double Turret::getCurrentMotorAngle() {
     double motorPos = turretMotor.GetPosition().GetValueAsDouble() * 360; //find pos in degrees
     double currentAngle = std::fmod(motorPos/TurretConstants::turretPulleyRatio, 360.0);//pullyRatio = 44
+    if (currentAngle > 180.0)  currentAngle -= 360.0;
+    if (currentAngle < -180.0) currentAngle += 360.0;
     return currentAngle;
 }
 
@@ -88,13 +91,6 @@ void Turret::setAngle(double targetAngle) {
     }
     else{
         frc::SmartDashboard::PutBoolean("is angle in range?", true);
-        if (targetAngle > 180) {
-            targetAngle = std::fmod(targetAngle, 360) - 360;
-        } 
-
-        else if (targetAngle < -180) {
-            targetAngle = std::fmod(targetAngle, -360) + 360;
-        } 
         turretMotor.SetControl(positionVoltage.WithPosition(units::angle::turn_t(targetAngle/360 * TurretConstants::turretPulleyRatio)).WithSlot(0));
     }
 

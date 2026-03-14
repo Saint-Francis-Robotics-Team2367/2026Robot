@@ -75,7 +75,7 @@ namespace ShooterConstants {
     // CAN IDs
     static constexpr int ShooterID = 36; // Wheel
     static constexpr int RackMotorID = 27; // Kraken
-    static constexpr int RackEncoderID = 2.0; // ThroughBore
+    static constexpr int RackEncoderID = 2; // ThroughBore
     static constexpr int FeederID = 21; // Feeder
 
     // PID Constants Feeder
@@ -89,7 +89,7 @@ namespace ShooterConstants {
     static constexpr double FlywheelI = 0.0;
     static constexpr double FlywheelD = 0.0;
     static constexpr double FlywheelV = 0.09;
-    static constexpr double FlywheelS = 0.1;;
+    static constexpr double FlywheelS = 0.1;
     
     // PID Constants Rack
     static constexpr double RackP = 0.025;
