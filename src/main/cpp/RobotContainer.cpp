@@ -75,7 +75,7 @@ void RobotContainer::InitializeStartPose() {
   }
   else if (fieldPosition == "Front Hub") {
     startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
-                            units::meter_t(4.025 * 6.67),
+                            units::meter_t(4.025),
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Bottom Bump") {
