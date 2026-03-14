@@ -231,7 +231,7 @@ void RobotContainer::ConfigureBindings() {
       frc2::cmd::Parallel(
         frc2::cmd::StartEnd (
           [this] {
-            HoodedShooter.setFlywheelSpeed(HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches));
+            HoodedShooter.setFlywheelSpeed(-(HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches)));
           },
           [this] {
             HoodedShooter.ShooterMotor.Set(0);
