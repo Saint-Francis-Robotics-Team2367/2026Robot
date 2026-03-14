@@ -67,15 +67,15 @@ namespace ShooterConstants {
     static constexpr double GRAVITY = 9.81;
     static constexpr double PI = M_PI;
     static constexpr double SHOOTEREFFICIENCY = 0.65;
-    static constexpr double MeterConversionFactor = 0.0254f; // inches to meters
-    static constexpr double meterToInches = 39.37;
+    static constexpr double InchesToMeters = 0.0254f; // inches to meters
+    static constexpr double MeterToInches = 39.37;
     static constexpr double motorGearRatio = 116.8831;
     static constexpr double shooterTurnRatio = 1.0;
 
     // CAN IDs
     static constexpr int ShooterID = 36; // Wheel
     static constexpr int RackMotorID = 27; // Kraken
-    static constexpr int RackEncoderID = 2.0; // ThroughBore
+    static constexpr int RackEncoderID = 2; // ThroughBore
     static constexpr int FeederID = 21; // Feeder
 
     // PID Constants Feeder
@@ -85,10 +85,11 @@ namespace ShooterConstants {
     static constexpr double FeederV = 0.0;
 
     // PID Constants Shooter
-    static constexpr double FlywheelP = 0.05;
+    static constexpr double FlywheelP = 0.09;
     static constexpr double FlywheelI = 0.0;
     static constexpr double FlywheelD = 0.0;
-    static constexpr double FlywheelV = 0.01;
+    static constexpr double FlywheelV = 0.09;
+    static constexpr double FlywheelS = 0.1;
     
     // PID Constants Rack
     static constexpr double RackP = 0.025;
@@ -118,9 +119,11 @@ namespace TurretConstants {
     static constexpr int turretEncoderID = 60;
     static constexpr int turretMotorID = 18;
     static constexpr double turretTurnRatio = 1.0;
-    
-    static constexpr double hubHeading = 0.0; // deg
-    
+
+    // Hub target position on the field (inches, origin = back-left, X = right, Y = forward)
+    static constexpr double hubX = 182.11;  // from field diagram left-wall measurement
+    static constexpr double hubY = 158.85;  // (317.69 / 2) confirmed by 158.84 dims each side
+
     //TURRET CONSTANTS
     //need to tune
     static constexpr double turretkP = 0.5;
@@ -129,5 +132,6 @@ namespace TurretConstants {
 
     constexpr double turretPulleyRatio = 44; //big wheel to small wheel (encoder) ratio
     constexpr double turretTbRatio = 8.77778;
+    constexpr double turretMaxAngle = 45.0; // deg, mechanical hard limit
 
 }

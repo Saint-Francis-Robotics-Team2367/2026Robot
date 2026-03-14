@@ -37,6 +37,7 @@ void Robot::RobotPeriodic() {
       odometrySeeded = true;
     }
   }
+  
   double currAngle = m_container.m_turret.getCurrentMotorAngle();
   frc::SmartDashboard::PutNumber("Turret Motor Pos", currAngle);
   frc::SmartDashboard::PutNumber("Turret setpoint", m_container.m_turret.getSetpoint());
@@ -46,6 +47,16 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Target Position", m_container.HoodedShooter.targetAbs);
   frc::SmartDashboard::PutNumber("Motor RPM", m_container.HoodedShooter.getShooterVelocity());
   m_container.BallIndexer.DisplayValues();
+  // double currAngle = m_container.m_turret.getCurrentMotorAngle();
+  // frc::SmartDashboard::PutNumber("Turret Motor Pos", currAngle);
+  // frc::SmartDashboard::PutNumber("Turret setpoint", m_container.m_turret.getSetpoint());
+  // frc::SmartDashboard::PutBoolean("is turret at angle?", m_container.m_turret.isAtAngle(m_container.m_turret.getSetpoint()));
+  // frc::SmartDashboard::PutNumber("Rack Position", m_container.HoodedShooter.RackMotor.GetPosition().GetValueAsDouble());
+  // frc::SmartDashboard::PutNumber("Offset Position", m_container.HoodedShooter.hoodCenterRot);
+  // frc::SmartDashboard::PutNumber("Target Position", m_container.HoodedShooter.targetAbs);
+  // frc::SmartDashboard::PutNumber("Motor RPM", m_container.HoodedShooter.getShooterVelocity());
+  // m_container.BallIndexer.DisplayValues();
+  frc::SmartDashboard::PutNumber("Quest Heading", QuestNav::getInstance().getPose2d().Rotation().Degrees().value());
 }
 
 /**
@@ -62,6 +73,8 @@ void Robot::DisabledPeriodic() {}
  * RobotContainer} class.
  */
 void Robot::AutonomousInit() {
+  m_container.InitializeStartPose();
+
   // m_autonomousCommand = m_container.GetAutonomousCommand();
 
   // if (m_autonomousCommand) {
@@ -72,6 +85,8 @@ void Robot::AutonomousInit() {
 void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {
+  m_container.InitializeStartPose();
+
   // This makes sure that the autonomous stops running when
   // teleop starts running. If you want the autonomous to
   // continue until interrupted by another command, remove
