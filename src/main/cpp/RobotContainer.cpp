@@ -23,13 +23,72 @@ RobotContainer::RobotContainer() {
   HoodedShooter.init(); // Initalize Shooter motors and encoders
   BallFeeder.init(); // Initialize Feeder motors and encoders
   BallIndexer.init(); // Initialize Indexer motors and encoders
-  
+  m_turret.init();
+
   drivetrain.initModules();
   drivetrain.initGyro();
   QuestNav::getInstance().init();
   drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
+
+  allianceChooser.SetDefaultOption("Blue Alliance", blueAlliance);
+  allianceChooser.AddOption("Red Alliance", redAlliance);
+  frc::SmartDashboard::PutData("Alliance Color", &allianceChooser);
+
+  positionChooser.SetDefaultOption("Bottom Trench", bottomTrench);
+  positionChooser.AddOption("Bottom Bump", bottomBump);
+  positionChooser.AddOption("Front Hub", frontHub);
+  positionChooser.AddOption("Top Bump", topBump);
+  positionChooser.AddOption("Top Trench", topTrench);
+  frc::SmartDashboard::PutData("Field Position", &positionChooser);
+
+  autoTargeting = true;
 }
 
+
+void RobotContainer::InitializeStartPose() {
+  std::string fieldPosition = positionChooser.GetSelected();
+  std::string allianceColor = allianceChooser.GetSelected();
+
+  if (allianceColor == "Red Alliance") {
+    allianceXPositionOffset = 334.0;
+    hubXPositionOffset = 287.0;
+  }
+  else {
+    allianceXPositionOffset = 0.0;
+  }
+  
+
+  double startX = 158.61 + allianceXPositionOffset; // constant: tape line in front of hub (inches) (182.11 - 23.5)
+  TurretConstants::hubX += hubXPositionOffset;
+
+  if (fieldPosition == "Top Trench") {
+    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
+                            units::inch_t(317.7 - 25.17).convert<units::meter>(),
+                            frc::Rotation2d{0_rad}};
+  }
+  else if (fieldPosition == "Top Bump") {
+    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
+                            units::inch_t(317.7 - (65.65 + 73/2)).convert<units::meter>(),
+                            frc::Rotation2d{0_rad}};
+  }
+  else if (fieldPosition == "Front Hub") {
+    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
+                            units::inch_t(317.7/2).convert<units::meter>(),
+                            frc::Rotation2d{0_rad}};
+  }
+  else if (fieldPosition == "Bottom Bump") {
+    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
+                            units::inch_t(65.65 + 73/2).convert<units::meter>(),
+                            frc::Rotation2d{0_rad}};
+  }
+  else if (fieldPosition == "Bottom Trench") {
+    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
+                            units::inch_t(25.17).convert<units::meter>(),
+                            frc::Rotation2d{0_rad}};
+  }
+
+  drivetrain.resetOdometry(startPose);
+}
 
 void RobotContainer::ConfigureBindings() {
   // ******************** Trigger Functions ********************
@@ -59,40 +118,39 @@ void RobotContainer::ConfigureBindings() {
 
   // ******************** DEFAULT COMMANDS ********************
   drivetrain.SetDefaultCommand(
-      drivetrain.Run(
-        [this]() {
-          double x = frc::ApplyDeadband(driverCtr.GetLeftX(), ControllerConstants::deadband);
-          double y = frc::ApplyDeadband(driverCtr.GetLeftY(), ControllerConstants::deadband);
-          double rot = frc::ApplyDeadband(driverCtr.GetRightX(), ControllerConstants::deadband);
+    drivetrain.Run(
+      [this]() {
+        double x = frc::ApplyDeadband(driverCtr.GetLeftX(), ControllerConstants::deadband);
+        double y = frc::ApplyDeadband(driverCtr.GetLeftY(), ControllerConstants::deadband);
+        double rot = frc::ApplyDeadband(driverCtr.GetRightX(), ControllerConstants::deadband);
 
-          x = xLimiter.Calculate(x);
-          y = yLimiter.Calculate(y);
-          rot = rotLimiter.Calculate(rot);
+        x = xLimiter.Calculate(x);
+        y = yLimiter.Calculate(y);
+        rot = rotLimiter.Calculate(rot);
 
-          double vx = x * ModuleConstants::moduleMaxMPS;
-          double vy = y * ModuleConstants::moduleMaxMPS;
-          rot = rot * ModuleConstants::moduleMaxRot * 2;
+        double vx = x * ModuleConstants::moduleMaxMPS;
+        double vy = y * ModuleConstants::moduleMaxMPS;
+        rot = rot * ModuleConstants::moduleMaxRot * 2;
 
-          frc::SmartDashboard::PutNumber("vx", vx);
-          frc::SmartDashboard::PutNumber("vy", vy);
-          frc::SmartDashboard::PutNumber("rot", rot);
+        frc::SmartDashboard::PutNumber("vx", vx);
+        frc::SmartDashboard::PutNumber("vy", vy);
+        frc::SmartDashboard::PutNumber("rot", rot);
 
-          drivetrain.Drive(vx, -vy, -rot, drivetrain.gyroConnected());
-
-        }
-      )
+        drivetrain.Drive(vx, -vy, rot, drivetrain.gyroConnected());
+      }
+    )
   );
 
   // HoodedShooter.SetDefaultCommand(
   //   HoodedShooter.Run(
-  //     [this]() {HoodedShooter.setFlywheelSpeed(-1000);}
+  //     [this]() {HoodedShooter.setFlywheelSpeed(-500);}
   //   )
   // );
 
   turretAutoTargetingOn.WhileTrue(
     frc2::cmd::Run(
       [this] {
-        m_turret.autoTarget();
+        m_turret.autoMoveToTarget();
       }
     )
   );
@@ -140,29 +198,60 @@ void RobotContainer::ConfigureBindings() {
   // Reverse Indexer and Feeder
   codriverCtr.L2().WhileTrue(
     frc2::cmd::Parallel(
+      BallIndexer.RunIndexer(&BallIndexer, -3000),
+      BallFeeder.RunFeeder(&BallFeeder, -3000)
+    )
+  );
+
+  codriverCtr.L1().WhileTrue(
+    frc2::cmd::Parallel(
       BallIndexer.RunIndexer(&BallIndexer, 3000),
       BallFeeder.RunFeeder(&BallFeeder, 3000)
     )
   );
 
+  // Apply Hood Brake
+  /*
+  codriverCtr.Triangle().OnTrue(
+    HoodedShooter.RunOnce(
+      [this] {HoodedShooter.applyHoodBrake();}
+    )
+  );
+  */
+
   codriverCtr.R2().ToggleOnTrue(
-    frc2::cmd::Parallel(
-      HoodedShooter.Run(
-        [this] {HoodedShooter.setFlywheelSpeed(-(HoodedShooter.findOptimalRPM(48, 232)));}
+    frc2::cmd::Sequence(
+      // Step 1: Set hood position
+      HoodedShooter.RunOnce(
+        [this] {
+          HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches), TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches);
+        }
       ),
-      frc2::cmd::Sequence(
-        frc2::cmd::WaitUntil(
+      // Step 2: Spin up flywheel and wait 4 seconds, then feed while flywheel keeps spinning
+      frc2::cmd::Parallel(
+        frc2::cmd::StartEnd (
           [this] {
-            return (HoodedShooter.getShooterVelocity() > (0.9 * HoodedShooter.findOptimalRPM(48, 232)));
+            HoodedShooter.setFlywheelSpeed(-(HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches)));
+          },
+          [this] {
+            HoodedShooter.ShooterMotor.Set(0);
+            HoodedShooter.moveHoodToZero();
           }
         ),
-        frc2::cmd::RunOnce([this] {
-          frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
-          HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(48, 232), 48, 232);
-        }),
-        frc2::cmd::Parallel(
-          BallIndexer.RunIndexer(&BallIndexer, -3000),
-          BallFeeder.RunFeeder(&BallFeeder, -3000)
+        frc2::cmd::Sequence(
+          frc2::cmd::WaitUntil(
+            [this] {
+              return (HoodedShooter.getShooterVelocity() > (0.85 * (1/ShooterConstants::SHOOTEREFFICIENCY) * HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches)));
+            }
+          ),
+          // Step 3: Run indexer and feeder while flywheel is still spinning
+          frc2::cmd::RunOnce([this] {
+            frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
+          }),
+          frc2::cmd::Parallel(
+            BallIndexer.RunIndexer(&BallIndexer, -3000),
+            BallFeeder.RunFeeder(&BallFeeder, -3000)
+          )
         )
       )
     )
@@ -182,7 +271,7 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
-  // Co-Driver Manual Turret Movement
+  // Co-Driver Manual Turret Movement (NEEDS TO BE TESTED)
   (codriverCtr.R1() && leftStickXMoving).WhileTrue(
     m_turret.Run(
       [this] {
@@ -192,12 +281,12 @@ void RobotContainer::ConfigureBindings() {
 
         frc::SmartDashboard::PutNumber("Turret Controller Left X", leftX);
 
-        m_turret.setAngle(m_turret.getCurrentMotorAngle() + TurretConstants::turretTurnRatio * leftX * 10.0);
+        m_turret.setAngle(m_turret.getCurrentMotorAngle() + TurretConstants::turretTurnRatio * leftX * 1.0);
       }
     )
   );
 
-  // Co-Driver Manual Hood Movement
+  // Co-Driver Manual Hood Movement (NEEDS TO BE TESTED)
   (codriverCtr.R1() && rightStickYMoving).WhileTrue(
     HoodedShooter.Run(
       [this] {

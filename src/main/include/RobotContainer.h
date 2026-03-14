@@ -7,6 +7,7 @@
 #include <frc2/command/CommandPtr.h>
 #include "frc2/command/Commands.h"
 #include <frc2/command/button/CommandPS5Controller.h>
+#include "frc/smartdashboard/SendableChooser.h"
 
 #include "Constants.h"
 
@@ -40,6 +41,7 @@ class RobotContainer {
   DriveSubsystem drivetrain;
   Turret m_turret;
   Lemonlight m_lemonlight;
+  Turret m_turret = Turret(drivetrain);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   frc2::CommandPS5Controller driverCtr{0}; //drive controller should be first controller that is plugged in
@@ -52,11 +54,27 @@ class RobotContainer {
   RunIntake mRunIntake;
   DeployIntake mDeployIntake;
 
-  bool autoTargeting = true;
+  bool autoTargeting = false;
+
+  frc::SendableChooser<std::string> positionChooser;
+  const std::string topTrench = "Top Trench";
+  const std::string topBump = "Top Bump";
+  const std::string frontHub = "Front Hub";
+  const std::string bottomBump = "Bottom Bump";
+  const std::string bottomTrench = "Bottom Trench";
+
+  frc::SendableChooser<std::string> allianceChooser;
+  const std::string blueAlliance = "Blue Alliance";
+  const std::string redAlliance = "Red Alliance";
+
+  frc::Pose2d startPose{0_m, 0_m, 0_rad};
+  double allianceXPositionOffset = 0.0;
+  double hubXPositionOffset = 0.0;
 
   frc::SlewRateLimiter<units::scalar> xLimiter{ControllerConstants::slewRate / 1_s};
   frc::SlewRateLimiter<units::scalar> yLimiter{ControllerConstants::slewRate / 1_s};
   frc::SlewRateLimiter<units::scalar> rotLimiter{ControllerConstants::slewRate / 1_s};
 
   void ConfigureBindings();
+  void InitializeStartPose();
 };

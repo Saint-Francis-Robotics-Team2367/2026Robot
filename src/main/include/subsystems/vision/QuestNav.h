@@ -18,6 +18,8 @@ private:
     nt::RawSubscriber m_questNavSub;
     questnav::protos::data::ProtobufQuestNavFrameData m_frame;
     units::radian_t yawOffset = 0_rad;
+    units::meter_t xOffset = 0_m;
+    units::meter_t yOffset = 0_m;
 
     bool questConnected = false;
 public:
@@ -88,6 +90,11 @@ public:
         }
     }
 
+    void SetStartPose(frc::Pose2d pose) {
+        xOffset = pose.X();
+        yOffset = pose.Y();
+    }
+
     void ZeroGyro(double offset = 0.0) { // radians
         yawOffset = robotPose.Rotation().Z() + units::radian_t(offset); 
     }
@@ -107,7 +114,7 @@ public:
     }
 
     frc::Pose2d getPose2d() {
-        return frc::Pose2d(robotPose.X(), robotPose.Y(), getRotation2d());
+        return frc::Pose2d(robotPose.X() + xOffset, robotPose.Y() + yOffset, getRotation2d());
     }
 
     frc::Rotation2d getBoundedAngleCCW()

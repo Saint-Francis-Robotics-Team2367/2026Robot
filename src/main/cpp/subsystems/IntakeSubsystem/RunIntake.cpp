@@ -7,6 +7,9 @@ void RunIntake::init() {
     rollerConfig.Slot0.kI = 0.0;
     rollerConfig.Slot0.kD = 0.0;
 
+    rollerConfig.CurrentLimits.SupplyCurrentLimit = 15_A;
+    rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+
     rollerConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
     rollerConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
     rollerMotor.GetConfigurator().Apply(rollerConfig);

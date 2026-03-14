@@ -40,7 +40,7 @@ private:
   SwerveModule backLeft{HardwareIDs::BLdriveID, HardwareIDs::BLsteerID, HardwareIDs::BLencoderID, "Drivetrain"};
   SwerveModule backRight{HardwareIDs::BRdriveID, HardwareIDs::BRsteerID, HardwareIDs::BRencoderID, "Drivetrain"};
 
-  //CHANGE THESE IF ROBOT DIMENSIONS CHANGE; positions of swerve modules relative to robot
+    //CHANGE THESE IF ROBOT DIMENSIONS CHANGE; positions of swerve modules relative to robot
   frc::SwerveDriveKinematics<4> kinematics {
     frc::Translation2d{0.381_m, 0.381_m}, 
     frc::Translation2d{0.381_m, -0.381_m},
@@ -50,7 +50,7 @@ private:
 
   frc::SwerveDrivePoseEstimator<4> odometry{
         kinematics, 
-        pigeon.GetRotation2d(), 
+        QuestNav::getInstance().getRotation2d(), 
         { 
           frontLeft.getPosition(),
           frontRight.getPosition(),
