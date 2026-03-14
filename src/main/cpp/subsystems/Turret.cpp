@@ -63,8 +63,8 @@ double Turret::getSetpoint(){
 
 //updated code for it, incorrect heading in original one
 void Turret::autoMoveToTarget() {
-    double dx = 158.85 - QuestNav::getInstance().getPose2d().X().value();
-    double dy = 102.8 - QuestNav::getInstance().getPose2d().Y().value();
+    double dx = 158.6 - QuestNav::getInstance().getPose2d().X().value();
+    double dy = 158.85 - QuestNav::getInstance().getPose2d().Y().value();
     
     double angleToHub = atan2(dy, dx) * 180.0 / M_PI;
     double robotHeading = QuestNav::getInstance().getPose2d().Rotation().Degrees().value();
@@ -84,7 +84,7 @@ void Turret::autoMoveToTarget() {
 
 void Turret::setAngle(double targetAngle) {
     if (targetAngle > 45 || targetAngle < -45){
-        frc::SmartDashboard::PutBoolean("angle is not in range", false);
+        frc::SmartDashboard::PutBoolean("is angle in range?", false);
     }
     else{
         frc::SmartDashboard::PutBoolean("is angle in range?", true);
@@ -137,8 +137,10 @@ void Turret::ZeroTurret() {
     turretMotor.SetPosition(0_tr);
 }
 
+/*
 void Turret::autoTarget() {
     double heading = QuestNav::getInstance().getPose2d().Rotation().Degrees().value();
     double targetDeg = (heading - TurretConstants::hubHeading);
     setAngle(targetDeg);
 }
+*/
