@@ -23,6 +23,7 @@
 #include "frc/MathUtil.h"
 #include "frc/smartdashboard/SmartDashboard.h"
 #include "subsystems/Turret.h"
+#include "subsystems/vision/Lemonlight.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -38,6 +39,8 @@ class RobotContainer {
   frc2::CommandPtr GetAutonomousCommand();
 
   DriveSubsystem drivetrain;
+  Turret m_turret;
+  Lemonlight m_lemonlight;
   Turret m_turret = Turret(drivetrain);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
