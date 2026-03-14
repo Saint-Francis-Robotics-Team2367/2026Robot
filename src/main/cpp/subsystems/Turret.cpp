@@ -63,11 +63,24 @@ double Turret::getSetpoint(){
 
 //updated code for it, incorrect heading in original one
 void Turret::autoMoveToTarget() {
-    double angleToHub = atan((102.8-QuestNav::getInstance().getPose2d().Y().value())/(158.85-QuestNav::getInstance().getPose2d().X().value()));
+    double dx = 158.85 - QuestNav::getInstance().getPose2d().X().value();
+    double dy = 102.8 - QuestNav::getInstance().getPose2d().Y().value();
+    
+    double angleToHub = atan2(dy, dx) * 180.0 / M_PI;
     double robotHeading = QuestNav::getInstance().getPose2d().Rotation().Degrees().value();
-    frc::SmartDashboard::PutNumber("turret angle", (angleToHub * 180.0 / M_PI) - robotHeading);
-    setAngle((angleToHub * 180.0 / M_PI) - robotHeading);
+    double turretTarget = angleToHub - robotHeading;
+
+    while (turretTarget > 180)  turretTarget -= 360;
+    while (turretTarget < -180) turretTarget += 360;
+
+    double clampedTarget = std::clamp(turretTarget, -45.0, 45.0);
+
+    frc::SmartDashboard::PutNumber("turret angle", turretTarget);
+    frc::SmartDashboard::PutBoolean("is angle in range?", turretTarget == clampedTarget);
+    
+    turretMotor.SetControl(positionVoltage.WithPosition(units::angle::turn_t(clampedTarget / 360 * TurretConstants::turretPulleyRatio)).WithSlot(0));
 }
+
 
 void Turret::setAngle(double targetAngle) {
     if (targetAngle > 45 || targetAngle < -45){
