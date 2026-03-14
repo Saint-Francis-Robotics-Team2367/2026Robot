@@ -59,7 +59,7 @@ bool Shooter::setFlywheelSpeed(float shooterRPM) {
 
     float targetVelocity = efficientRPM / 60.0;
     float actualVelocity = ShooterMotor.GetVelocity().GetValue().value();
-    const float tolerance = 3; // 2.5 TPS ≈ 150 RPM
+    const float tolerance = 3; // 3 TPS ≈ 180 RPM
 
     if (std::fabs(targetVelocity - actualVelocity) < tolerance) {
         // std::cout << "Shooter at target speed." << std::endl;
@@ -82,14 +82,14 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
 
     // Target point (dx, dy) in meters
     // Alter (7.5) to make it shoot farther or closer to the center of the goal
-    float dx = (7.5 * ShooterConstants::MeterConversionFactor) + std::sqrt(std::pow(horizontalOffset * ShooterConstants::MeterConversionFactor, 2.0f) + std::pow(yOffset * ShooterConstants::MeterConversionFactor, 2.0f));
-    const float dy = 72.0f * ShooterConstants::MeterConversionFactor;
-    const float verticalOffset = dy - (shooterHeight * ShooterConstants::MeterConversionFactor);
+    float dx = (7.5 * ShooterConstants::InchesToMeters) + std::sqrt(std::pow(horizontalOffset * ShooterConstants::InchesToMeters, 2.0f) + std::pow(yOffset * ShooterConstants::InchesToMeters, 2.0f));
+    const float dy = 72.0f * ShooterConstants::InchesToMeters;
+    const float verticalOffset = dy - (shooterHeight * ShooterConstants::InchesToMeters);
 
     // Desired vertex location  
     // Alter (24) to make it shooter higher
-    // const float VertexYPose = verticalOffset + (24.0f * ShooterConstants::MeterConversionFactor);
-    // float VertexXPose = dx - (24.0755062252f * ShooterConstants::MeterConversionFactor);
+    // const float VertexYPose = verticalOffset + (24.0f * ShooterConstants::InchesToMeters);
+    // float VertexXPose = dx - (24.0755062252f * ShooterConstants::InchesToMeters);
 
     // Solve projectile equation at (dx, dy)
     const float A = (ShooterConstants::GRAVITY * dx * dx) / (2.0f * exitVelo * exitVelo);
@@ -204,14 +204,10 @@ void Shooter::ZeroHood() {
     RackMotor.SetPosition(0_tr);
 }
 
-void Shooter::setManualHoodPosition(float targetAngle) {
-    double initialAngle = findHoodAngle();
-    // Convert chosen projectile angle (radians) -> hood angle (degrees)
-    float hoodAngleDegrees = targetAngle * 180.0f / ShooterConstants::PI;
-
-    // Convert hood angle to motor turns (absolute command)
-    // Assumes MotorGearRatio = motor turns per 1 hood revolution
-    float deltaDeg = hoodAngleDegrees - initialAngle; 
+void Shooter::setManualHoodPosition(float targetAngleDeg) {
+    // targetAngleDeg is a hood angle in degrees (same unit as findHoodAngle())
+    // deltaDeg is relative to the resting/max angle (68°), matching setHoodPosition's convention
+    float deltaDeg = targetAngleDeg - 68.0f;
     double motorTurnsTarget = (deltaDeg / 360.0) * ShooterConstants::motorGearRatio;
     double targetAbsLocal = hoodCenterRot + motorTurnsTarget;
 
@@ -221,5 +217,6 @@ void Shooter::setManualHoodPosition(float targetAngle) {
 }
 
 double Shooter::findHoodAngle() {
-    return RackMotor.GetPosition().GetValueAsDouble() / ShooterConstants::motorGearRatio;
+    // Inverse of setHoodPosition's motor-turns formula: angle = turns/gearRatio * 360 + restingAngle
+    return (RackMotor.GetPosition().GetValueAsDouble() / ShooterConstants::motorGearRatio) * 360.0 + 68.0;
 }

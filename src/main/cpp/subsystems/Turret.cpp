@@ -1,4 +1,5 @@
 #include "subsystems/Turret.h"
+#include "subsystems/vision/QuestNav.h"
 
 Turret::Turret() {
     //pids
@@ -57,6 +58,8 @@ double Turret::getCurrentMotorAngle() {
 double Turret::getCurrentEncoderAngle() {
     double encoderPos = encoder.GetPosition().GetValueAsDouble() * 360; //find pos in degrees
     double currentAngle = std::fmod(encoderPos/TurretConstants::turretTbRatio, 360.0);//tb to turret ratio = 8.7777
+    if (currentAngle > 180.0)  currentAngle -= 360.0;
+    if (currentAngle < -180.0) currentAngle += 360.0;
     return currentAngle;
 }
 
@@ -66,17 +69,23 @@ double Turret::getSetpoint(){
 
 //updated code for it, incorrect heading in original one
 void Turret::autoMoveToTarget() {
-    double dx = TurretConstants::MeterConversionFactor * (158.6 - QuestNav::getInstance().getPose2d().X().value());
-    double dy = TurretConstants::MeterConversionFactor * (158.85 - QuestNav::getInstance().getPose2d().Y().value());
     
-    double angleToHub = atan2(dy, dx) * 180.0 / M_PI;
+    // Convert robot pose from meters to inches to match hub coordinate constants
+    double robotX_in = QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::MeterToInches;
+    double robotY_in = QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::MeterToInches;
+    double dx = TurretConstants::hubX - robotX_in;
+    double dy = TurretConstants::hubY - robotY_in;
+
+    // atan2(dx, dy) gives angle from +Y (forward) axis, CW-positive toward +X (right).
+    // Negate to make CCW-positive so it matches the robotHeading convention (0 = facing forward/+Y, CCW+).
+    double angleToHub = -atan2(dx, dy) * 180.0 / M_PI;
     double robotHeading = QuestNav::getInstance().getPose2d().Rotation().Degrees().value();
     double turretTarget = angleToHub - robotHeading;
 
     while (turretTarget > 180)  turretTarget -= 360;
     while (turretTarget < -180) turretTarget += 360;
 
-    double clampedTarget = std::clamp(turretTarget, -45.0, 45.0);
+    double clampedTarget = std::clamp(turretTarget, -TurretConstants::turretMaxAngle, TurretConstants::turretMaxAngle);
 
     frc::SmartDashboard::PutNumber("turret angle", turretTarget);
     frc::SmartDashboard::PutBoolean("is angle in range?", turretTarget == clampedTarget);
@@ -86,29 +95,7 @@ void Turret::autoMoveToTarget() {
 
 
 void Turret::setAngle(double targetAngle) {
-    if (targetAngle > 45 || targetAngle < -45){
-        frc::SmartDashboard::PutBoolean("is angle in range?", false);
-    }
-    else{
-        frc::SmartDashboard::PutBoolean("is angle in range?", true);
-        turretMotor.SetControl(positionVoltage.WithPosition(units::angle::turn_t(targetAngle/360 * TurretConstants::turretPulleyRatio)).WithSlot(0));
-    }
-
-//Not yet tested! I need to test the encoder values first, and this is just a backup when skipping happens
-
-//Should I use a while loop to make it stop when it hits the setpoint on the encoder value?
-
-/*
-    if (!isAtAngle(targetAngle)){
-        if (targetAngle >= 0){
-            setSpeed(0.1);
-        }
-        else if(targetAngle < 0){
-            setSpeed(-0.1);
-        }
-    }
-*/
-
+    turretMotor.SetControl(positionVoltage.WithPosition(units::angle::turn_t(targetAngle/360 * TurretConstants::turretPulleyRatio)).WithSlot(0));
 }
 
 
