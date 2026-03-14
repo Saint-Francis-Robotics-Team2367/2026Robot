@@ -25,6 +25,7 @@ public:
   void initModules();
   void updateOdometry();
   void resetOdometry(frc::Pose2d pose);
+  
   frc::Pose2d getPose();
   void resetGyro();
   bool gyroConnected();

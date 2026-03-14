@@ -231,7 +231,7 @@ void RobotContainer::ConfigureBindings() {
       frc2::cmd::Parallel(
         frc2::cmd::StartEnd (
           [this] {
-            HoodedShooter.setFlywheelSpeed(-(HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches)));
+            HoodedShooter.setFlywheelSpeed(-1500);
           },
           [this] {
             HoodedShooter.ShooterMotor.Set(0);
@@ -241,7 +241,7 @@ void RobotContainer::ConfigureBindings() {
         frc2::cmd::Sequence(
           frc2::cmd::WaitUntil(
             [this] {
-              return (HoodedShooter.getShooterVelocity() > (0.85 * (1/ShooterConstants::SHOOTEREFFICIENCY) * HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches)));
+              return (HoodedShooter.getShooterVelocity() > 1400);
             }
           ),
           // Step 3: Run indexer and feeder while flywheel is still spinning
@@ -302,8 +302,6 @@ void RobotContainer::ConfigureBindings() {
         rightY = yLimiter.Calculate(rightY);
 
         frc::SmartDashboard::PutNumber("Shooter Hood Right Y", rightY);
-
-        HoodedShooter.setManualHoodPosition(HoodedShooter.findHoodAngle() + ShooterConstants::shooterTurnRatio * rightY * 10.0);
 
         if (rightY > 0.5) HoodedShooter.setManualHoodPosition(HoodedShooter.findHoodAngle()+1.0);
         else if (rightY < -0.5) HoodedShooter.setManualHoodPosition(HoodedShooter.findHoodAngle() - 1.0);

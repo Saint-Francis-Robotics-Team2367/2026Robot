@@ -107,7 +107,7 @@ void SwerveModule::setDesiredState(frc::SwerveModuleState& state) {
 }
 
 frc::SwerveModulePosition SwerveModule::getPosition() {
-    double conversionFactor = M_PI * 0.1016 * ModuleConstants::kDriveGearRatio;
+    double conversionFactor = M_PI * 0.1016 / ModuleConstants::kDriveGearRatio;
     return frc::SwerveModulePosition{units::meter_t(driveMotor.GetPosition().GetValueAsDouble() * conversionFactor),
                                      units::radian_t(encoder.GetAbsolutePosition().GetValueAsDouble() * MathConstants::TWO_PI - moduleOffset)
     };

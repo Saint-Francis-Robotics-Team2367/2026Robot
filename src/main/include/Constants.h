@@ -85,7 +85,7 @@ namespace ShooterConstants {
     static constexpr double FeederV = 0.0;
 
     // PID Constants Shooter
-    static constexpr double FlywheelP = 0.09;
+    static constexpr double FlywheelP = 0.65;
     static constexpr double FlywheelI = 0.0;
     static constexpr double FlywheelD = 0.0;
     static constexpr double FlywheelV = 0.09;

@@ -54,20 +54,21 @@ void Shooter::init() {
 
 bool Shooter::setFlywheelSpeed(float shooterRPM) {
     // set shooter velocity
-    float efficientRPM = shooterRPM / ShooterConstants::SHOOTEREFFICIENCY;
-    ShooterMotor.SetControl(ctre::phoenix6::controls::VelocityDutyCycle{units::angular_velocity::turns_per_second_t {efficientRPM / 60.0}});
+    // float efficientRPM = shooterRPM / ShooterConstants::SHOOTEREFFICIENCY;
+    ShooterMotor.SetControl(ctre::phoenix6::controls::VelocityVoltage{units::angular_velocity::turns_per_second_t{shooterRPM / 60.0}});
 
-    float targetVelocity = efficientRPM / 60.0;
-    float actualVelocity = ShooterMotor.GetVelocity().GetValue().value();
-    const float tolerance = 3; // 3 TPS ≈ 180 RPM
+    // float targetVelocity = efficientRPM / 60.0;
+    // float actualVelocity = ShooterMotor.GetVelocity().GetValue().value();
+    // const float tolerance = 3; // 3 TPS ≈ 180 RPM
 
-    if (std::fabs(targetVelocity - actualVelocity) < tolerance) {
-        // std::cout << "Shooter at target speed." << std::endl;
-        return true;
-    } else {
-        // std::cout << "Shooter NOT at target speed." << std::endl;
-        return false;
-    }
+    // if (std::fabs(targetVelocity - actualVelocity) < tolerance) {
+    //     // std::cout << "Shooter at target speed." << std::endl;
+    //     return true;
+    // } else {
+    //     // std::cout << "Shooter NOT at target speed." << std::endl;
+    //     return false;
+    // }
+    return true;
 }
 
 // initial angle is the angle of the hood at 0 degrees of rack rotation
