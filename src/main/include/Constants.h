@@ -85,10 +85,11 @@ namespace ShooterConstants {
     static constexpr double FeederV = 0.0;
 
     // PID Constants Shooter
-    static constexpr double FlywheelP = 0.05;
+    static constexpr double FlywheelP = 0.09;
     static constexpr double FlywheelI = 0.0;
     static constexpr double FlywheelD = 0.0;
-    static constexpr double FlywheelV = 0.01;
+    static constexpr double FlywheelV = 0.09;
+    static constexpr double FlywheelS = 0.1;;
     
     // PID Constants Rack
     static constexpr double RackP = 0.025;
@@ -121,6 +122,7 @@ namespace TurretConstants {
     
     static constexpr double hubHeading = 0.0; // deg
     
+    static constexpr double MeterConversionFactor = 0.0254f;
     //TURRET CONSTANTS
     //need to tune
     static constexpr double turretkP = 0.5;
