@@ -39,7 +39,6 @@ class RobotContainer {
   frc2::CommandPtr GetAutonomousCommand();
 
   DriveSubsystem drivetrain;
-  Turret m_turret;
   Lemonlight m_lemonlight;
   Turret m_turret = Turret(drivetrain);
 
