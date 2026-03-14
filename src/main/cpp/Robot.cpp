@@ -47,7 +47,6 @@ void Robot::DisabledPeriodic() {}
  * RobotContainer} class.
  */
 void Robot::AutonomousInit() {
-  m_container.InitializeStartPose();
 
   // m_autonomousCommand = m_container.GetAutonomousCommand();
 
