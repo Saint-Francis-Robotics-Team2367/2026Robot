@@ -41,25 +41,27 @@ RobotContainer::RobotContainer() {
   positionChooser.AddOption("Top Trench", topTrench);
   frc::SmartDashboard::PutData("Field Position", &positionChooser);
 
-  fieldPosition = positionChooser.GetSelected();
-  allianceColor = allianceChooser.GetSelected();
-
   autoTargeting = true;
 }
 
 
 void RobotContainer::InitializeStartPose() {
+
+  fieldPosition = positionChooser.GetSelected();
+  allianceColor = allianceChooser.GetSelected();
+
   if (allianceColor == "Red Alliance") {
     allianceXPositionOffset = 334.0;
     hubXPositionOffset = 287.0;
   }
   else {
     allianceXPositionOffset = 0.0;
+    hubXPositionOffset = 0.0;
   }
   
 
   double startX = 158.61 + allianceXPositionOffset; // constant: tape line in front of hub (inches) (182.11 - 23.5)
-  TurretConstants::hubX += hubXPositionOffset;
+  TurretConstants::hubX = TurretConstants::hubX + hubXPositionOffset;
 
   if (fieldPosition == "Top Trench") {
     startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
