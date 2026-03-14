@@ -39,7 +39,7 @@ class RobotContainer {
   frc2::CommandPtr GetAutonomousCommand();
 
   DriveSubsystem drivetrain;
-  Lemonlight m_lemonlight;
+  Lemonlight m_lemonlight{drivetrain};
   Turret m_turret = Turret(drivetrain);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed

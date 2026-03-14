@@ -8,6 +8,7 @@
 #include <frc2/command/SubsystemBase.h>
 
 #include "frc/kinematics/ChassisSpeeds.h"
+#include <units/time.h>
 #include "frc/kinematics/SwerveDriveKinematics.h"
 #include "frc/estimator/SwerveDrivePoseEstimator.h"
 
@@ -31,6 +32,7 @@ public:
   bool gyroConnected();
   void stopAllModules();
   void initGyro();
+  void AddVisionMeasurement(frc::Pose2d pose, units::second_t timestamp);
 
 private:
   ctre::phoenix6::hardware::Pigeon2 pigeon{HardwareIDs::pigeonID, "Drivetrain"};

@@ -1,18 +1,31 @@
 #include "subsystems/vision/Lemonlight.h"
 #include "LimelightHelpers.h"
 #include "visionKonstants.h"
+#include "subsystems/DriveSubsystem.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <cmath>
 
-Lemonlight::Lemonlight() {
+Lemonlight::Lemonlight(DriveSubsystem& drive)
+    : m_drive(drive),
+      m_fieldLayout(frc::LoadAprilTagLayoutField(frc::AprilTagField::k2025Reefscape))
+{
     if (VisionConstants::usePhotonVision) {
-        m_photonCamera = std::make_unique<photon::PhotonCamera>(m_limelightName);
+        m_photonCamera = std::make_unique<photon::PhotonCamera>(
+            std::string(VisionConstants::photonCameraName));
+        m_poseEstimator.emplace(
+            m_fieldLayout,
+            photon::PoseStrategy::MULTI_TAG_PNP_ON_COPROCESSOR,
+            VisionConstants::robotToCamera);
     } else {
-        LimelightHelpers::setPipelineIndex(m_limelightName, 0); 
+        LimelightHelpers::setPipelineIndex(m_limelightName, 0);
     }
 }
 
 void Lemonlight::Periodic() {
+    if (VisionConstants::usePhotonVision) {
+        UpdateDrivePose();
+    }
+
     // Update SmartDashboard with useful information
     bool hasTarget = HasTarget();
     frc::SmartDashboard::PutBoolean("Lemonlight/HasTarget", hasTarget);
@@ -138,9 +151,32 @@ std::optional<units::meter_t> Lemonlight::GetDistanceToTag() {
 std::optional<units::degree_t> Lemonlight::GetHeadingErrorToTag() {
     auto tagPoseOpt = GetTargetPoseCameraSpace();
     if (!tagPoseOpt) return std::nullopt;
-    
+
     double x = tagPoseOpt.value().X().value();
     double y = tagPoseOpt.value().Y().value();
-    
+
     return units::radian_t{std::atan2(y, x)};
+}
+
+void Lemonlight::UpdateDrivePose() {
+    if (!m_photonCamera || !m_poseEstimator) return;
+
+    for (const auto& result : m_photonCamera->GetAllUnreadResults()) {
+        // Try coprocessor multi-tag first (most accurate), fall back to lowest ambiguity
+        auto estimatedPose = m_poseEstimator->EstimateCoprocMultiTagPose(result);
+        if (!estimatedPose.has_value()) {
+            estimatedPose = m_poseEstimator->EstimateLowestAmbiguityPose(result);
+        }
+
+        if (estimatedPose.has_value()) {
+            m_drive.AddVisionMeasurement(
+                estimatedPose->estimatedPose.ToPose2d(),
+                estimatedPose->timestamp);
+
+            frc::SmartDashboard::PutNumber("Lemonlight/VisionPoseX",
+                estimatedPose->estimatedPose.X().value());
+            frc::SmartDashboard::PutNumber("Lemonlight/VisionPoseY",
+                estimatedPose->estimatedPose.Y().value());
+        }
+    }
 }
