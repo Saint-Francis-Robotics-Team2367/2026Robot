@@ -20,7 +20,7 @@ namespace VisionConstants {
     // Physical transform from robot center to the camera lens.
     // +X forward, +Y left, +Z up (robot frame). Update these to match actual mounting.
     inline const frc::Transform3d robotToCamera{
-        frc::Translation3d{0.0_m, 0.0_m, 0.0_m},
+        frc::Translation3d{0.3048_m, 0.3556_m, 0.3048_m},
         frc::Rotation3d{0_rad, 0_rad, 0_rad}
     };
 

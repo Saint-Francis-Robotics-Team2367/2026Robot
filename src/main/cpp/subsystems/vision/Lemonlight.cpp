@@ -2,13 +2,100 @@
 #include "LimelightHelpers.h"
 #include "visionKonstants.h"
 #include "subsystems/DriveSubsystem.h"
+
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/filesystem.h>
+
+#include <wpi/json.h>
+
+#include <filesystem>
+#include <fstream>
 #include <cmath>
 
+namespace {
+
+frc::AprilTagFieldLayout LoadFieldLayoutFromFmap(const std::filesystem::path& fmapPath) {
+    frc::AprilTagFieldLayout layout;
+
+    std::ifstream file{fmapPath};
+    if (!file.is_open()) {
+        return layout;
+    }
+
+    wpi::json json;
+    try {
+        file >> json;
+    } catch (...) {
+        return layout;
+    }
+
+    if (!json.contains("fiducials") || !json["fiducials"].is_array()) {
+        return layout;
+    }
+
+    std::vector<frc::AprilTag> tags;
+    tags.reserve(json["fiducials"].size());
+
+    for (const auto& fid : json["fiducials"]) {
+        if (!fid.contains("id") || !fid.contains("transform")) {
+            continue;
+        }
+        if (!fid["transform"].is_array() || fid["transform"].size() != 16) {
+            continue;
+        }
+
+        int id = fid["id"].get<int>();
+
+        // Transform is a 4x4 row-major matrix. The translation components are
+        // in the last column (indices 3, 7, 11) in meters.
+        const auto& t = fid["transform"];
+        double x = t[3].get<double>();
+        double y = t[7].get<double>();
+        double z = t[11].get<double>();
+
+        // Rotation is assumed to be a pure yaw rotation about +Z.
+        double r00 = t[0].get<double>();
+        double r10 = t[4].get<double>();
+        double yaw = std::atan2(r10, r00);
+
+        frc::Pose3d pose{
+            frc::Translation3d{units::meter_t{x}, units::meter_t{y}, units::meter_t{z}},
+            frc::Rotation3d{0_rad, 0_rad, units::radian_t{yaw}}
+        };
+
+        tags.emplace_back(id, pose);
+    }
+
+    double fieldLength = 0.0;
+    double fieldWidth = 0.0;
+    if (json.contains("fieldlength")) {
+        fieldLength = json["fieldlength"].get<double>();
+    }
+    if (json.contains("fieldwidth")) {
+        fieldWidth = json["fieldwidth"].get<double>();
+    }
+
+    if (!tags.empty()) {
+        layout = frc::AprilTagFieldLayout{
+            tags,
+            units::meter_t{fieldLength},
+            units::meter_t{fieldWidth}
+        };
+    }
+
+    return layout;
+}
+
+}  // namespace
+
 Lemonlight::Lemonlight(DriveSubsystem& drive)
-    : m_drive(drive),
-      m_fieldLayout(frc::LoadAprilTagLayoutField(frc::AprilTagField::k2025Reefscape))
+    : m_drive(drive)
 {
+    if (VisionConstants::usePhotonVision) {
+        auto deployPath = std::filesystem::path{frc::filesystem::GetDeployDirectory()} / "FRC2026_WELDED.fmap";
+        m_fieldLayout = LoadFieldLayoutFromFmap(deployPath);
+    }
+
     if (VisionConstants::usePhotonVision) {
         m_photonCamera = std::make_unique<photon::PhotonCamera>(
             std::string(VisionConstants::photonCameraName));
