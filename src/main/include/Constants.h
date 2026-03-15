@@ -66,7 +66,7 @@ namespace ShooterConstants {
     static constexpr double SHOOTERWHEELDIAMETER = 0.1; // in meters
     static constexpr double GRAVITY = 9.81;
     static constexpr double PI = M_PI;
-    static constexpr double SHOOTEREFFICIENCY = 0.4;
+    static constexpr double SHOOTEREFFICIENCY = 0.65;
     static constexpr double InchesToMeters = 0.0254f; // inches to meters
     static constexpr double MeterToInches = 39.37;
     static constexpr double motorGearRatio = 116.8831;
@@ -85,10 +85,10 @@ namespace ShooterConstants {
     static constexpr double FeederV = 0.0;
 
     // PID Constants Shooter
-    static constexpr double FlywheelP = 0.65;
+    static constexpr double FlywheelP = 0.25;
     static constexpr double FlywheelI = 0.0;
     static constexpr double FlywheelD = 0.0;
-    static constexpr double FlywheelV = 0.09;
+    static constexpr double FlywheelV = 0.12;
     static constexpr double FlywheelS = 0.1;
     
     // PID Constants Rack

@@ -22,7 +22,7 @@ void Shooter::init() {
     FlywheelConfig.Slot0.kV = ShooterConstants::FlywheelV;
     FlywheelConfig.Slot0.kS = ShooterConstants::FlywheelS;
 
-    FlywheelConfig.CurrentLimits.SupplyCurrentLimit = 20_A;
+    FlywheelConfig.CurrentLimits.SupplyCurrentLimit = 35_A;
     FlywheelConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     FlywheelConfig.CurrentLimits.StatorCurrentLimit = 40_A;
     FlywheelConfig.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -55,7 +55,7 @@ void Shooter::init() {
 bool Shooter::setFlywheelSpeed(float shooterRPM) {
     // set shooter velocity
     float efficientRPM = shooterRPM / ShooterConstants::SHOOTEREFFICIENCY;
-    ShooterMotor.SetControl(ctre::phoenix6::controls::VelocityVoltage{units::angular_velocity::turns_per_second_t{shooterRPM / 60.0}});
+    ShooterMotor.SetControl(ctre::phoenix6::controls::VelocityVoltage{units::angular_velocity::turns_per_second_t{efficientRPM/ 60.0}});
 
     // float targetVelocity = efficientRPM / 60.0;
     // float actualVelocity = ShooterMotor.GetVelocity().GetValue().value();
