@@ -131,16 +131,16 @@ void Lemonlight::Periodic() {
             frc::SmartDashboard::PutNumber("Lemonlight/ErrorToTag", error.value().value());
         }
         
-        // Example: If seeing tag 7, also log distance to SpeakerCenter offset
+        // Example: If seeing tag 7, also log distance to the primary offset target
         if (targetId == 7) {
-            auto distOffset = GetDistanceToOffset(7, "SpeakerCenter");
+            auto distOffset = GetDistanceToOffset(7, "PrimaryTarget");
             if (distOffset) {
-                frc::SmartDashboard::PutNumber("Lemonlight/DistToSpeakerCenter", distOffset.value().value());
+                frc::SmartDashboard::PutNumber("Lemonlight/DistToPrimaryTarget", distOffset.value().value());
             }
             
-            auto errorOffset = GetHeadingErrorToOffset(7, "SpeakerCenter");
+            auto errorOffset = GetHeadingErrorToOffset(7, "PrimaryTarget");
             if (errorOffset) {
-                frc::SmartDashboard::PutNumber("Lemonlight/ErrorToSpeakerCenter", errorOffset.value().value());
+                frc::SmartDashboard::PutNumber("Lemonlight/ErrorToPrimaryTarget", errorOffset.value().value());
             }
         }
     }
