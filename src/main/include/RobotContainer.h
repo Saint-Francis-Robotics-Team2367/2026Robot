@@ -39,7 +39,7 @@ class RobotContainer {
   frc2::CommandPtr GetAutonomousCommand();
 
   DriveSubsystem drivetrain;
-  Lemonlight m_lemonlight;
+  Lemonlight m_lemonlight{drivetrain};
   Turret m_turret = Turret(drivetrain);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -78,4 +78,8 @@ class RobotContainer {
 
   void ConfigureBindings();
   void InitializeStartPose();
+
+  // Uses the Lemonlight's AprilTag pose estimate to calibrate the QuestNav offsets
+  // and reset drive odometry. Call at match start. No-ops if no tag is visible.
+  void CalibrateQuestNavWithAprilTag();
 };

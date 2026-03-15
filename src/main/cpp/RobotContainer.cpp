@@ -9,8 +9,10 @@
 #include <frc2/command/button/Trigger.h>
 #include "frc2/command/button/RobotModeTriggers.h"
 
-
 #include "subsystems/Turret.h"
+#include "subsystems/vision/Lemonlight.h"
+#include "visionKonstants.h"
+
 #include "frc/smartdashboard/SmartDashboard.h"
 #include <frc2/command/CommandPtr.h>
 
@@ -149,10 +151,51 @@ void RobotContainer::ConfigureBindings() {
   //   )
   // );
 
+  // When autoTargeting is enabled, continuously aim ONLY the turret using PhotonVision.
+  // Turret is commanded directly to the current tag heading (clamped to +/- 45 deg).
   turretAutoTargetingOn.WhileTrue(
     frc2::cmd::Run(
       [this] {
-        m_turret.autoMoveToTarget();
+        if (!VisionConstants::usePhotonVision) {
+          return;
+        }
+
+        if (!m_lemonlight.HasTarget()) {
+          return;
+        }
+
+        int tagId = m_lemonlight.GetPrimaryTagID();
+        // Only auto-aim to specific hub-related tags (update IDs as needed).
+        if (tagId != 5 && tagId != 10 && tagId != 2) {
+          return;
+        }
+
+        // Heading error from camera/turret to tag (degrees, CCW+).
+        // We'll apply a scaled correction to the current turret angle for stability.
+        auto errorOpt = m_lemonlight.GetHeadingErrorToTag();
+        if (!errorOpt.has_value()) {
+          return;
+        }
+
+        double errorDeg = errorOpt->value();
+
+        // Small deadband to avoid jitter from measurement noise.
+        if (std::abs(errorDeg) < 0.5) {
+          return;
+        }
+
+        // Current turret angle in degrees.
+        double currentDeg = m_turret.getCurrentMotorAngle();
+
+        // Apply a proportional correction based on vision error.
+        // Negative sign so positive error turns turret toward the tag.
+        constexpr double kVisionP = 0.5;  // vision proportional gain (tunable)
+        double targetDeg = currentDeg - kVisionP * errorDeg;
+
+        double clampedTarget =
+            std::clamp(targetDeg, -TurretConstants::turretMaxAngle, TurretConstants::turretMaxAngle);
+
+        m_turret.setAngle(clampedTarget);
       }
     )
   );
@@ -294,7 +337,7 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
-  // Enable Auto Targetting
+  // Enable/disable automatic turret targeting (QuestNav + hub equations)
   codriverCtr.POVUp().OnTrue(
     frc2::cmd::RunOnce(
       [this] {
@@ -329,6 +372,20 @@ void RobotContainer::ConfigureBindings() {
   );
 }
 
+
+void RobotContainer::CalibrateQuestNavWithAprilTag() {
+  auto fieldPose = m_lemonlight.GetEstimatedFieldPose();
+  if (!fieldPose.has_value()) {
+    frc::SmartDashboard::PutBoolean("QuestNav/AprilTagCalibrated", false);
+    return;
+  }
+
+  QuestNav::getInstance().CalibrateToFieldPose(fieldPose.value());
+  drivetrain.resetOdometry(fieldPose.value());
+  frc::SmartDashboard::PutBoolean("QuestNav/AprilTagCalibrated", true);
+  frc::SmartDashboard::PutNumber("QuestNav/CalibPoseX", fieldPose->X().value());
+  frc::SmartDashboard::PutNumber("QuestNav/CalibPoseY", fieldPose->Y().value());
+}
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
   // An example command will be run in autonomous

@@ -90,6 +90,10 @@ void DriveSubsystem::stopAllModules() {
   backRight.stopModule();
 }
 
+void DriveSubsystem::AddVisionMeasurement(frc::Pose2d pose, units::second_t timestamp) {
+  odometry.AddVisionMeasurement(pose, timestamp);
+}
+
 //initializes gyro and sets current gyro situation to zero
 void DriveSubsystem::initGyro() {
   ctre::phoenix6::configs::Pigeon2Configuration pigeonConfigs{};

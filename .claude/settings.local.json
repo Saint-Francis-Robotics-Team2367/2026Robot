@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:cppdocs.photonvision.org)",
+      "WebSearch",
+      "WebFetch(domain:docs.photonvision.org)"
+    ]
+  }
+}

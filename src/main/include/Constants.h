@@ -132,6 +132,6 @@ namespace TurretConstants {
 
     constexpr double turretPulleyRatio = 44; //big wheel to small wheel (encoder) ratio
     constexpr double turretTbRatio = 8.77778;
-    constexpr double turretMaxAngle = 45.0; // deg, mechanical hard limit
-
+    constexpr double turretMaxAngle = 60.0; // deg, mechanical hard limit
+    
 }
