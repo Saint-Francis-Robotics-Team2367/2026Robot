@@ -11,6 +11,7 @@
 
 
 #include "subsystems/Turret.h"
+
 #include "frc/smartdashboard/SmartDashboard.h"
 #include <frc2/command/CommandPtr.h>
 
@@ -149,10 +150,29 @@ void RobotContainer::ConfigureBindings() {
   //   )
   // );
 
+  // When autoTargeting is enabled, continuously aim the turret using PhotonVision.
+  // Uses Lemonlight's vision-based turret heading to a configured offset target.
   turretAutoTargetingOn.WhileTrue(
     frc2::cmd::Run(
       [this] {
-        m_turret.autoMoveToTarget();
+        // Only run if PhotonVision is the active vision provider
+        if (!VisionConstants::usePhotonVision) {
+          return;
+        }
+
+        // Current turret heading in degrees
+        auto currentTurretHeading = units::degree_t{m_turret.getCurrentMotorAngle()};
+
+        // Compute desired turret heading based purely on vision to tag 7's primary offset
+        auto targetHeadingOpt = m_lemonlight.GetTargetTurretHeading(currentTurretHeading, 8, "PrimaryTarget");
+        if (!targetHeadingOpt) {
+          return;
+        }
+
+        double targetDeg = targetHeadingOpt->value();
+        double clampedTarget = std::clamp(targetDeg, -TurretConstants::turretMaxAngle, TurretConstants::turretMaxAngle);
+
+        m_turret.setAngle(clampedTarget);
       }
     )
   );
@@ -311,7 +331,7 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
-  // Enable Auto Targetting
+  // Enable/disable automatic turret targeting (QuestNav + hub equations)
   codriverCtr.POVUp().OnTrue(
     frc2::cmd::RunOnce(
       [this] {

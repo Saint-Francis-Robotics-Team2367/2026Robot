@@ -69,8 +69,8 @@ double Turret::getSetpoint(){
 
 void Turret::autoMoveToTarget() {
     // Convert robot pose from meters to inches to match hub coordinate constants
-    double robotX_in = mDrive.getPose().X().value() * ShooterConstants::MeterToInches;
-    double robotY_in = mDrive.getPose().Y().value() * ShooterConstants::MeterToInches;
+    double robotX_in = mDrive.getPose().Y().value() * ShooterConstants::MeterToInches;
+    double robotY_in = mDrive.getPose().X().value() * ShooterConstants::MeterToInches;
     double dx = TurretConstants::hubX - robotX_in;
     double dy = TurretConstants::hubY - robotY_in;
 
@@ -86,11 +86,11 @@ void Turret::autoMoveToTarget() {
     double clampedTarget = std::clamp(turretTarget, -TurretConstants::turretMaxAngle, TurretConstants::turretMaxAngle);
 
     frc::SmartDashboard::PutNumber("turret angle", turretTarget);
-    frc::SmartDashboard::PutBoolean("is angle in range?", turretTarget == clampedTarget);
+    frc::SmartDashboard::PutBoolean("clamp angle", clampedTarget);
     
     turretMotor.SetControl(
         positionVoltage
-            .WithPosition(units::angle::turn_t(clampedTarget / 360 * TurretConstants::turretPulleyRatio))
+            .WithPosition(units::angle::turn_t((clampedTarget / 360) * TurretConstants::turretPulleyRatio))
             .WithSlot(0));
 }
 
