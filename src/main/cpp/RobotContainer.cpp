@@ -243,7 +243,7 @@ void RobotContainer::ConfigureBindings() {
         frc2::cmd::Sequence(
           frc2::cmd::WaitUntil(
             [this] {
-              return (HoodedShooter.getShooterVelocity() > (0.85 * (1/ShooterConstants::SHOOTEREFFICIENCY) * HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches)));
+              return (HoodedShooter.getShooterVelocity() > (1000));
             }
           ),
           // Step 3: Run indexer and feeder while flywheel is still spinning
@@ -301,7 +301,7 @@ void RobotContainer::ConfigureBindings() {
   // Rotate Turret Left
   codriverCtr.POVLeft().WhileTrue(
     m_turret.StartEnd(
-      [this] { m_turret.setSpeed(-0.2); },
+      [this] { m_turret.setSpeed(-0.1); },
       [this] { m_turret.stop(); }
     )
   );
@@ -309,7 +309,7 @@ void RobotContainer::ConfigureBindings() {
   // Rotate Turret Right
   codriverCtr.POVRight().WhileTrue(
     m_turret.StartEnd(
-      [this] { m_turret.setSpeed(0.2); },
+      [this] { m_turret.setSpeed(0.1); },
       [this] { m_turret.stop(); }
     )
   );
