@@ -83,7 +83,7 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
 
     // Target point (dx, dy) in meters
     // Alter (7.5) to make it shoot farther or closer to the center of the goal
-    float dx = (7.5 * ShooterConstants::InchesToMeters) + std::sqrt(std::pow(horizontalOffset * ShooterConstants::InchesToMeters, 2.0f) + std::pow(yOffset * ShooterConstants::InchesToMeters, 2.0f));
+    float dx = (4.5 * ShooterConstants::InchesToMeters) + std::sqrt(std::pow(horizontalOffset * ShooterConstants::InchesToMeters, 2.0f) + std::pow(yOffset * ShooterConstants::InchesToMeters, 2.0f));
     frc::SmartDashboard::PutNumber("Shooter Distance (dx)", dx);
     const float dy = 72.0f * ShooterConstants::InchesToMeters;
     const float verticalOffset = dy - (shooterHeight * ShooterConstants::InchesToMeters);
@@ -156,7 +156,7 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
 }
 
 float Shooter::findOptimalRPM(float horizontalOffset, float yOffset) {
-    float dx = (7.5f) + std::sqrt(std::pow(horizontalOffset, 2.0f) + std::pow(yOffset, 2.0f));
+    float dx = (4.5f) + std::sqrt(std::pow(horizontalOffset, 2.0f) + std::pow(yOffset, 2.0f));
 
     // table
     struct Entry { float dx; float effectiveRPM; };
