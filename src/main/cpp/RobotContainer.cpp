@@ -166,7 +166,7 @@ void RobotContainer::ConfigureBindings() {
 
         int tagId = m_lemonlight.GetPrimaryTagID();
         // Only auto-aim to specific hub-related tags (update IDs as needed).
-        if (tagId != 7 && tagId != 8 && tagId != 9) {
+        if (tagId != 5 && tagId != 10 && tagId != 2) {
           return;
         }
 
