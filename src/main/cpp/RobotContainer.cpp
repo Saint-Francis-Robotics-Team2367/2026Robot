@@ -187,10 +187,17 @@ void RobotContainer::ConfigureBindings() {
         // Current turret angle in degrees.
         double currentDeg = m_turret.getCurrentMotorAngle();
 
-        // Apply a proportional correction based on vision error.
+        // Apply a bounded proportional correction based on vision error.
         // Negative sign so positive error turns turret toward the tag.
-        constexpr double kVisionP = 0.5;  // vision proportional gain (tunable)
-        double targetDeg = currentDeg - kVisionP * errorDeg;
+        constexpr double kVisionP = 0.2;  // vision proportional gain (tunable)
+        double deltaDeg = -kVisionP * errorDeg;
+
+        // Limit how much we move the setpoint per loop to avoid slamming to the hard limit.
+        constexpr double kMaxStepDeg = 5.0;
+        if (deltaDeg > kMaxStepDeg)  deltaDeg = kMaxStepDeg;
+        if (deltaDeg < -kMaxStepDeg) deltaDeg = -kMaxStepDeg;
+
+        double targetDeg = currentDeg + deltaDeg;
 
         double clampedTarget =
             std::clamp(targetDeg, -TurretConstants::turretMaxAngle, TurretConstants::turretMaxAngle);
