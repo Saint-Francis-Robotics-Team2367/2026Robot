@@ -66,7 +66,7 @@ namespace ShooterConstants {
     static constexpr double SHOOTERWHEELDIAMETER = 0.1; // in meters
     static constexpr double GRAVITY = 9.81;
     static constexpr double PI = M_PI;
-    static constexpr double SHOOTEREFFICIENCY = 0.65;
+    static constexpr double SHOOTEREFFICIENCY = 0.60;
     static constexpr double InchesToMeters = 0.0254f; // inches to meters
     static constexpr double MeterToInches = 39.37;
     static constexpr double motorGearRatio = 116.8831;

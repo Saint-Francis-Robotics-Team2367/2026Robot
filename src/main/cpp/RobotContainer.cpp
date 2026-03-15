@@ -226,7 +226,12 @@ void RobotContainer::ConfigureBindings() {
       // Step 1: Set hood position
       HoodedShooter.RunOnce(
         [this] {
-          HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches), TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches);
+          HoodedShooter.setHoodPosition(
+            HoodedShooter.findOptimalRPM(
+              TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, 
+              TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches), 
+              TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, 
+              TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches);
         }
       ),
       // Step 2: Spin up flywheel and wait 4 seconds, then feed while flywheel keeps spinning
