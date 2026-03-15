@@ -9,8 +9,9 @@
 #include <frc2/command/button/Trigger.h>
 #include "frc2/command/button/RobotModeTriggers.h"
 
-
 #include "subsystems/Turret.h"
+#include "subsystems/vision/Lemonlight.h"
+#include "visionKonstants.h"
 
 #include "frc/smartdashboard/SmartDashboard.h"
 #include <frc2/command/CommandPtr.h>
@@ -150,26 +151,33 @@ void RobotContainer::ConfigureBindings() {
   //   )
   // );
 
-  // When autoTargeting is enabled, continuously aim the turret using PhotonVision.
-  // Uses Lemonlight's vision-based turret heading to a configured offset target.
+  // When autoTargeting is enabled, continuously aim ONLY the turret using PhotonVision.
+  // Turret is commanded directly to the current tag heading (clamped to +/- 45 deg).
   turretAutoTargetingOn.WhileTrue(
     frc2::cmd::Run(
       [this] {
-        // Only run if PhotonVision is the active vision provider
         if (!VisionConstants::usePhotonVision) {
           return;
         }
 
-        // Current turret heading in degrees
-        auto currentTurretHeading = units::degree_t{m_turret.getCurrentMotorAngle()};
-
-        // Compute desired turret heading based purely on vision to tag 7's primary offset
-        auto targetHeadingOpt = m_lemonlight.GetTargetTurretHeading(currentTurretHeading, 8, "PrimaryTarget");
-        if (!targetHeadingOpt) {
+        if (!m_lemonlight.HasTarget()) {
           return;
         }
 
-        double targetDeg = targetHeadingOpt->value();
+        int tagId = m_lemonlight.GetPrimaryTagID();
+        // Only auto-aim to specific hub-related tags (update IDs as needed).
+        if (tagId != 7 && tagId != 8 && tagId != 9) {
+          return;
+        }
+
+        // Heading error from camera/turret to tag (degrees, CCW+).
+        // Since the camera is on the turret, this is the turret angle we want.
+        auto errorOpt = m_lemonlight.GetHeadingErrorToTag();
+        if (!errorOpt.has_value()) {
+          return;
+        }
+
+        double targetDeg = errorOpt->value();
         double clampedTarget = std::clamp(targetDeg, -TurretConstants::turretMaxAngle, TurretConstants::turretMaxAngle);
 
         m_turret.setAngle(clampedTarget);
