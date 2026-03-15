@@ -171,14 +171,29 @@ void RobotContainer::ConfigureBindings() {
         }
 
         // Heading error from camera/turret to tag (degrees, CCW+).
-        // Negate so positive error commands turret toward the tag.
+        // We'll apply a scaled correction to the current turret angle for stability.
         auto errorOpt = m_lemonlight.GetHeadingErrorToTag();
         if (!errorOpt.has_value()) {
           return;
         }
 
-        double targetDeg = -errorOpt->value();
-        double clampedTarget = std::clamp(targetDeg, -TurretConstants::turretMaxAngle, TurretConstants::turretMaxAngle);
+        double errorDeg = errorOpt->value();
+
+        // Small deadband to avoid jitter from measurement noise.
+        if (std::abs(errorDeg) < 0.5) {
+          return;
+        }
+
+        // Current turret angle in degrees.
+        double currentDeg = m_turret.getCurrentMotorAngle();
+
+        // Apply a proportional correction based on vision error.
+        // Negative sign so positive error turns turret toward the tag.
+        constexpr double kVisionP = 0.5;  // vision proportional gain (tunable)
+        double targetDeg = currentDeg - kVisionP * errorDeg;
+
+        double clampedTarget =
+            std::clamp(targetDeg, -TurretConstants::turretMaxAngle, TurretConstants::turretMaxAngle);
 
         m_turret.setAngle(clampedTarget);
       }
