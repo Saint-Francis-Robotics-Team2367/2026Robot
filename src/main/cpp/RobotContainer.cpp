@@ -273,28 +273,6 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
-  // Co-Driver Manual Turret Movement (NEEDS TO BE TESTED)
-  (codriverCtr.R1() && leftStickXMoving).WhileTrue(
-    m_turret.Run(
-      [this] {
-        // Make separate turret slew rate limiter if needed
-        double leftX = frc::ApplyDeadband(codriverCtr.GetLeftX(), ControllerConstants::deadband);
-        leftX = xLimiter.Calculate(leftX);
-
-        frc::SmartDashboard::PutNumber("Turret Controller Left X", leftX);
-
-        if (leftX > 0.5){
-          m_turret.setAngle(m_turret.getCurrentMotorAngle() + 5.0);
-        }
-        else if (leftX <= -0.5){
-          m_turret.setAngle(m_turret.getCurrentMotorAngle() - 5.0);
-        }
-
-        m_turret.setAngle(m_turret.getCurrentMotorAngle() + TurretConstants::turretTurnRatio * leftX * 1.0);
-      }
-    )
-  );
-
   // Co-Driver Manual Hood Movement (NEEDS TO BE TESTED)
   (codriverCtr.R1() && rightStickYMoving).WhileTrue(
     HoodedShooter.Run(
@@ -316,6 +294,24 @@ void RobotContainer::ConfigureBindings() {
     frc2::cmd::RunOnce(
       [this] {
         autoTargeting = !autoTargeting;
+      }
+    )
+  );
+
+  // Rotate Turret Left
+  codriverCtr.POVLeft().WhileTrue(
+    m_turret.Run(
+      [this] {
+        m_turret.setAngle(m_turret.getCurrentMotorAngle() - 5.0);
+      }
+    )
+  );
+
+  // Rotate Turret Right
+  codriverCtr.POVRight().WhileTrue(
+    m_turret.Run(
+      [this] {
+        m_turret.setAngle(m_turret.getCurrentMotorAngle() + 5.0);
       }
     )
   );
