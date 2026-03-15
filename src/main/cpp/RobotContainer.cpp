@@ -236,7 +236,7 @@ void RobotContainer::ConfigureBindings() {
             HoodedShooter.setFlywheelSpeed(-HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches));
           },
           [this] {
-            HoodedShooter.ShooterMotor.Set(0);
+            HoodedShooter.ShooterMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0});
             HoodedShooter.moveHoodToZero();
           }
         ),
