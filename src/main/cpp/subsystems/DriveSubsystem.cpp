@@ -12,7 +12,7 @@ void DriveSubsystem::Drive(double vx, double vy, double rot, bool fieldRelative)
   frc::ChassisSpeeds speeds;
   
   if (fieldRelative) {
-    speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(units::meters_per_second_t(vx), units::meters_per_second_t(vy), units::radians_per_second_t(rot), pigeon.GetRotation2d());
+    speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(units::meters_per_second_t(vx), units::meters_per_second_t(vy), units::radians_per_second_t(rot), QuestNav::getInstance().getRotation2d());
   }
   else {
     speeds = frc::ChassisSpeeds{units::meters_per_second_t(vx), units::meters_per_second_t(vy), units::radians_per_second_t(rot)};
