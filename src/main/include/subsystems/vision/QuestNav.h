@@ -111,7 +111,7 @@ public:
     }
 
     frc::Pose2d getPose2d() {
-        return frc::Pose2d(robotPose.X() + xOffset, robotPose.Y() + yOffset, getRotation2d());
+        return frc::Pose2d(robotPose.Y() + xOffset, robotPose.X() + yOffset, getRotation2d());
     }
 
     frc::Rotation2d getBoundedAngleCCW()

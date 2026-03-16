@@ -51,45 +51,46 @@ void RobotContainer::InitializeStartPose() {
   allianceColor = allianceChooser.GetSelected();
 
   if (allianceColor == "Red Alliance") {
-    allianceXPositionOffset = 334.0;
+    allianceXPositionOffset = 8.4836; // 334.0 inches in meters
     hubXPositionOffset = 287.0;
   }
   else {
     allianceXPositionOffset = 0.0;
     hubXPositionOffset = 0.0;
   }
-  
 
-  double startX = 158.61 + allianceXPositionOffset; // constant: tape line in front of hub (inches) (182.11 - 23.5)
+
+  double startX = 4.028694 + allianceXPositionOffset; // constant: tape line in front of hub (meters) (182.11 - 23.5 inches)
   TurretConstants::hubX = TurretConstants::hubX + hubXPositionOffset;
 
   if (fieldPosition == "Top Trench") {
-    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
-                            units::inch_t(317.7 - 25.17).convert<units::meter>(),
+    startPose = frc::Pose2d{units::meter_t(startX),
+                            units::meter_t(7.430262), // 292.53 inches
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Top Bump") {
-    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
-                            units::inch_t(317.7 - (65.65 + 73/2)).convert<units::meter>(),
+    startPose = frc::Pose2d{units::meter_t(startX),
+                            units::meter_t(5.47497), // 215.55 inches
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Front Hub") {
-    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
-                            units::meter_t(4.025 ),
+    startPose = frc::Pose2d{units::meter_t(startX),
+                            units::meter_t(4.025),
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Bottom Bump") {
-    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
-                            units::inch_t(65.65 + 73/2).convert<units::meter>(),
+    startPose = frc::Pose2d{units::meter_t(startX),
+                            units::meter_t(2.59461), // 102.15 inches
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Bottom Trench") {
-    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
-                            units::inch_t(25.17).convert<units::meter>(),
+    startPose = frc::Pose2d{units::meter_t(startX),
+                            units::meter_t(0.639318), // 25.17 inches
                             frc::Rotation2d{0_rad}};
   }
 
   drivetrain.resetOdometry(startPose);
+  QuestNav::getInstance().SetStartPose(startPose);
 }
 
 void RobotContainer::ConfigureBindings() {
@@ -228,17 +229,17 @@ void RobotContainer::ConfigureBindings() {
         [this] {
           HoodedShooter.setHoodPosition(
             HoodedShooter.findOptimalRPM(
-              TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, 
-              TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches), 
-              TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, 
-              TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches);
+              TurretConstants::hubX - QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::MeterToInches,
+              TurretConstants::hubY - QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::MeterToInches),
+              TurretConstants::hubX - QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::MeterToInches,
+              TurretConstants::hubY - QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::MeterToInches);
         }
       ),
-      // Step 2: Spin up flywheel and wait 4 seconds, then feed while flywheel keeps spinning
+      // Step 2: Spin up flywheel and wait until rpm is at correct speed seconds, then feed while flywheel keeps spinning
       frc2::cmd::Parallel(
         frc2::cmd::StartEnd (
           [this] {
-            HoodedShooter.setFlywheelSpeed(-HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches));
+            HoodedShooter.setFlywheelSpeed(-HoodedShooter.findOptimalRPM(TurretConstants::hubX - QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::MeterToInches));
           },
           [this] {
             HoodedShooter.ShooterMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0});
@@ -248,7 +249,7 @@ void RobotContainer::ConfigureBindings() {
         frc2::cmd::Sequence(
           frc2::cmd::WaitUntil(
             [this] {
-              return (HoodedShooter.getShooterVelocity() > (0.85 * (1/ShooterConstants::SHOOTEREFFICIENCY) * HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches)));
+              return (HoodedShooter.getShooterVelocity() > (0.85 * (1/ShooterConstants::SHOOTEREFFICIENCY) * HoodedShooter.findOptimalRPM(TurretConstants::hubX - QuestNav::getInstance().getPose2d().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - QuestNav::getInstance().getPose2d().Y().value() * ShooterConstants::MeterToInches)));
             }
           ),
           // Step 3: Run indexer and feeder while flywheel is still spinning
