@@ -4,7 +4,9 @@
 
 #include "Robot.h"
 
+
 #include <frc2/command/CommandScheduler.h>
+
 
 Robot::Robot() {}
 
@@ -17,34 +19,22 @@ Robot::Robot() {}
  * LiveWindow and SmartDashboard integrated updating.
  */
 void Robot::RobotPeriodic() {
-  frc2::CommandScheduler::GetInstance().Run();  // runs command-based queue
+  frc2::CommandScheduler::GetInstance().Run(); //runs command-based queue
   QuestNav::getInstance().periodic();
   // double currAngle = m_container.m_turret.getCurrentMotorAngle();
   // frc::SmartDashboard::PutNumber("Turret Motor Pos", currAngle);
-  // frc::SmartDashboard::PutNumber("Turret setpoint",
-  // m_container.m_turret.getSetpoint()); frc::SmartDashboard::PutBoolean("is
-  // turret at angle?",
-  // m_container.m_turret.isAtAngle(m_container.m_turret.getSetpoint()));
-  // frc::SmartDashboard::PutNumber("Rack Position",
-  // m_container.HoodedShooter.RackMotor.GetPosition().GetValueAsDouble());
-  // frc::SmartDashboard::PutNumber("Offset Position",
-  // m_container.HoodedShooter.hoodCenterRot);
-  // frc::SmartDashboard::PutNumber("Target Position",
-  // m_container.HoodedShooter.targetAbs);
-  frc::SmartDashboard::PutNumber(
-      "Motor RPM", m_container.HoodedShooter.getShooterVelocity());
-  frc::SmartDashboard::PutNumber("Hood Position",
-                                 m_container.HoodedShooter.findHoodAngle());
-  frc::SmartDashboard::PutNumber("Turret Position",
-                                 m_container.m_turret.getCurrentMotorAngle());
+  // frc::SmartDashboard::PutNumber("Turret setpoint", m_container.m_turret.getSetpoint());
+  // frc::SmartDashboard::PutBoolean("is turret at angle?", m_container.m_turret.isAtAngle(m_container.m_turret.getSetpoint()));
+  // frc::SmartDashboard::PutNumber("Rack Position", m_container.HoodedShooter.RackMotor.GetPosition().GetValueAsDouble());
+  // frc::SmartDashboard::PutNumber("Offset Position", m_container.HoodedShooter.hoodCenterRot);
+  // frc::SmartDashboard::PutNumber("Target Position", m_container.HoodedShooter.targetAbs);
+  frc::SmartDashboard::PutNumber("Motor RPM", m_container.HoodedShooter.getShooterVelocity());
+  frc::SmartDashboard::PutNumber("Hood Position", m_container.HoodedShooter.findHoodAngle());
+  frc::SmartDashboard::PutNumber("Turret Position", m_container.m_turret.getCurrentMotorAngle());
   m_container.BallIndexer.DisplayValues();
-  frc::SmartDashboard::PutNumber("Robot Pose X",
-                                 m_container.drivetrain.getPose().X().value());
-  frc::SmartDashboard::PutNumber("Robot Pose Y",
-                                 m_container.drivetrain.getPose().Y().value());
-  frc::SmartDashboard::PutNumber(
-      "Quest Heading",
-      QuestNav::getInstance().getPose2d().Rotation().Degrees().value());
+  frc::SmartDashboard::PutNumber("Robot Pose X", m_container.drivetrain.getPose().X().value());
+  frc::SmartDashboard::PutNumber("Robot Pose Y", m_container.drivetrain.getPose().Y().value());
+  frc::SmartDashboard::PutNumber("Quest Heading", QuestNav::getInstance().getPose2d().Rotation().Degrees().value());
   m_container.drivetrain.updateOdometry();
 }
 
@@ -62,6 +52,7 @@ void Robot::DisabledPeriodic() {}
  * RobotContainer} class.
  */
 void Robot::AutonomousInit() {
+
   // m_autonomousCommand = m_container.GetAutonomousCommand();
 
   // if (m_autonomousCommand) {
@@ -87,8 +78,8 @@ void Robot::TeleopInit() {
  * This function is called periodically during operator control.
  */
 void Robot::TeleopPeriodic() {
-  // frc::SmartDashboard::PutNumber("encoder angle",
-  // m_turret.getCurrentAngle());
+
+  //frc::SmartDashboard::PutNumber("encoder angle", m_turret.getCurrentAngle());
 }
 /**
  * This function is called periodically during test mode.

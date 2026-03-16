@@ -1,10 +1,6 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 #pragma once
 
-#include <ctre/phoenix6/TalonFX.hpp>  // Include Phoenix 6 API
+#include <ctre/phoenix6/TalonFX.hpp> // Include Phoenix 6 API
 #include "ctre/phoenix6/CANcoder.hpp"
 #include "ctre/phoenix6/configs/Configuration.hpp"
 #include "ctre/phoenix6/controls/PositionVoltage.hpp"
@@ -21,20 +17,23 @@
 #include "frc2/command/Commands.h"
 #include "frc2/command/Command.h"
 
-class Feeder : public frc2::SubsystemBase {
- public:
-  void stop();
-  void init();
-  void setFeederSpeed(double rpm);
-  frc2::CommandPtr RunFeeder(Feeder* feeder, double rpm);
+class Feeder : public frc2::SubsystemBase{
+public:
+    void stop();
+    void init();
+    void setFeederSpeed(double rpm);
+    frc2::CommandPtr RunFeeder(Feeder* feeder, double rpm);
 
- private:
-  // Motors
-  ctre::phoenix6::hardware::TalonFX FeederMotor{
-      ShooterConstants::FeederID,
-      "Drivetrain"};  // Use CANivore bus if applicable
-  ctre::phoenix6::controls::VelocityVoltage velocityVoltage{0_tps};
+private:
+    // Motors
+    ctre::phoenix6::hardware::TalonFX FeederMotor{ShooterConstants::FeederID, "Drivetrain"}; // Use CANivore bus if applicable
+    ctre::phoenix6::controls::VelocityVoltage velocityVoltage{0_tps};
 
-  // Configuration objects
-  ctre::phoenix6::configs::TalonFXConfiguration FeederConfig;
+    // Configuration objects
+    ctre::phoenix6::configs::TalonFXConfiguration FeederConfig;
+
 };
+
+
+
+

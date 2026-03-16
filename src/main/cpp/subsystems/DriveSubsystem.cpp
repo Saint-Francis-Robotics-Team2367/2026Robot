@@ -7,25 +7,19 @@
 
 DriveSubsystem::DriveSubsystem() {}
 
-// fieldRelative always true in swervedrive
-void DriveSubsystem::Drive(double vx, double vy, double rot,
-                           bool fieldRelative) {
+//fieldRelative always true in swervedrive
+void DriveSubsystem::Drive(double vx, double vy, double rot, bool fieldRelative) {
   frc::ChassisSpeeds speeds;
-
+  
   if (fieldRelative) {
-    speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(
-        units::meters_per_second_t(vx), units::meters_per_second_t(vy),
-        units::radians_per_second_t(rot),
-        QuestNav::getInstance().getRotation2d());
-  } else {
-    speeds = frc::ChassisSpeeds{units::meters_per_second_t(vx),
-                                units::meters_per_second_t(vy),
-                                units::radians_per_second_t(rot)};
+    speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(units::meters_per_second_t(vx), units::meters_per_second_t(vy), units::radians_per_second_t(rot), QuestNav::getInstance().getRotation2d());
+  }
+  else {
+    speeds = frc::ChassisSpeeds{units::meters_per_second_t(vx), units::meters_per_second_t(vy), units::radians_per_second_t(rot)};
   }
 
   auto states = kinematics.ToSwerveModuleStates(speeds);
-  kinematics.DesaturateWheelSpeeds(
-      &states, units::meters_per_second_t(ModuleConstants::moduleMaxMPS));
+  kinematics.DesaturateWheelSpeeds(&states, units::meters_per_second_t(ModuleConstants::moduleMaxMPS));
 
   frontLeft.setDesiredState(states[1]);
   frontRight.setDesiredState(states[3]);
@@ -34,25 +28,36 @@ void DriveSubsystem::Drive(double vx, double vy, double rot,
 }
 
 void DriveSubsystem::updateOdometry() {
-  odometry.Update(QuestNav::getInstance().getRotation2d(),
-                  {frontLeft.getPosition(), frontRight.getPosition(),
-                   backLeft.getPosition(), backRight.getPosition()});
+  odometry.Update(
+    QuestNav::getInstance().getRotation2d(), 
+    { 
+      frontLeft.getPosition(),
+      frontRight.getPosition(),
+      backLeft.getPosition(),
+      backRight.getPosition()
+    });
 }
 
-// resets origin
+//resets origin
 void DriveSubsystem::resetOdometry(frc::Pose2d pose) {
-  odometry.ResetPosition(QuestNav::getInstance().getRotation2d(),
-                         {frontLeft.getPosition(), frontRight.getPosition(),
-                          backLeft.getPosition(), backRight.getPosition()},
-                         pose);
+  odometry.ResetPosition(
+    QuestNav::getInstance().getRotation2d(),
+    {
+      frontLeft.getPosition(),
+      frontRight.getPosition(),
+      backLeft.getPosition(),
+      backRight.getPosition()
+    },
+    pose
+  );
 }
 
-// gets robot position
+//gets robot position
 frc::Pose2d DriveSubsystem::getPose() {
   return odometry.GetEstimatedPosition();
 }
 
-// initializes swerve modules
+//initializes swerve modules
 void DriveSubsystem::initModules() {
   frontLeft.initHardware();
   frontRight.initHardware();
@@ -64,16 +69,10 @@ void DriveSubsystem::initModules() {
   backLeft.zeroModule();
   backRight.zeroModule();
 
-  // backRight.invertModule(ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive,
-  // false, true);
-  // backLeft.invertModule(ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive,
-  // false, true);
-  frontLeft.invertModule(
-      ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive, false,
-      true);
-  frontRight.invertModule(
-      ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive, false,
-      true);
+  // backRight.invertModule(ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive, false, true);
+  // backLeft.invertModule(ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive, false, true);
+  frontLeft.invertModule(ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive, false, true);
+  frontRight.invertModule(ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive, false, true);
 }
 
 void DriveSubsystem::resetGyro() {
@@ -91,7 +90,7 @@ void DriveSubsystem::stopAllModules() {
   backRight.stopModule();
 }
 
-// initializes gyro and sets current gyro situation to zero
+//initializes gyro and sets current gyro situation to zero
 void DriveSubsystem::initGyro() {
   ctre::phoenix6::configs::Pigeon2Configuration pigeonConfigs{};
 

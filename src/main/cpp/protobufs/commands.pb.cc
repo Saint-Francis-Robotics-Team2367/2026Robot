@@ -703,7 +703,7 @@ ProtobufQuestNavCommandResponse::ProtobufQuestNavCommandResponse(const ProtobufQ
     _impl_.error_message_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (!from._internal_error_message().empty()) {
-    _this->_impl_.error_message_.Set(from._internal_error_message(),
+    _this->_impl_.error_message_.Set(from._internal_error_message(), 
       _this->GetArenaForAllocation());
   }
   ::memcpy(&_impl_.command_id_, &from._impl_.command_id_,
