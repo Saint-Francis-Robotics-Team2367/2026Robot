@@ -9,6 +9,4 @@ cppSrcFileInclude {
 }
 modifiableFileExclude {
    gradle/
-  .*\.pb\.cc
-  .*\.pb\.h
 }
