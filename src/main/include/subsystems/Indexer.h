@@ -1,9 +1,11 @@
-#pragma once
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 
+#pragma once
 
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <ctre/phoenix6/controls/PositionVoltage.hpp>
-
 
 #include <frc2/command/Subsystem.h>
 #include "frc2/command/StartEndCommand.h"
@@ -16,16 +18,17 @@
 #include <Constants.h>
 
 class Indexer : public frc2::Subsystem {
+ public:
+  void init();
+  void setIndexerSpeed(double speed);
+  void stopIndexer();
+  frc2::CommandPtr RunIndexer(Indexer* indexer, double speed);
+  bool IndexerStall();
+  void DisplayValues();
 
-    public:
-        void init();
-        void setIndexerSpeed(double speed);
-        void stopIndexer();
-        frc2::CommandPtr RunIndexer(Indexer* indexer, double speed);
-        bool IndexerStall();
-        void DisplayValues();
-       
-    private:
-        ctre::phoenix6::hardware::TalonFX indexerMotor{IndexerConstants::IndexerMotorID, "Drivetrain"}; // Use CANivore bus if applicable
-        ctre::phoenix6::configs::TalonFXConfiguration indexerConfigs;
+ private:
+  ctre::phoenix6::hardware::TalonFX indexerMotor{
+      IndexerConstants::IndexerMotorID,
+      "Drivetrain"};  // Use CANivore bus if applicable
+  ctre::phoenix6::configs::TalonFXConfiguration indexerConfigs;
 };

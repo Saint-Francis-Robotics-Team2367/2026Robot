@@ -43,7 +43,8 @@ class RobotContainer {
   Turret m_turret = Turret(drivetrain);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  frc2::CommandPS5Controller driverCtr{0}; //drive controller should be first controller that is plugged in
+  frc2::CommandPS5Controller driverCtr{
+      0};  // drive controller should be first controller that is plugged in
   frc2::CommandPS5Controller codriverCtr{1};
 
   // The robot's subsystems are defined here...
@@ -72,9 +73,12 @@ class RobotContainer {
   std::string allianceColor;
   std::string fieldPosition;
 
-  frc::SlewRateLimiter<units::scalar> xLimiter{ControllerConstants::slewRate / 1_s};
-  frc::SlewRateLimiter<units::scalar> yLimiter{ControllerConstants::slewRate / 1_s};
-  frc::SlewRateLimiter<units::scalar> rotLimiter{ControllerConstants::slewRate / 1_s};
+  frc::SlewRateLimiter<units::scalar> xLimiter{ControllerConstants::slewRate /
+                                               1_s};
+  frc::SlewRateLimiter<units::scalar> yLimiter{ControllerConstants::slewRate /
+                                               1_s};
+  frc::SlewRateLimiter<units::scalar> rotLimiter{ControllerConstants::slewRate /
+                                                 1_s};
 
   void ConfigureBindings();
   void InitializeStartPose();
