@@ -30,10 +30,11 @@ namespace VisionConstants {
     //
     // These names are intentionally game-agnostic for 2026; update the tag IDs
     // and offsets to match your desired scoring locations on the current field.
+    
     inline const std::unordered_map<int, std::unordered_map<std::string, frc::Transform3d>> tagOffsets = {
         {
             7, {
-                {"PrimaryTarget", frc::Transform3d{frc::Translation3d{0.0_m, 0.5_m, 0.0_m}, frc::Rotation3d{}}},
+                {"PrimaryTarget", frc::Transform3d{frc::Translation3d{0.5_m, 0.0_m, 1.0_m}, frc::Rotation3d{}}},
                 {"SecondaryTarget", frc::Transform3d{frc::Translation3d{-0.2_m, 0.0_m, 0.0_m}, frc::Rotation3d{}}}
             }
         },

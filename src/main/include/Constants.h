@@ -126,9 +126,10 @@ namespace TurretConstants {
 
     //TURRET CONSTANTS
     //need to tune
-    static constexpr double turretkP = 0.5;
-    static constexpr double turretkI = 0.00;
-    static constexpr double turretkD = 0.00;
+    // Turret PID gains (tuned for smoother vision tracking)
+    static constexpr double turretkP = 0.15;
+    static constexpr double turretkI = 0.15;
+    static constexpr double turretkD = 1.00;
 
     constexpr double turretPulleyRatio = 44; //big wheel to small wheel (encoder) ratio
     constexpr double turretTbRatio = 8.77778;
