@@ -1,5 +1,6 @@
 #include "subsystems/Turret.h"
 #include "subsystems/vision/QuestNav.h"
+#include <frc/DriverStation.h>
 
 void Turret::init() {
     //pids
@@ -69,28 +70,34 @@ double Turret::getSetpoint(){
 
 //updated code for it, incorrect heading in original one
 void Turret::autoMoveToTarget() {
+  frc::Pose2d robotPose = QuestNav::getInstance().getPose2d();
+  
+  double robotX_in = robotPose.X().value();
+  double robotY_in = robotPose.Y().value();
+
+  auto alliance = frc::DriverStation::GetAlliance();
+  double hubX = (alliance && *alliance == frc::DriverStation::Alliance::kRed)
+                    ? PoseConstants::RedhubX
+                    : PoseConstants::BluehubX;
+
+  double dx = hubX - robotX_in;
+  double dy = PoseConstants::hubPoseY - robotY_in;
+
+  // atan2(dx, dy) gives angle from +Y (forward) axis, CW-positive toward +X (right).
+  // Negate to make CCW-positive so it matches the robotHeading convention (0 = facing forward/+Y, CCW+).
+  double angleToHub = -atan2(dx, dy) * 180.0 / M_PI;
+  double robotHeading = QuestNav::getInstance().getPose2d().Rotation().Degrees().value();
+  double turretTarget = angleToHub - robotHeading;
+
+  while (turretTarget > 180)  turretTarget -= 360;
+  while (turretTarget < -180) turretTarget += 360;
+
+  double clampedTarget = std::clamp(turretTarget, -TurretConstants::turretMaxAngle, TurretConstants::turretMaxAngle);
+
+  frc::SmartDashboard::PutNumber("turret angle", turretTarget);
+  frc::SmartDashboard::PutBoolean("is angle in range?", turretTarget == clampedTarget);
     
-    // Convert robot pose from meters to inches to match hub coordinate constants
-    double robotX_in = mDrive.getPose().X().value() * ShooterConstants::MeterToInches;
-    double robotY_in = mDrive.getPose().Y().value() * ShooterConstants::MeterToInches;
-    double dx = TurretConstants::hubX - robotX_in;
-    double dy = TurretConstants::hubY - robotY_in;
-
-    // atan2(dx, dy) gives angle from +Y (forward) axis, CW-positive toward +X (right).
-    // Negate to make CCW-positive so it matches the robotHeading convention (0 = facing forward/+Y, CCW+).
-    double angleToHub = -atan2(dx, dy) * 180.0 / M_PI;
-    double robotHeading = QuestNav::getInstance().getPose2d().Rotation().Degrees().value();
-    double turretTarget = angleToHub - robotHeading;
-
-    while (turretTarget > 180)  turretTarget -= 360;
-    while (turretTarget < -180) turretTarget += 360;
-
-    double clampedTarget = std::clamp(turretTarget, -TurretConstants::turretMaxAngle, TurretConstants::turretMaxAngle);
-
-    frc::SmartDashboard::PutNumber("turret angle", turretTarget);
-    frc::SmartDashboard::PutBoolean("is angle in range?", turretTarget == clampedTarget);
-    
-    turretMotor.SetControl(positionVoltage.WithPosition(units::angle::turn_t(clampedTarget / 360 * TurretConstants::turretPulleyRatio)).WithSlot(0));
+  turretMotor.SetControl(positionVoltage.WithPosition(units::angle::turn_t(clampedTarget / 360 * TurretConstants::turretPulleyRatio)).WithSlot(0));
 }
 
 
