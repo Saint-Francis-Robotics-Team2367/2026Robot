@@ -81,17 +81,13 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset,
   // Convert shooter RPM to linear velocity (m/s)
   // alter (0.75) based on how much of rotational velocity is translated to
   // linear velocity
-  float flywheelCircumference =
-      ShooterConstants::PI * ShooterConstants::SHOOTERWHEELDIAMETER;
+  float flywheelCircumference = ShooterConstants::PI * ShooterConstants::SHOOTERWHEELDIAMETER;
   float shooterVelocity = (shooterRPM * flywheelCircumference) / 60.0f;
   float exitVelo = shooterVelocity;
 
   // Target point (dx, dy) in meters
   // Alter (num) to make it shoot farther or closer to the center of the goal
-  float dx =
-      0.0254f +
-      std::sqrt(horizontalOffset * horizontalOffset +
-                yOffset * yOffset);
+  float dx = 0.0254f + std::sqrt(horizontalOffset * horizontalOffset + yOffset * yOffset);
   frc::SmartDashboard::PutNumber("Shooter Distance (dx)", dx);
   const float dy = 1.8288f;  // 72.0 inches in meters
   const float verticalOffset = dy - shooterHeight;
