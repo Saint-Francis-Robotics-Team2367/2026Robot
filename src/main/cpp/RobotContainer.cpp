@@ -197,7 +197,7 @@ void RobotContainer::ConfigureBindings() {
         if (deltaDeg > kMaxStepDeg)  deltaDeg = kMaxStepDeg;
         if (deltaDeg < -kMaxStepDeg) deltaDeg = -kMaxStepDeg;
 
-        double targetDeg = currentDeg + deltaDeg;
+        targetDeg = currentDeg + deltaDeg;
 
         double clampedTarget =
             std::clamp(targetDeg, -TurretConstants::turretMaxAngle, TurretConstants::turretMaxAngle);

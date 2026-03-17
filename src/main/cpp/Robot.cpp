@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "Robot.h"
+#include "RobotContainer.h"
 
 
 #include <frc2/command/CommandScheduler.h>
@@ -27,7 +28,7 @@ void Robot::RobotPeriodic() {
   // frc::SmartDashboard::PutBoolean("is turret at angle?", m_container.m_turret.isAtAngle(m_container.m_turret.getSetpoint()));
   // frc::SmartDashboard::PutNumber("Rack Position", m_container.HoodedShooter.RackMotor.GetPosition().GetValueAsDouble());
   // frc::SmartDashboard::PutNumber("Offset Position", m_container.HoodedShooter.hoodCenterRot);
-  // frc::SmartDashboard::PutNumber("Target Position", m_container.HoodedShooter.targetAbs);
+  frc::SmartDashboard::PutNumber("Target Position", m_container.HoodedShooter.targetAbs);
   frc::SmartDashboard::PutNumber("Motor RPM", m_container.HoodedShooter.getShooterVelocity());
   frc::SmartDashboard::PutNumber("Hood Position", m_container.HoodedShooter.findHoodAngle());
   frc::SmartDashboard::PutNumber("Turret Position", m_container.m_turret.getCurrentMotorAngle());
@@ -35,6 +36,9 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Robot Pose X", m_container.drivetrain.getPose().X().value());
   frc::SmartDashboard::PutNumber("Robot Pose Y", m_container.drivetrain.getPose().Y().value());
   frc::SmartDashboard::PutNumber("Quest Heading", QuestNav::getInstance().getPose2d().Rotation().Degrees().value());
+  frc::SmartDashboard::PutNumber("Lemon Target", m_container.m_lemonlight.GetPrimaryTagID());
+  frc::SmartDashboard::PutData("LemonError", m_container.m_lemonlight.GetHeadingErrorToTag());
+  frc::SmartDashboard::PutNumber("Turret Target Deg", m_container.targetDeg);
   m_container.drivetrain.updateOdometry();
 }
 

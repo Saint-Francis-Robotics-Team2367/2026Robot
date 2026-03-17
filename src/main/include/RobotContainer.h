@@ -82,4 +82,7 @@ class RobotContainer {
   // Uses the Lemonlight's AprilTag pose estimate to calibrate the QuestNav offsets
   // and reset drive odometry. Call at match start. No-ops if no tag is visible.
   void CalibrateQuestNavWithAprilTag();
+
+  double targetDeg;
+
 };
