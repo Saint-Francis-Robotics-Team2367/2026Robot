@@ -7,6 +7,7 @@
 
 
 #include <frc2/command/CommandScheduler.h>
+#include <limits>
 
 
 Robot::Robot() {}
@@ -37,7 +38,12 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Robot Pose Y", m_container.drivetrain.getPose().Y().value());
   frc::SmartDashboard::PutNumber("Quest Heading", QuestNav::getInstance().getPose2d().Rotation().Degrees().value());
   frc::SmartDashboard::PutNumber("Lemon Target", m_container.m_lemonlight.GetPrimaryTagID());
-  frc::SmartDashboard::PutData("LemonError", m_container.m_lemonlight.GetHeadingErrorToTag());
+  {
+    const auto errorOpt = m_container.m_lemonlight.GetHeadingErrorToTag();
+    frc::SmartDashboard::PutNumber(
+        "LemonError",
+        errorOpt ? errorOpt->value() : std::numeric_limits<double>::quiet_NaN());
+  }
   frc::SmartDashboard::PutNumber("Turret Target Deg", m_container.targetDeg);
   m_container.drivetrain.updateOdometry();
 }
