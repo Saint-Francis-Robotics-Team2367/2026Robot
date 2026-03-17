@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6090727605674786,
-        "y": 7.406552104505066
+        "x": 9.675584795321635,
+        "y": 6.697654970760234
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.405243960406362,
-        "y": 7.392342990876538
+        "x": 8.678415204678362,
+        "y": 5.6209239766081875
       },
       "isLocked": false,
-      "linkedName": "A"
+      "linkedName": "Balls for A"
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 5.9
+        "x": 7.638812865497075,
+        "y": 4.17821052631579
       },
       "prevControl": {
-        "x": 1.987723833264686,
-        "y": 6.149698409546971
+        "x": 8.10026900584795,
+        "y": 4.766964912280702
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "S1"
+      "linkedName": "Intake End-A"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -100.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -40.0
+    "rotation": 124.71860657106745
   },
   "reversed": false,
   "folder": "2026 Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -140.42059528376217
   },
   "useDefaultConstraints": true
 }
