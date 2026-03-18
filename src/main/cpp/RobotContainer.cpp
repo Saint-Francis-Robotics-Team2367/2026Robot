@@ -154,7 +154,7 @@ void RobotContainer::ConfigureBindings() {
   // When autoTargeting is enabled, continuously aim ONLY the turret using PhotonVision.
   // Turret is commanded directly to the current tag heading (clamped to +/- 45 deg).
   turretAutoTargetingOn.WhileTrue(
-    frc2::cmd::Run(
+    m_turret.Run(
       [this] {
         if (!VisionConstants::usePhotonVision) {
           return;
@@ -165,8 +165,7 @@ void RobotContainer::ConfigureBindings() {
         }
 
         int tagId = m_lemonlight.GetPrimaryTagID();
-        // Only auto-aim to specific hub-related tags (update IDs as needed).
-        if (tagId != 5 && tagId != 10 && tagId != 2) {
+        if (tagId < 0) {
           return;
         }
 
@@ -179,8 +178,11 @@ void RobotContainer::ConfigureBindings() {
 
         double errorDeg = errorOpt->value();
 
+        frc::SmartDashboard::PutNumber("TurretAuto/tagId", tagId);
+        frc::SmartDashboard::PutNumber("TurretAuto/errorDeg", errorDeg);
+
         // Small deadband to avoid jitter from measurement noise.
-        if (std::abs(errorDeg) < 0.5) {
+        if (std::abs(errorDeg) < 0.1) {
           return;
         }
 
@@ -191,6 +193,7 @@ void RobotContainer::ConfigureBindings() {
         // Negative sign so positive error turns turret toward the tag.
         constexpr double kVisionP = 0.2;  // vision proportional gain (tunable)
         double deltaDeg = -kVisionP * errorDeg;
+        frc::SmartDashboard::PutNumber("TurretAuto/deltaDeg", deltaDeg);
 
         // Limit how much we move the setpoint per loop to avoid slamming to the hard limit.
         constexpr double kMaxStepDeg = 5.0;
@@ -198,9 +201,12 @@ void RobotContainer::ConfigureBindings() {
         if (deltaDeg < -kMaxStepDeg) deltaDeg = -kMaxStepDeg;
 
         targetDeg = currentDeg + deltaDeg;
+        frc::SmartDashboard::PutNumber("TurretAuto/currentDeg", currentDeg);
+        frc::SmartDashboard::PutNumber("TurretAuto/targetDeg", targetDeg);
 
         double clampedTarget =
             std::clamp(targetDeg, -TurretConstants::turretMaxAngle, TurretConstants::turretMaxAngle);
+        frc::SmartDashboard::PutNumber("TurretAuto/clampedTarget", clampedTarget);
 
         m_turret.setAngle(clampedTarget);
       }
