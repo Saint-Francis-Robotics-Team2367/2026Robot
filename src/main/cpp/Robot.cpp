@@ -37,14 +37,8 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Robot Pose X", m_container.drivetrain.getPose().X().value());
   frc::SmartDashboard::PutNumber("Robot Pose Y", m_container.drivetrain.getPose().Y().value());
   frc::SmartDashboard::PutNumber("Quest Heading", QuestNav::getInstance().getPose2d().Rotation().Degrees().value());
-  frc::SmartDashboard::PutNumber("Lemon Target", m_container.m_lemonlight.GetPrimaryTagID());
-  {
-    const auto errorOpt = m_container.m_lemonlight.GetHeadingErrorToTag();
-    frc::SmartDashboard::PutNumber(
-        "LemonError",
-        errorOpt ? errorOpt->value() : std::numeric_limits<double>::quiet_NaN());
-  }
-  frc::SmartDashboard::PutNumber("Turret Target Deg", m_container.targetDeg);
+  frc::SmartDashboard::PutNumber("Distance to Tag", m_container.turretCam.getDistanceToTarget());
+  frc::SmartDashboard::PutNumber("Strafe Distance to Tag", m_container.turretCam.getStrafeDistancetoTarget());
   m_container.drivetrain.updateOdometry();
 }
 
@@ -62,8 +56,6 @@ void Robot::DisabledPeriodic() {}
  * RobotContainer} class.
  */
 void Robot::AutonomousInit() {
-  m_container.CalibrateQuestNavWithAprilTag();
-
   // m_autonomousCommand = m_container.GetAutonomousCommand();
 
   // if (m_autonomousCommand) {
@@ -75,7 +67,6 @@ void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {
   m_container.InitializeStartPose();       // sets pose from dashboard selector (fallback)
-  m_container.CalibrateQuestNavWithAprilTag(); // overrides with AprilTag if visible
 
   // This makes sure that the autonomous stops running when
   // teleop starts running. If you want the autonomous to

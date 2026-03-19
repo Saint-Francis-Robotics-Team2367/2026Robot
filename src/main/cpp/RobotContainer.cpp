@@ -10,8 +10,6 @@
 #include "frc2/command/button/RobotModeTriggers.h"
 
 #include "subsystems/Turret.h"
-#include "subsystems/vision/Lemonlight.h"
-#include "visionKonstants.h"
 
 #include "frc/smartdashboard/SmartDashboard.h"
 #include <frc2/command/CommandPtr.h>
@@ -150,68 +148,6 @@ void RobotContainer::ConfigureBindings() {
   //     [this]() {HoodedShooter.setFlywheelSpeed(-500);}
   //   )
   // );
-
-  // When autoTargeting is enabled, continuously aim ONLY the turret using PhotonVision.
-  // Turret is commanded directly to the current tag heading (clamped to +/- 45 deg).
-  turretAutoTargetingOn.WhileTrue(
-    m_turret.Run(
-      [this] {
-        if (!VisionConstants::usePhotonVision) {
-          return;
-        }
-
-        if (!m_lemonlight.HasTarget()) {
-          return;
-        }
-
-        int tagId = m_lemonlight.GetPrimaryTagID();
-        if (tagId < 0) {
-          return;
-        }
-
-        // Heading error from camera/turret to tag (degrees, CCW+).
-        // We'll apply a scaled correction to the current turret angle for stability.
-        auto errorOpt = m_lemonlight.GetHeadingErrorToTag();
-        if (!errorOpt.has_value()) {
-          return;
-        }
-
-        double errorDeg = errorOpt->value();
-
-        frc::SmartDashboard::PutNumber("TurretAuto/tagId", tagId);
-        frc::SmartDashboard::PutNumber("TurretAuto/errorDeg", errorDeg);
-
-        // Small deadband to avoid jitter from measurement noise.
-        if (std::abs(errorDeg) < 0.1) {
-          return;
-        }
-
-        // Current turret angle in degrees.
-        double currentDeg = m_turret.getCurrentMotorAngle();
-
-        // Apply a bounded proportional correction based on vision error.
-        // Negative sign so positive error turns turret toward the tag.
-        constexpr double kVisionP = 0.2;  // vision proportional gain (tunable)
-        double deltaDeg = -kVisionP * errorDeg;
-        frc::SmartDashboard::PutNumber("TurretAuto/deltaDeg", deltaDeg);
-
-        // Limit how much we move the setpoint per loop to avoid slamming to the hard limit.
-        constexpr double kMaxStepDeg = 5.0;
-        if (deltaDeg > kMaxStepDeg)  deltaDeg = kMaxStepDeg;
-        if (deltaDeg < -kMaxStepDeg) deltaDeg = -kMaxStepDeg;
-
-        targetDeg = currentDeg + deltaDeg;
-        frc::SmartDashboard::PutNumber("TurretAuto/currentDeg", currentDeg);
-        frc::SmartDashboard::PutNumber("TurretAuto/targetDeg", targetDeg);
-
-        double clampedTarget =
-            std::clamp(targetDeg, -TurretConstants::turretMaxAngle, TurretConstants::turretMaxAngle);
-        frc::SmartDashboard::PutNumber("TurretAuto/clampedTarget", clampedTarget);
-
-        m_turret.setAngle(clampedTarget);
-      }
-    )
-  );
 
   // Detect Indexer Stall
   IndexerStall.OnTrue(
@@ -383,21 +319,6 @@ void RobotContainer::ConfigureBindings() {
       }
     ).IgnoringDisable(true)
   );
-}
-
-
-void RobotContainer::CalibrateQuestNavWithAprilTag() {
-  auto fieldPose = m_lemonlight.GetEstimatedFieldPose();
-  if (!fieldPose.has_value()) {
-    frc::SmartDashboard::PutBoolean("QuestNav/AprilTagCalibrated", false);
-    return;
-  }
-
-  QuestNav::getInstance().CalibrateToFieldPose(fieldPose.value());
-  drivetrain.resetOdometry(fieldPose.value());
-  frc::SmartDashboard::PutBoolean("QuestNav/AprilTagCalibrated", true);
-  frc::SmartDashboard::PutNumber("QuestNav/CalibPoseX", fieldPose->X().value());
-  frc::SmartDashboard::PutNumber("QuestNav/CalibPoseY", fieldPose->Y().value());
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
