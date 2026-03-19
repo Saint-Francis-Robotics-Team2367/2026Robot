@@ -47,9 +47,6 @@ public:
         }
         frc::SmartDashboard::PutBoolean("Quest Connected?", questConnected);
 
-        bool topicConnected = inst.GetTopic("/QuestNav/frameData").Exists();
-        auto lastUpdate = m_questNavSub.GetLastChange();
-
         std::vector<uint8_t> rawBytes = m_questNavSub.Get({});
 
         if (rawBytes.empty()) return;
