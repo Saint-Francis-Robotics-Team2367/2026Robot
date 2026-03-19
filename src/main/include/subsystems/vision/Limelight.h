@@ -51,4 +51,12 @@ public:
         distanceToTag = pose[2];
         strafeDistanceToTag = pose[0];
     }
+
+    bool isHub() {
+        if (!hasTarget) {
+            return false;
+        }
+        int tagID = LimelightHelpers::getFiducialID();
+        return (tagID >= 2 && tagID <= 11) || (tagID >= 18 && tagID <= 27);
+    }
 };

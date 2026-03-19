@@ -151,8 +151,10 @@ void RobotContainer::ConfigureBindings() {
   m_turret.SetDefaultCommand(
     m_turret.Run(
       [this]() {
-        double tx = std::clamp(turretCam.tx, -40.0, 40.0);
-        m_turret.setAngle(tx);
+        if (turretCam.isHub()) {
+          double tx = std::clamp(turretCam.tx, -55.0, 55.0);
+          m_turret.setAngle(tx);
+        }
       }
     )
   );
