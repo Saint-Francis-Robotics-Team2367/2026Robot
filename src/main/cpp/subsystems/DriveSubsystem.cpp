@@ -52,6 +52,10 @@ void DriveSubsystem::resetOdometry(frc::Pose2d pose) {
   );
 }
 
+frc::SwerveDrivePoseEstimator<4> DriveSubsystem::getPoseEstimator() {
+  return odometry;
+}
+
 //gets robot position
 frc::Pose2d DriveSubsystem::getPose() {
   return odometry.GetEstimatedPosition();

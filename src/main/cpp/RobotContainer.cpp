@@ -24,6 +24,7 @@ RobotContainer::RobotContainer() {
   BallFeeder.init(); // Initialize Feeder motors and encoders
   BallIndexer.init(); // Initialize Indexer motors and encoders
   m_turret.init();
+  turretCam.init();
 
   drivetrain.initModules();
   drivetrain.initGyro();

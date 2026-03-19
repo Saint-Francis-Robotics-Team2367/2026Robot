@@ -24,6 +24,7 @@
 #include "frc/smartdashboard/SmartDashboard.h"
 #include "subsystems/Turret.h"
 #include "subsystems/vision/PhotonVision.h"
+#include "subsystems/vision/Limelight.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -39,7 +40,7 @@ class RobotContainer {
   frc2::CommandPtr GetAutonomousCommand();
 
   DriveSubsystem drivetrain;
-  PhotonVision turretCam{"Meyer"};
+  Limelight turretCam{drivetrain};
   Turret m_turret = Turret(drivetrain);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed

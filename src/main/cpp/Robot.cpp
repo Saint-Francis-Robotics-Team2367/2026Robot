@@ -23,22 +23,12 @@ Robot::Robot() {}
 void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run(); //runs command-based queue
   QuestNav::getInstance().periodic();
-  // double currAngle = m_container.m_turret.getCurrentMotorAngle();
-  // frc::SmartDashboard::PutNumber("Turret Motor Pos", currAngle);
-  // frc::SmartDashboard::PutNumber("Turret setpoint", m_container.m_turret.getSetpoint());
-  // frc::SmartDashboard::PutBoolean("is turret at angle?", m_container.m_turret.isAtAngle(m_container.m_turret.getSetpoint()));
-  // frc::SmartDashboard::PutNumber("Rack Position", m_container.HoodedShooter.RackMotor.GetPosition().GetValueAsDouble());
-  // frc::SmartDashboard::PutNumber("Offset Position", m_container.HoodedShooter.hoodCenterRot);
-  frc::SmartDashboard::PutNumber("Target Position", m_container.HoodedShooter.targetAbs);
-  frc::SmartDashboard::PutNumber("Motor RPM", m_container.HoodedShooter.getShooterVelocity());
-  frc::SmartDashboard::PutNumber("Hood Position", m_container.HoodedShooter.findHoodAngle());
-  frc::SmartDashboard::PutNumber("Turret Position", m_container.m_turret.getCurrentMotorAngle());
-  m_container.BallIndexer.DisplayValues();
+  m_container.turretCam.periodic();
   frc::SmartDashboard::PutNumber("Robot Pose X", m_container.drivetrain.getPose().X().value());
   frc::SmartDashboard::PutNumber("Robot Pose Y", m_container.drivetrain.getPose().Y().value());
   frc::SmartDashboard::PutNumber("Quest Heading", QuestNav::getInstance().getPose2d().Rotation().Degrees().value());
-  frc::SmartDashboard::PutNumber("Distance to Tag", m_container.turretCam.getDistanceToTarget());
-  frc::SmartDashboard::PutNumber("Strafe Distance to Tag", m_container.turretCam.getStrafeDistancetoTarget());
+  frc::SmartDashboard::PutNumber("Distance to Tag", m_container.turretCam.distanceToTag);
+  frc::SmartDashboard::PutNumber("Strafe Distance to Tag", m_container.turretCam.strafeDistanceToTag);
   m_container.drivetrain.updateOdometry();
 }
 

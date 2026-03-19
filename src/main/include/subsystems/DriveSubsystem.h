@@ -26,6 +26,7 @@ public:
   void initModules();
   void updateOdometry();
   void resetOdometry(frc::Pose2d pose);
+  frc::SwerveDrivePoseEstimator<4> getPoseEstimator();
   
   frc::Pose2d getPose();
   void resetGyro();
