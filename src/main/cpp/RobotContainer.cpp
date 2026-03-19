@@ -24,7 +24,6 @@ RobotContainer::RobotContainer() {
   BallFeeder.init(); // Initialize Feeder motors and encoders
   BallIndexer.init(); // Initialize Indexer motors and encoders
   m_turret.init();
-  turretCam.init();
 
   drivetrain.initModules();
   drivetrain.initGyro();
@@ -149,6 +148,14 @@ void RobotContainer::ConfigureBindings() {
   //     [this]() {HoodedShooter.setFlywheelSpeed(-500);}
   //   )
   // );
+  m_turret.SetDefaultCommand(
+    m_turret.Run(
+      [this]() {
+        double tx = std::clamp(turretCam.tx, -40.0, 40.0);
+        m_turret.setAngle(tx);
+      }
+    )
+  );
 
   // Detect Indexer Stall
   IndexerStall.OnTrue(

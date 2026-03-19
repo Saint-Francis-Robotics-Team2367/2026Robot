@@ -17,17 +17,14 @@ public:
 
     Limelight(DriveSubsystem &mDriveInput, std::string name = "") : mDrive(mDriveInput) {
         LimelightName = name;
-    }
-
-    void init() {
         LimelightHelpers::setPipelineIndex(LimelightName, 0);
         LimelightHelpers::setCameraPose_RobotSpace(
             LimelightName,
-            0.5, // tune these numbers
-            0.5,
+            0.305, 
             0.0,
+            0.36,
             0.0,
-            0.0,
+            20,
             0.0
         );
 

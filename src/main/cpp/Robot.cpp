@@ -29,6 +29,7 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Quest Heading", QuestNav::getInstance().getPose2d().Rotation().Degrees().value());
   frc::SmartDashboard::PutNumber("Distance to Tag", m_container.turretCam.distanceToTag);
   frc::SmartDashboard::PutNumber("Strafe Distance to Tag", m_container.turretCam.strafeDistanceToTag);
+  frc::SmartDashboard::PutNumber("tx", m_container.turretCam.tx);
   m_container.drivetrain.updateOdometry();
 }
 
