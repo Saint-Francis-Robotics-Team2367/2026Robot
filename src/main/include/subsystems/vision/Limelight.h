@@ -15,7 +15,7 @@ public:
     double distanceToTag = 0.0;
     double strafeDistanceToTag = 0.0;
 
-    Limelight::Limelight(DriveSubsystem &mDriveInput, std::string name = "") : mDrive(mDriveInput) {
+    Limelight(DriveSubsystem &mDriveInput, std::string name = "") : mDrive(mDriveInput) {
         LimelightName = name;
     }
 
