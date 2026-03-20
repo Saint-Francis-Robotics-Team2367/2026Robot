@@ -118,6 +118,12 @@ void RobotContainer::ConfigureBindings() {
     }
   };
 
+  frc2::Trigger scorePossible{
+    [this] {
+      return drivetrain.getPose().Y().value() < 4.625594;
+    }
+  };
+
   // ******************** DEFAULT COMMANDS ********************
   drivetrain.SetDefaultCommand(
     drivetrain.Run(
@@ -148,16 +154,31 @@ void RobotContainer::ConfigureBindings() {
   //     [this]() {HoodedShooter.setFlywheelSpeed(-500);}
   //   )
   // );
-  m_turret.SetDefaultCommand(
-    m_turret.Run(
-      [this]() {
-        if (turretCam.isHub()) {
+
+  (scorePossible && turretAutoTargetingOn).ToggleOnTrue(
+    frc2::cmd::StartEnd(
+      [this] {
+        if (turretCam.isHub()) {  
           double tx = std::clamp(turretCam.tx, -55.0, 55.0);
           m_turret.setAngle(tx);
         }
+      },
+      [this] {
+        m_turret.setAngle(0);
       }
     )
   );
+
+  // m_turret.SetDefaultCommand(
+  //   m_turret.Run(
+  //     [this]() {
+  //       if (turretCam.isHub()) {
+  //         double tx = std::clamp(turretCam.tx, -55.0, 55.0);
+  //         m_turret.setAngle(tx);
+  //       }
+  //     }
+  //   )
+  // );
 
   // Detect Indexer Stall
   IndexerStall.OnTrue(
