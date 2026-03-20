@@ -68,10 +68,11 @@ class RobotContainer {
   const std::string redAlliance = "Red Alliance";
 
   frc::Pose2d startPose{0_m, 0_m, 0_rad};
-  double allianceXPositionOffset = 0.0;
-  double hubXPositionOffset = 0.0;
   std::string allianceColor;
   std::string fieldPosition;
+
+  double startXOffset = 0.0;
+  double hubPoseX = 0.0;
 
   frc::SlewRateLimiter<units::scalar> xLimiter{ControllerConstants::slewRate / 1_s};
   frc::SlewRateLimiter<units::scalar> yLimiter{ControllerConstants::slewRate / 1_s};

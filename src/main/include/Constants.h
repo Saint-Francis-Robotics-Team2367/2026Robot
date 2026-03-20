@@ -67,8 +67,6 @@ namespace ShooterConstants {
     static constexpr double GRAVITY = 9.81;
     static constexpr double PI = M_PI;
     static constexpr double SHOOTEREFFICIENCY = 0.60;
-    static constexpr double InchesToMeters = 0.0254f; // inches to meters
-    static constexpr double MeterToInches = 39.37;
     static constexpr double motorGearRatio = 116.8831;
     static constexpr double shooterTurnRatio = 1.0;
 
@@ -120,10 +118,6 @@ namespace TurretConstants {
     static constexpr int turretMotorID = 18;
     static constexpr double turretTurnRatio = 1.0;
 
-    // Hub target position on the field (inches, origin = back-left, X = right, Y = forward)
-    inline static double hubX = 182.11;  // from field diagram left-wall measurement
-    inline static double hubY = 158.85;  // (317.69 / 2) confirmed by 158.84 dims each side
-
     //TURRET CONSTANTS
     //need to tune
     // Turret PID gains (tuned for smoother vision tracking)
@@ -135,4 +129,12 @@ namespace TurretConstants {
     constexpr double turretTbRatio = 8.77778;
     constexpr double turretMaxAngle = 60.0; // deg, mechanical hard limit
     
+}
+
+namespace PoseConstants {
+    static constexpr double BluehubX = 4.625594;         // meters (182.11 inches)
+    static constexpr double RedhubX = 4.625594 + 7.2898; // meters (469.11 inches)
+    static constexpr double hubPoseY = 4.034790;         // meters (158.85 inches)
+
+    static constexpr double alliancePoseOffset = 8.4836; // meters (334.0 inches)
 }

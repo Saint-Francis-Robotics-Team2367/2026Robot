@@ -1,5 +1,6 @@
 #include "subsystems/Turret.h"
 #include "subsystems/vision/QuestNav.h"
+#include <frc/DriverStation.h>
 
 void Turret::init() {
     //pids
@@ -68,11 +69,17 @@ double Turret::getSetpoint(){
 }
 
 void Turret::autoMoveToTarget() {
-    // Convert robot pose from meters to inches to match hub coordinate constants
-    double robotX_in = mDrive.getPose().Y().value() * ShooterConstants::MeterToInches;
-    double robotY_in = mDrive.getPose().X().value() * ShooterConstants::MeterToInches;
-    double dx = TurretConstants::hubX - robotX_in;
-    double dy = TurretConstants::hubY - robotY_in;
+    frc::Pose2d robotPose = QuestNav::getInstance().getPose2d();
+    double robotX_in = robotPose.X().value();
+    double robotY_in = robotPose.Y().value();
+
+    auto alliance = frc::DriverStation::GetAlliance();
+    double hubX = (alliance && *alliance == frc::DriverStation::Alliance::kRed)
+                      ? PoseConstants::RedhubX
+                      : PoseConstants::BluehubX;
+
+    double dx = hubX - robotX_in;
+    double dy = PoseConstants::hubPoseY - robotY_in;
 
     // atan2(dx, dy) gives angle from +Y (forward) axis, CW-positive toward +X (right).
     // Negate to make CCW-positive so it matches the robotHeading convention (0 = facing forward/+Y, CCW+).
