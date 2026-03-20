@@ -91,29 +91,29 @@ void RobotContainer::InitializeStartPose() {
 
 void RobotContainer::ConfigureBindings() {
   // ******************** Trigger Functions ********************
-  frc2::Trigger rightStickYMoving{
+  frc2::Trigger rightStickYMoving(
     [this] {
       return std::abs(frc::ApplyDeadband(codriverCtr.GetRightY(), ControllerConstants::deadband)) > 0.0;
     }
-  };
+  );
 
-  frc2::Trigger leftStickXMoving{
+  frc2::Trigger leftStickXMoving(
     [this] {
       return std::abs(frc::ApplyDeadband(codriverCtr.GetLeftX(), ControllerConstants::deadband)) > 0.0;
     }
-  };
+  );
 
-  frc2::Trigger turretAutoTargetingOn{
+  frc2::Trigger turretAutoTargetingOn(
     [this] {
       return autoTargeting;
     }
-  };
+  );
 
-  frc2::Trigger IndexerStall{
+  frc2::Trigger IndexerStall(
     [this] {
       return BallIndexer.IndexerStall();
     }
-  };
+  );
 
   frc2::Trigger scorePossible{
     [this] {
