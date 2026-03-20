@@ -41,6 +41,10 @@ RobotContainer::RobotContainer() {
   positionChooser.AddOption("Top Trench", topTrench);
   frc::SmartDashboard::PutData("Field Position", &positionChooser);
 
+  frc::SmartDashboard::PutNumber("Hood Angle", hoodAngle);
+  frc::SmartDashboard::PutNumber("Shooter Velocity", shooterVelo);
+  frc::SmartDashboard::PutNumber("Distance", distance);
+
   autoTargeting = true;
 }
 
@@ -249,19 +253,16 @@ void RobotContainer::ConfigureBindings() {
       // Step 1: Set hood position
       HoodedShooter.RunOnce(
         [this] {
-          HoodedShooter.setHoodPosition(
-            HoodedShooter.findOptimalRPM(
-              TurretConstants::hubX - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches, 
-              TurretConstants::hubY - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches), 
-              TurretConstants::hubX - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches, 
-              TurretConstants::hubY - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches);
+          hoodAngle = frc::SmartDashboard::GetNumber("Hood Angle", 0.0);
+          HoodedShooter.setManualHoodPosition(hoodAngle);
         }
       ),
       // Step 2: Spin up flywheel and wait 4 seconds, then feed while flywheel keeps spinning
       frc2::cmd::Parallel(
         frc2::cmd::StartEnd (
           [this] {
-            HoodedShooter.setFlywheelSpeed(-HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches));
+            shooterVelo = frc::SmartDashboard::GetNumber("Shooter Velocity", 0.0);
+            HoodedShooter.setFlywheelSpeed(shooterVelo);
           },
           [this] {
             HoodedShooter.ShooterMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0});
@@ -271,7 +272,7 @@ void RobotContainer::ConfigureBindings() {
         frc2::cmd::Sequence(
           frc2::cmd::WaitUntil(
             [this] {
-              return (HoodedShooter.getShooterVelocity() > (0.95 * (1/ShooterConstants::SHOOTEREFFICIENCY) * HoodedShooter.findOptimalRPM(TurretConstants::hubX - drivetrain.getPose().X().value() * ShooterConstants::MeterToInches, TurretConstants::hubY - drivetrain.getPose().Y().value() * ShooterConstants::MeterToInches)));
+              return (HoodedShooter.getShooterVelocity() > (0.95 * shooterVelo));
             }
           ),
           // Step 3: Run indexer and feeder while flywheel is still spinning

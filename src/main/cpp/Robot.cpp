@@ -30,6 +30,9 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Distance to Tag", m_container.turretCam.distanceToTag);
   frc::SmartDashboard::PutNumber("Strafe Distance to Tag", m_container.turretCam.strafeDistanceToTag);
   frc::SmartDashboard::PutNumber("tx", m_container.turretCam.tx);
+  frc::SmartDashboard::PutNumber("Hood Angle", m_container.hoodAngle);
+  frc::SmartDashboard::PutNumber("Shooter Velocity", m_container.shooterVelo);
+  frc::SmartDashboard::PutNumber("Distance", m_container.distance);
   m_container.drivetrain.updateOdometry();
 }
 

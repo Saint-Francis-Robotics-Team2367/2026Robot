@@ -73,6 +73,10 @@ class RobotContainer {
   std::string allianceColor;
   std::string fieldPosition;
 
+  double hoodAngle = 0.0;
+  double shooterVelo = 0.0;
+  double distance = 0.0;
+
   frc::SlewRateLimiter<units::scalar> xLimiter{ControllerConstants::slewRate / 1_s};
   frc::SlewRateLimiter<units::scalar> yLimiter{ControllerConstants::slewRate / 1_s};
   frc::SlewRateLimiter<units::scalar> rotLimiter{ControllerConstants::slewRate / 1_s};
