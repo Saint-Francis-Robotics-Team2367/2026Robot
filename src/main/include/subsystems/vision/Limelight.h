@@ -27,8 +27,7 @@ public:
             20,
             0.0
         );
-
-        LimelightHelpers::SetFiducialIDFiltersOverride(LimelightName, std::vector<int>{2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27});
+        LimelightHelpers::SetFiducialIDFiltersOverride(LimelightName, std::vector<int>{2, 4, 5, 10, 24, 26, 27, 20});
     }
 
     void periodic() {
