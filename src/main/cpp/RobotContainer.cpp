@@ -61,31 +61,32 @@ void RobotContainer::InitializeStartPose() {
   double startX = 4.028694 + startXOffset;
 
   if (fieldPosition == "Top Trench") {
-    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
+    startPose = frc::Pose2d{units::inch_t(startX),
                             units::meter_t(7.430262),  // meters
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Top Bump") {
-    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
+    startPose = frc::Pose2d{units::meter_t(startX),
                             units::meter_t(5.47497),  // meters
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Front Hub") {
-    startPose = frc::Pose2d{units::inch_t(startX),
+    startPose = frc::Pose2d{units::meter_t(startX),
                             units::meter_t(4.025 ),
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Bottom Bump") {
-    startPose = frc::Pose2d{units::inch_t(startX),
+    startPose = frc::Pose2d{units::meter_t(startX),
                             units::meter_t(2.59461),  // meters
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Bottom Trench") {
-    startPose = frc::Pose2d{units::inch_t(startX),
+    startPose = frc::Pose2d{units::meter_t(startX),
                             units::meter_t(0.639318),  // meters
                             frc::Rotation2d{0_rad}};
   }
 
+  QuestNav::getInstance().SetStartPose(startPose);
   drivetrain.resetOdometry(startPose);
 }
 
@@ -247,7 +248,11 @@ void RobotContainer::ConfigureBindings() {
       HoodedShooter.RunOnce(
         [this] {
           double dx = hubPoseX - QuestNav::getInstance().getPose2d().X().value();
+          frc::SmartDashboard::PutNumber("Quest Pose X", QuestNav::getInstance().getPose2d().X().value());
+          
           double dy = PoseConstants::hubPoseY - QuestNav::getInstance().getPose2d().Y().value();
+          frc::SmartDashboard::PutNumber("Quest Pose Y", QuestNav::getInstance().getPose2d().Y().value());
+          
           HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(dx, dy), dx, dy);
         }
       ),
