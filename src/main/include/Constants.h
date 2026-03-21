@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cmath>
+#include <numbers>
 #include "frc2/command/Commands.h"
 #include "frc2/command/CommandPtr.h"
 #include "subsystems/vision/QuestNav.h"
@@ -121,14 +122,14 @@ namespace TurretConstants {
     //TURRET CONSTANTS
     //need to tune
     // Turret PID gains (tuned for smoother vision tracking)
-    static constexpr double turretkP = 0.5;
+    static constexpr double turretkP = 0.75;
     static constexpr double turretkI = 0.0;
-    static constexpr double turretkD = 0.0;
+    static constexpr double turretkD = 0.15;
 
-    constexpr double turretPulleyRatio = 44; //big wheel to small wheel (encoder) ratio
-    constexpr double turretTbRatio = 8.77778;
-    constexpr double turretMaxAngle = 60.0; // deg, mechanical hard limit
-    
+    static constexpr double turretPulleyRatio = 44; //big wheel to small wheel (encoder) ratio
+    static constexpr double turretTbRatio = 8.77778;
+    static constexpr double turretMaxAngle = 60.0; // deg, mechanical hard limit
+    static constexpr double turretDeadband = 0.1;
 }
 
 namespace PoseConstants {

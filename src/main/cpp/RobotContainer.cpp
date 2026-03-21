@@ -40,8 +40,6 @@ RobotContainer::RobotContainer() {
   positionChooser.AddOption("Top Bump", topBump);
   positionChooser.AddOption("Top Trench", topTrench);
   frc::SmartDashboard::PutData("Field Position", &positionChooser);
-
-  autoTargeting = true;
 }
 
 
@@ -92,31 +90,37 @@ void RobotContainer::InitializeStartPose() {
 void RobotContainer::ConfigureBindings() {
   // ******************** Trigger Functions ********************
   frc2::Trigger rightStickYMoving(
-    [this] {
+    [&] {
       return std::abs(frc::ApplyDeadband(codriverCtr.GetRightY(), ControllerConstants::deadband)) > 0.0;
     }
   );
 
   frc2::Trigger leftStickXMoving(
-    [this] {
+    [&] {
       return std::abs(frc::ApplyDeadband(codriverCtr.GetLeftX(), ControllerConstants::deadband)) > 0.0;
     }
   );
 
   frc2::Trigger turretAutoTargetingOn(
-    [this] {
+    [&] {
       return autoTargeting;
     }
   );
 
+  frc2::Trigger tagVisible(
+    [&] {
+      return turretCam.hasTarget;
+    }
+  );
+
   frc2::Trigger IndexerStall(
-    [this] {
+    [&] {
       return BallIndexer.IndexerStall();
     }
   );
 
   frc2::Trigger scorePossible{
-    [this] {
+    [&] {
       return drivetrain.getPose().Y().value() < 4.625594;
     }
   };
@@ -152,16 +156,37 @@ void RobotContainer::ConfigureBindings() {
   //   )
   // );
 
-  (scorePossible && turretAutoTargetingOn).ToggleOnTrue(
-    frc2::cmd::StartEnd(
+  (turretAutoTargetingOn && tagVisible).WhileTrue(
+    frc2::cmd::Run(
       [this] {
-        if (turretCam.isHub()) {  
-          double tx = std::clamp(turretCam.tx, -55.0, 55.0);
-          m_turret.setAngle(tx);
-        }
-      },
+        double tx = std::clamp(turretCam.tx + m_turret.getCurrentMotorAngle(), -50.0, 50.0);
+        double tolerance = std::sin(turretCam.tx * (std::numbers::pi / 180.0)) * turretCam.distanceToTag;
+        tolerance = frc::ApplyDeadband(tolerance, TurretConstants::turretDeadband);
+        m_turret.setAngle(tx);
+      }
+    )
+  );
+
+  (turretAutoTargetingOn).OnFalse(
+    frc2::cmd::RunOnce(
       [this] {
         m_turret.setAngle(0);
+      }
+    )
+  );
+
+  tagVisible.OnFalse(
+    frc2::cmd::RunOnce(
+      [this] {
+        autoTargeting = false;
+      }
+    )
+  );
+
+  tagVisible.OnTrue(
+    frc2::cmd::RunOnce(
+      [this] {
+        autoTargeting = true;
       }
     )
   );

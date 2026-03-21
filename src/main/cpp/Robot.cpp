@@ -27,9 +27,12 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Robot Pose X", m_container.drivetrain.getPose().X().value());
   frc::SmartDashboard::PutNumber("Robot Pose Y", m_container.drivetrain.getPose().Y().value());
   frc::SmartDashboard::PutNumber("Quest Heading", QuestNav::getInstance().getPose2d().Rotation().Degrees().value());
+  frc::SmartDashboard::PutBoolean("Auto Target", m_container.autoTargeting);
   frc::SmartDashboard::PutNumber("Distance to Tag", m_container.turretCam.distanceToTag);
   frc::SmartDashboard::PutNumber("Strafe Distance to Tag", m_container.turretCam.strafeDistanceToTag);
   frc::SmartDashboard::PutNumber("tx", m_container.turretCam.tx);
+  frc::SmartDashboard::PutNumber("Turret Angle", m_container.m_turret.getCurrentMotorAngle());
+  frc::SmartDashboard::PutBoolean("Has Target", m_container.turretCam.hasTarget);
   m_container.drivetrain.updateOdometry();
 }
 
@@ -58,6 +61,7 @@ void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {
   m_container.InitializeStartPose();       // sets pose from dashboard selector (fallback)
+  // m_container.autoTargeting = true;
 
   // This makes sure that the autonomous stops running when
   // teleop starts running. If you want the autonomous to
