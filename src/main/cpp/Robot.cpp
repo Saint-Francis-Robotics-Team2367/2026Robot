@@ -5,7 +5,7 @@
 #include "Robot.h"
 #include "RobotContainer.h"
 
-
+#include "cameraserver/CameraServer.h"
 #include <frc2/command/CommandScheduler.h>
 #include <limits>
 
@@ -21,6 +21,7 @@ Robot::Robot() {}
  * LiveWindow and SmartDashboard integrated updating.
  */
 void Robot::RobotPeriodic() {
+  // frc::CameraServer::StartAutomaticCapture();
   frc2::CommandScheduler::GetInstance().Run(); //runs command-based queue
   QuestNav::getInstance().periodic();
   m_container.turretCam.periodic();
@@ -35,6 +36,7 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Turret Angle", m_container.m_turret.getCurrentMotorAngle());
   frc::SmartDashboard::PutBoolean("Has Target", m_container.turretCam.hasTarget);
   m_container.drivetrain.updateOdometry();
+  
 }
 
 /**

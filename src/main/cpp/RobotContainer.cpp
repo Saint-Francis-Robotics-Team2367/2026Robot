@@ -40,6 +40,7 @@ RobotContainer::RobotContainer() {
   positionChooser.AddOption("Top Bump", topBump);
   positionChooser.AddOption("Top Trench", topTrench);
   frc::SmartDashboard::PutData("Field Position", &positionChooser);
+  
 }
 
 
@@ -59,12 +60,12 @@ void RobotContainer::InitializeStartPose() {
   double startX = 4.028694 + startXOffset;
 
   if (fieldPosition == "Top Trench") {
-    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
+    startPose = frc::Pose2d{units::inch_t(startX),
                             units::meter_t(7.430262),  // meters
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Top Bump") {
-    startPose = frc::Pose2d{units::inch_t(startX).convert<units::meter>(),
+    startPose = frc::Pose2d{units::inch_t(startX),
                             units::meter_t(5.47497),  // meters
                             frc::Rotation2d{0_rad}};
   }
@@ -255,17 +256,23 @@ void RobotContainer::ConfigureBindings() {
       // Step 1: Set hood position
       HoodedShooter.RunOnce(
         [this] {
-          double dx = hubPoseX - QuestNav::getInstance().getPose2d().X().value();
-          double dy = PoseConstants::hubPoseY - QuestNav::getInstance().getPose2d().Y().value();
+          double horizontalOffset = std::cos((turretCam.ty + 15.0) * (std::numbers::pi / 180.0)) * turretCam.distanceToTag;
+          double dx = std::sin(turretCam.tx * (std::numbers::pi / 180.0)) * horizontalOffset;
+          double dy = std::cos(turretCam.tx * (std::numbers::pi / 180.0)) * horizontalOffset;
           HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(dx, dy), dx, dy);
+
+          frc::SmartDashboard::PutNumber("Shooter Distance (dx)", dx);
+          frc::SmartDashboard::PutNumber("Shooter Distance (dy)", dy);
+
         }
       ),
       // Step 2: Spin up flywheel and wait 4 seconds, then feed while flywheel keeps spinning
       frc2::cmd::Parallel(
         frc2::cmd::StartEnd(
           [this] {
-            double dx = hubPoseX - QuestNav::getInstance().getPose2d().X().value();
-            double dy = PoseConstants::hubPoseY - QuestNav::getInstance().getPose2d().Y().value();
+            double horizontalOffset = std::cos(turretCam.ty * (std::numbers::pi / 180.0) + 15) * turretCam.distanceToTag;
+            double dx = std::sin(turretCam.tx) * horizontalOffset;
+            double dy = std::cos(turretCam.tx) * horizontalOffset;
             HoodedShooter.setFlywheelSpeed(-HoodedShooter.findOptimalRPM(dx, dy));
           },
           [this] {
@@ -276,8 +283,9 @@ void RobotContainer::ConfigureBindings() {
         frc2::cmd::Sequence(
           frc2::cmd::WaitUntil(
             [this] {
-              double dx = hubPoseX - QuestNav::getInstance().getPose2d().X().value();
-              double dy = PoseConstants::hubPoseY - QuestNav::getInstance().getPose2d().Y().value();
+              double horizontalOffset = std::cos(turretCam.ty * (std::numbers::pi / 180.0) + 15) * turretCam.distanceToTag;
+              double dx = std::sin(turretCam.tx) * horizontalOffset;
+              double dy = std::cos(turretCam.tx) * horizontalOffset;
               return (HoodedShooter.getShooterVelocity() > (0.95 * (1/ShooterConstants::SHOOTEREFFICIENCY) * HoodedShooter.findOptimalRPM(dx, dy)));
             }
           ),

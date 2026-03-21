@@ -83,8 +83,7 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
 
     // Target point (dx, dy) in meters
     // Alter (num) to make it shoot farther or closer to the center of the goal
-    float dx = 0.0254f + std::sqrt(horizontalOffset * horizontalOffset + yOffset * yOffset);
-    frc::SmartDashboard::PutNumber("Shooter Distance (dx)", dx);
+    float dx = 0.5461f + std::sqrt(horizontalOffset * horizontalOffset + yOffset * yOffset);
     const float dy = 1.8288f;  // 72.0 inches in meters
     const float verticalOffset = dy - shooterHeight;
 
