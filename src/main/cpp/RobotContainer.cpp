@@ -167,26 +167,10 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
-  (turretAutoTargetingOn).OnFalse(
+  (!turretAutoTargetingOn || !tagVisible).OnTrue(
     frc2::cmd::RunOnce(
       [this] {
         m_turret.setAngle(0);
-      }
-    )
-  );
-
-  tagVisible.OnFalse(
-    frc2::cmd::RunOnce(
-      [this] {
-        autoTargeting = false;
-      }
-    )
-  );
-
-  tagVisible.OnTrue(
-    frc2::cmd::RunOnce(
-      [this] {
-        autoTargeting = true;
       }
     )
   );
