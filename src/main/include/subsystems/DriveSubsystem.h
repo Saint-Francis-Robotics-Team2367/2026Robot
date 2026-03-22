@@ -52,6 +52,7 @@ private:
     frc::Translation2d{-0.381_m, -0.381_m} 
   };
 
+public:
   frc::SwerveDrivePoseEstimator<4> odometry{
         kinematics, 
         QuestNav::getInstance().getRotation2d(), 

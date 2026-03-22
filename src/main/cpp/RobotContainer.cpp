@@ -70,7 +70,7 @@ void RobotContainer::InitializeStartPose() {
   }
   else if (fieldPosition == "Front Hub") {
     startPose = frc::Pose2d{units::inch_t(startX),
-                            units::meter_t(4.025 ),
+                            units::meter_t(4.025),
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Bottom Bump") {
@@ -162,35 +162,21 @@ void RobotContainer::ConfigureBindings() {
   //   )
   // );
 
-  (turretAutoTargetingOn).WhileTrue(
-    frc2::cmd::Run(
-      [this] {
-        if (turretCam.hasTarget)
-        {
-          double x = drivetrain.getPose().X().value();
-          double y = drivetrain.getPose().Y().value();
-          double yOffset = PoseConstants::BluehubX - y; 
-          double xOffset = PoseConstants::hubPoseY - x;
-          double turnAmt = std::atan(yOffset / xOffset) * (180.0 / std::numbers::pi);
-          double tx = std::clamp(turnAmt + m_turret.getCurrentMotorAngle(), -50.0, 50.0);
-          tx = frc::ApplyDeadband(tx, TurretConstants::turretDeadband);
-          m_turret.setAngle(tx);
-          noTagVisibleCounter = 0;
-        }
-        else {
-          noTagVisibleCounter++;
-        }
-      }
-    )
-  );
-
-  (!turretAutoTargetingOn || turretNoAprilTagDetected).OnTrue(
-    frc2::cmd::RunOnce(
-      [this] {
-        m_turret.setAngle(0);
-      }
-    )
-  );
+  // (turretAutoTargetingOn).WhileTrue(
+  //   frc2::cmd::Run(
+  //     [this] {
+  //       double x = drivetrain.getPose().X().value();
+  //       double y = drivetrain.getPose().Y().value();
+  //       double yOffset = PoseConstants::BluehubX - y; 
+  //       double xOffset = PoseConstants::hubPoseY - x;
+  //       double turnAmt = std::atan(yOffset / xOffset) * (180.0 / std::numbers::pi);
+  //       double tx = std::clamp(turnAmt + m_turret.getCurrentMotorAngle(), -50.0, 50.0);
+  //       tx = frc::ApplyDeadband(tx, TurretConstants::turretDeadband);
+  //       frc::SmartDashboard::PutNumber("turret angle", tx);
+  //       m_turret.setAngle(tx);
+  //     }
+  //   )
+  // );
 
   // m_turret.SetDefaultCommand(
   //   m_turret.Run(

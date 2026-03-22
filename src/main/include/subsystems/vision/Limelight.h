@@ -35,11 +35,13 @@ public:
     void periodic() {
         LimelightHelpers::PoseEstimate limelightMeasurement = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(LimelightName);
 
-        mDrive.getPoseEstimator().SetVisionMeasurementStdDevs({0.5, 0.5, 9999999}); // Ignore Megatag Gyro Input
-        mDrive.getPoseEstimator().AddVisionMeasurement(
-            limelightMeasurement.pose,
-            limelightMeasurement.timestampSeconds
-        );
+        if (hasTarget) {
+            mDrive.odometry.SetVisionMeasurementStdDevs({0.5, 0.5, 9999999}); // Ignore Megatag Gyro Input
+            mDrive.odometry.AddVisionMeasurement(
+                limelightMeasurement.pose,
+                limelightMeasurement.timestampSeconds
+            ); 
+        }
 
         tx = LimelightHelpers::getTX(LimelightName);
         ty = LimelightHelpers::getTY(LimelightName);
@@ -47,14 +49,14 @@ public:
         hasTarget = LimelightHelpers::getTV(LimelightName);
         heartbeat = LimelightHelpers::getHeartbeat();
 
-        static int count = 0;
-        count++;
-        if (count == 5)
-        {
-            std::vector<double> pose = LimelightHelpers::getTargetPose_RobotSpace();
+        std::vector<double> pose =
+            LimelightHelpers::getTargetPose_RobotSpace(LimelightName);
+        if (pose.size() >= 3) {
             distanceToTag = pose[2];
             strafeDistanceToTag = pose[0];
-            count = 0;
+        } else {
+            distanceToTag = 0.0;
+            strafeDistanceToTag = 0.0;
         }
     }
 
