@@ -46,9 +46,15 @@ public:
         hasTarget = LimelightHelpers::getTV(LimelightName);
         heartbeat = LimelightHelpers::getHeartbeat();
 
-        std::vector<double> pose = LimelightHelpers::getTargetPose_RobotSpace();
-        distanceToTag = pose[2];
-        strafeDistanceToTag = pose[0];
+        std::vector<double> pose =
+            LimelightHelpers::getTargetPose_RobotSpace(LimelightName);
+        if (pose.size() >= 3) {
+            distanceToTag = pose[2];
+            strafeDistanceToTag = pose[0];
+        } else {
+            distanceToTag = 0.0;
+            strafeDistanceToTag = 0.0;
+        }
     }
 
     bool isHub() {
