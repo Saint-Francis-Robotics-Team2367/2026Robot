@@ -1,5 +1,6 @@
 #include "LimelightHelpers.h"
 #include "subsystems/DriveSubsystem.h"
+#include "subsystems/vision/QuestNav.h"
 
 class Limelight {
 private:
@@ -33,20 +34,30 @@ public:
     }
 
     void periodic() {
-        LimelightHelpers::PoseEstimate limelightMeasurement = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(LimelightName);
-
-        if (hasTarget) {
-            mDrive.odometry.SetVisionMeasurementStdDevs({0.5, 0.5, 9999999}); // Ignore Megatag Gyro Input
-            mDrive.odometry.AddVisionMeasurement(
-                limelightMeasurement.pose,
-                limelightMeasurement.timestampSeconds
-            ); 
-        }
+        // MegaTag2 fuses tag geometry with robot heading; Limelight docs require this every frame
+        // before reading botpose_orb_wpiblue.
+        LimelightHelpers::SetRobotOrientation(
+            LimelightName,
+            QuestNav::getInstance().getRotation2d().Degrees().value(),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0);
 
         tx = LimelightHelpers::getTX(LimelightName);
         ty = LimelightHelpers::getTY(LimelightName);
         ta = LimelightHelpers::getTA(LimelightName);
         hasTarget = LimelightHelpers::getTV(LimelightName);
+
+        if (hasTarget) {
+            LimelightHelpers::PoseEstimate limelightMeasurement =
+                LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(LimelightName);
+            mDrive.odometry.SetVisionMeasurementStdDevs({0.5, 0.5, 9999999}); // Ignore Megatag Gyro Input
+            mDrive.odometry.AddVisionMeasurement(
+                limelightMeasurement.pose,
+                limelightMeasurement.timestampSeconds);
+        }
         heartbeat = LimelightHelpers::getHeartbeat();
 
         std::vector<double> pose =
