@@ -49,10 +49,13 @@ public:
         ty = LimelightHelpers::getTY(LimelightName);
         ta = LimelightHelpers::getTA(LimelightName);
         hasTarget = LimelightHelpers::getTV(LimelightName);
+        
+        LimelightHelpers::PoseEstimate limelightMeasurement =
+            LimelightHelpers::getBotPoseEstimate_wpiRed_MegaTag2(LimelightName);
 
-        if (hasTarget) {
-            LimelightHelpers::PoseEstimate limelightMeasurement =
-                LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(LimelightName);
+        if (hasTarget && limelightMeasurement.tagCount >= 2) {
+            limelightMeasurement =
+                LimelightHelpers::getBotPoseEstimate_wpiRed_MegaTag2(LimelightName);
             mDrive.odometry.SetVisionMeasurementStdDevs({0.5, 0.5, 9999999}); // Ignore Megatag Gyro Input
             mDrive.odometry.AddVisionMeasurement(
                 limelightMeasurement.pose,
