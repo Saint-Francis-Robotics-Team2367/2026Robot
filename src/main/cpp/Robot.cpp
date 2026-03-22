@@ -24,7 +24,6 @@ void Robot::RobotPeriodic() {
   // frc::CameraServer::StartAutomaticCapture();
   frc2::CommandScheduler::GetInstance().Run(); //runs command-based queue
   QuestNav::getInstance().periodic();
-  m_container.turretCam.periodic();
   frc::SmartDashboard::PutNumber("Robot Pose X", m_container.drivetrain.getPose().X().value());
   frc::SmartDashboard::PutNumber("Robot Pose Y", m_container.drivetrain.getPose().Y().value());
   frc::SmartDashboard::PutNumber("Quest Heading", QuestNav::getInstance().getPose2d().Rotation().Degrees().value());
@@ -36,7 +35,6 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Turret Angle", m_container.m_turret.getCurrentMotorAngle());
   frc::SmartDashboard::PutBoolean("Has Target", m_container.turretCam.hasTarget);
   m_container.drivetrain.updateOdometry();
-  
 }
 
 /**
@@ -79,7 +77,7 @@ void Robot::TeleopInit() {
  * This function is called periodically during operator control.
  */
 void Robot::TeleopPeriodic() {
-
+  m_container.turretCam.periodic();
   //frc::SmartDashboard::PutNumber("encoder angle", m_turret.getCurrentAngle());
 }
 /**

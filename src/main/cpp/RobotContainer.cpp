@@ -40,7 +40,6 @@ RobotContainer::RobotContainer() {
   positionChooser.AddOption("Top Bump", topBump);
   positionChooser.AddOption("Top Trench", topTrench);
   frc::SmartDashboard::PutData("Field Position", &positionChooser);
-  
 }
 
 
@@ -176,6 +175,10 @@ void RobotContainer::ConfigureBindings() {
           double tx = std::clamp(turnAmt + m_turret.getCurrentMotorAngle(), -50.0, 50.0);
           tx = frc::ApplyDeadband(tx, TurretConstants::turretDeadband);
           m_turret.setAngle(tx);
+          noTagVisibleCounter = 0;
+        }
+        else {
+          noTagVisibleCounter++;
         }
       }
     )
