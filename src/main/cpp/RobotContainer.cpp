@@ -174,7 +174,7 @@ void RobotContainer::ConfigureBindings() {
           double xOffset = PoseConstants::hubPoseY - x;
           double turnAmt = std::atan(yOffset / xOffset) * (180.0 / std::numbers::pi);
           double tx = std::clamp(turnAmt + m_turret.getCurrentMotorAngle(), -50.0, 50.0);
-          tolerance = frc::ApplyDeadband(tx, TurretConstants::turretDeadband);
+          tx = frc::ApplyDeadband(tx, TurretConstants::turretDeadband);
           m_turret.setAngle(tx);
         }
       }
