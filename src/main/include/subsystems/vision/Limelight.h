@@ -34,8 +34,9 @@ public:
     }
 
     void periodic() {
-        // MegaTag2 fuses tag geometry with robot heading; Limelight docs require this every frame
-        // before reading botpose_orb_wpiblue.
+        // MegaTag2: SetRobotOrientation every frame, then read botpose_orb_wpiblue. Use wpiBlue for
+        // AddVisionMeasurement even when viewing tags on the red side — tag IDs map to poses in the
+        // global WPILib frame; wpiRed is a different convention, not "tags on the red alliance half."
         LimelightHelpers::SetRobotOrientation(
             LimelightName,
             QuestNav::getInstance().getRotation2d().Degrees().value(),
@@ -49,13 +50,11 @@ public:
         ty = LimelightHelpers::getTY(LimelightName);
         ta = LimelightHelpers::getTA(LimelightName);
         hasTarget = LimelightHelpers::getTV(LimelightName);
-        
+
         LimelightHelpers::PoseEstimate limelightMeasurement =
-            LimelightHelpers::getBotPoseEstimate_wpiRed_MegaTag2(LimelightName);
+            LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(LimelightName);
 
         if (hasTarget && limelightMeasurement.tagCount >= 2) {
-            limelightMeasurement =
-                LimelightHelpers::getBotPoseEstimate_wpiRed_MegaTag2(LimelightName);
             mDrive.odometry.SetVisionMeasurementStdDevs({0.5, 0.5, 9999999}); // Ignore Megatag Gyro Input
             mDrive.odometry.AddVisionMeasurement(
                 limelightMeasurement.pose,

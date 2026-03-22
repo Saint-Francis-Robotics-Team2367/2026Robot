@@ -24,6 +24,8 @@ void Robot::RobotPeriodic() {
   // frc::CameraServer::StartAutomaticCapture();
   frc2::CommandScheduler::GetInstance().Run(); //runs command-based queue
   QuestNav::getInstance().periodic();
+  // Advance odometry before vision so SwerveDrivePoseEstimator state matches wheel/gyro, then fuse.
+  m_container.drivetrain.updateOdometry();
   m_container.turretCam.periodic();
   frc::SmartDashboard::PutNumber("Robot Pose X", m_container.drivetrain.getPose().X().value());
   frc::SmartDashboard::PutNumber("Robot Pose Y", m_container.drivetrain.getPose().Y().value());
@@ -35,7 +37,6 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("ty", m_container.turretCam.ty);
   frc::SmartDashboard::PutNumber("Turret Angle", m_container.m_turret.getCurrentMotorAngle());
   frc::SmartDashboard::PutBoolean("Has Target", m_container.turretCam.hasTarget);
-  m_container.drivetrain.updateOdometry();
 }
 
 /**
