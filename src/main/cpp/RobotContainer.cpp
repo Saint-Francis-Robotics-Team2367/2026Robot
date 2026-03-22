@@ -108,6 +108,12 @@ void RobotContainer::ConfigureBindings() {
     }
   );
 
+  frc2::Trigger turretNoAprilTagDetected(
+    [&] {
+      return (noTagVisibleCounter > TurretConstants::turretNoTagResetThreshold);
+    }
+  );
+
   frc2::Trigger tagVisible(
     [&] {
       return turretCam.hasTarget;
@@ -157,18 +163,26 @@ void RobotContainer::ConfigureBindings() {
   //   )
   // );
 
-  (turretAutoTargetingOn && tagVisible).WhileTrue(
+  (turretAutoTargetingOn).WhileTrue(
     frc2::cmd::Run(
       [this] {
-        double tx = std::clamp(turretCam.tx + m_turret.getCurrentMotorAngle(), -50.0, 50.0);
-        double tolerance = std::sin(turretCam.tx * (std::numbers::pi / 180.0)) * turretCam.distanceToTag;
-        tolerance = frc::ApplyDeadband(tolerance, TurretConstants::turretDeadband);
-        m_turret.setAngle(tx);
+        if (turretCam.hasTarget)
+        {
+          double tx = std::clamp(turretCam.tx + m_turret.getCurrentMotorAngle(), -50.0, 50.0);
+          double tolerance = std::sin(turretCam.tx * (std::numbers::pi / 180.0)) * turretCam.distanceToTag;
+          tolerance = frc::ApplyDeadband(tolerance, TurretConstants::turretDeadband);
+          m_turret.setAngle(tx);
+          noTagVisibleCounter = 0;
+        }
+        else
+        {
+          noTagVisibleCounter++;
+        }
       }
     )
   );
 
-  (!turretAutoTargetingOn || !tagVisible).OnTrue(
+  (!turretAutoTargetingOn || turretNoAprilTagDetected).OnTrue(
     frc2::cmd::RunOnce(
       [this] {
         m_turret.setAngle(0);
@@ -256,13 +270,14 @@ void RobotContainer::ConfigureBindings() {
       // Step 1: Set hood position
       HoodedShooter.RunOnce(
         [this] {
-          double horizontalOffset = std::cos((turretCam.ty + 15.0) * (std::numbers::pi / 180.0)) * turretCam.distanceToTag;
-          double dx = std::sin(turretCam.tx * (std::numbers::pi / 180.0)) * horizontalOffset;
-          double dy = std::cos(turretCam.tx * (std::numbers::pi / 180.0)) * horizontalOffset;
-          HoodedShooter.setHoodPosition(HoodedShooter.findOptimalRPM(dx, dy), dx, dy);
+          HoodedShooter.distanceToTag = std::cos((turretCam.ty + 15.0) * (std::numbers::pi / 180.0)) * turretCam.distanceToTag;
+          HoodedShooter.xOffset = std::sin(turretCam.tx * (std::numbers::pi / 180.0)) * HoodedShooter.distanceToTag;
+          HoodedShooter.yOffset = std::cos(turretCam.tx * (std::numbers::pi / 180.0)) * HoodedShooter.distanceToTag;
+          HoodedShooter.optimalRPM = HoodedShooter.findOptimalRPM();
+          HoodedShooter.setHoodPosition(HoodedShooter.optimalRPM, HoodedShooter.xOffset, HoodedShooter.yOffset);
 
-          frc::SmartDashboard::PutNumber("Shooter Distance (dx)", dx);
-          frc::SmartDashboard::PutNumber("Shooter Distance (dy)", dy);
+          frc::SmartDashboard::PutNumber("Shooter Distance (dx)", HoodedShooter.xOffset);
+          frc::SmartDashboard::PutNumber("Shooter Distance (dy)", HoodedShooter.yOffset);
 
         }
       ),
@@ -270,10 +285,7 @@ void RobotContainer::ConfigureBindings() {
       frc2::cmd::Parallel(
         frc2::cmd::StartEnd(
           [this] {
-            double horizontalOffset = std::cos(turretCam.ty * (std::numbers::pi / 180.0) + 15) * turretCam.distanceToTag;
-            double dx = std::sin(turretCam.tx) * horizontalOffset;
-            double dy = std::cos(turretCam.tx) * horizontalOffset;
-            HoodedShooter.setFlywheelSpeed(-HoodedShooter.findOptimalRPM(dx, dy));
+            HoodedShooter.setFlywheelSpeed(-HoodedShooter.optimalRPM);
           },
           [this] {
             HoodedShooter.ShooterMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0});
@@ -283,10 +295,10 @@ void RobotContainer::ConfigureBindings() {
         frc2::cmd::Sequence(
           frc2::cmd::WaitUntil(
             [this] {
-              double horizontalOffset = std::cos(turretCam.ty * (std::numbers::pi / 180.0) + 15) * turretCam.distanceToTag;
-              double dx = std::sin(turretCam.tx) * horizontalOffset;
-              double dy = std::cos(turretCam.tx) * horizontalOffset;
-              return (HoodedShooter.getShooterVelocity() > (0.95 * (1/ShooterConstants::SHOOTEREFFICIENCY) * HoodedShooter.findOptimalRPM(dx, dy)));
+              return turretCam.hasTarget && 
+                (HoodedShooter.getShooterVelocity() > 
+                  (0.95 * (1/ShooterConstants::SHOOTEREFFICIENCY) * 
+                  HoodedShooter.optimalRPM));
             }
           ),
           // Step 3: Run indexer and feeder while flywheel is still spinning
@@ -295,7 +307,7 @@ void RobotContainer::ConfigureBindings() {
           }),
           frc2::cmd::Parallel(
             BallIndexer.RunIndexer(&BallIndexer, -3000),
-            BallFeeder.RunFeeder(&BallFeeder, -3000)
+            BallFeeder.RunFeeder(&BallFeeder, HoodedShooter.setFlywheelSpeed(HoodedShooter.optimalRPM))
           )
         )
       )

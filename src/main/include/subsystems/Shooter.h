@@ -28,7 +28,7 @@ public:
     void moveHoodToZero();
     void applyHoodBrake();
     void releaseHoodBrake(); 
-    float findOptimalRPM(float horizontalOffset, float yOffset);
+    float findOptimalRPM();
     double getShooterVelocity();
     void ZeroHood();
     double findHoodAngle();
@@ -53,7 +53,10 @@ public:
 
     // Timeout for configuration
     const std::chrono::milliseconds kTimeoutMs{30};
-
+    double xOffset = 0.0f;
+    double yOffset = 0.0f;
+    double distanceToTag = 0.0f;
+    float optimalRPM = 0.0f;
 };
 
 

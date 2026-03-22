@@ -130,6 +130,8 @@ namespace TurretConstants {
     static constexpr double turretTbRatio = 8.77778;
     static constexpr double turretMaxAngle = 60.0; // deg, mechanical hard limit
     static constexpr double turretDeadband = 0.1;
+
+    static constexpr int turretNoTagResetThreshold = 50; // in frames
 }
 
 namespace PoseConstants {

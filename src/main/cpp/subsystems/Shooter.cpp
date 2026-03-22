@@ -73,7 +73,7 @@ bool Shooter::setFlywheelSpeed(float shooterRPM) {
 
 // initial angle is the angle of the hood at 0 degrees of rack rotation
 // all units are in meters
-void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yOffset, float shooterHeight, float initialAngle, float minAngle, float MotorGearRatio, float ThroughBoreGearRatio) {
+void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float depthOffset, float shooterHeight, float initialAngle, float minAngle, float MotorGearRatio, float ThroughBoreGearRatio) {
 
     // Convert shooter RPM to linear velocity (m/s)
     // alter (0.75) based on how much of rotational velocity is translated to linear velocity
@@ -83,7 +83,7 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
 
     // Target point (dx, dy) in meters
     // Alter (num) to make it shoot farther or closer to the center of the goal
-    float dx = 0.5461f + std::sqrt(horizontalOffset * horizontalOffset + yOffset * yOffset);
+    float dx = 0.5461f + std::sqrt(horizontalOffset * horizontalOffset + depthOffset * depthOffset);
     const float dy = 1.8288f;  // 72.0 inches in meters
     const float verticalOffset = dy - shooterHeight;
 
@@ -154,20 +154,21 @@ void Shooter::setHoodPosition(float shooterRPM, float horizontalOffset, float yO
 
 }
 
-float Shooter::findOptimalRPM(float horizontalOffset, float yOffset) {
-    float dx = 0.0254f + std::sqrt(std::pow(horizontalOffset, 2.0f) + std::pow(yOffset, 2.0f));
+float Shooter::findOptimalRPM() {
+    // prev 0.5461
+    float dx = 0.5461f + std::sqrt(std::pow(xOffset, 2.0f) + std::pow(yOffset, 2.0f));
 
     // table
     struct Entry { float dx; float effectiveRPM; };
     static constexpr std::array<Entry, 8> kTable = {{
-    { 0.9398f, 1120.0f },  // 37 inches
+    { 0.9398f, 800.0f },  // 37 inches
     { 1.27f,   1100.0f },  // 50 inches
     { 1.905f,  1160.0f },  // 75 inches
     { 2.54f,   1240.0f },  // 100 inches
     { 3.175f,  1320.0f },  // 125 inches
     { 3.81f,   1398.0f },  // 150 inches
-    { 4.445f,  1510.0f },  // 175 inches
-    { 5.08f,   1545.0f },  // 200 inches
+    { 4.445f,  1610.0f },  // 175 inches
+    { 5.08f,   1800.0f },  // 200 inches
     }};
 
     if (dx < kTable.front().dx) return 0.0f;
