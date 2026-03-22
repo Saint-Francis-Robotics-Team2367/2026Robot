@@ -22,7 +22,9 @@ public:
     void stop();
     void init();
     void setFeederSpeed(double rpm);
+    void stopMotor();
     frc2::CommandPtr RunFeeder(Feeder* feeder, double rpm);
+    double getFeederSpeed();
 
 private:
     // Motors

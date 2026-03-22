@@ -30,8 +30,19 @@ void Feeder::setFeederSpeed(double rpm) {
 
 frc2::CommandPtr Feeder::RunFeeder(Feeder* feeder, double rpm) {
     return frc2::cmd::StartEnd(
-        [feeder, rpm] {feeder->setFeederSpeed(rpm);},
+        [feeder, rpm] {
+            feeder->setFeederSpeed(rpm);
+        },
         [feeder] {feeder->FeederMotor.Set(0);},
         {feeder}
     );
+}
+
+void Feeder::stopMotor()
+{
+    FeederMotor.Set(0);
+}
+
+double Feeder::getFeederSpeed() {
+    return FeederMotor.GetVelocity().GetValueAsDouble() * 60.0;
 }

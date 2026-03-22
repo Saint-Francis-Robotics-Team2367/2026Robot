@@ -306,8 +306,23 @@ void RobotContainer::ConfigureBindings() {
             frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
           }),
           frc2::cmd::Parallel(
+            frc2::cmd::Run(
+              [this] {
+                frc::SmartDashboard::PutNumber("Feeder Ideal RPM", HoodedShooter.optimalRPM * (1/ShooterConstants::SHOOTEREFFICIENCY));
+                frc::SmartDashboard::PutNumber("Feeder RPM", BallFeeder.getFeederSpeed());
+              }
+            ),
             BallIndexer.RunIndexer(&BallIndexer, -3000),
-            BallFeeder.RunFeeder(&BallFeeder, HoodedShooter.setFlywheelSpeed(HoodedShooter.optimalRPM))
+            frc2::cmd::StartEnd(
+              [this]
+              {
+                BallFeeder.setFeederSpeed( -HoodedShooter.optimalRPM * (1/ShooterConstants::SHOOTEREFFICIENCY));
+              },
+              [this]
+              {
+                BallFeeder.stopMotor();
+              }
+            )
           )
         )
       )
