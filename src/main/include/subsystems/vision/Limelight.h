@@ -27,18 +27,19 @@ public:
             15,
             0.0
         );
+        LimelightHelpers::SetRobotOrientation(LimelightName, QuestNav::getInstance().getRotation2d().Degrees().value(), 0.0, 0.0, 0.0, 0.0, 0.0);
         LimelightHelpers::SetFiducialIDFiltersOverride(LimelightName, std::vector<int>{2, 4, 5, 10, 24, 26, 27, 20, 8}); // Remove ID 8 to blacklist 
+        LimelightHelpers::SetFiducialDownscalingOverride(LimelightName, 2.0);
     }
 
     void periodic() {
-        LimelightHelpers::PoseEstimate limelightMeasurement = LimelightHelpers::getBotPoseEstimate_wpiBlue(LimelightName);
-        if (limelightMeasurement.tagCount >= 2) {
-            mDrive.getPoseEstimator().SetVisionMeasurementStdDevs({0.7, 0.7, 9999999}); // Ignore Megatag Gyro Input
-            mDrive.getPoseEstimator().AddVisionMeasurement(
-                limelightMeasurement.pose,
-                limelightMeasurement.timestampSeconds
-            );
-        }
+        LimelightHelpers::PoseEstimate limelightMeasurement = LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(LimelightName);
+
+        mDrive.getPoseEstimator().SetVisionMeasurementStdDevs({0.5, 0.5, 9999999}); // Ignore Megatag Gyro Input
+        mDrive.getPoseEstimator().AddVisionMeasurement(
+            limelightMeasurement.pose,
+            limelightMeasurement.timestampSeconds
+        );
 
         tx = LimelightHelpers::getTX(LimelightName);
         ty = LimelightHelpers::getTY(LimelightName);

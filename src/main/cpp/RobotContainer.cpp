@@ -168,15 +168,14 @@ void RobotContainer::ConfigureBindings() {
       [this] {
         if (turretCam.hasTarget)
         {
-          double tx = std::clamp(turretCam.tx + m_turret.getCurrentMotorAngle(), -50.0, 50.0);
-          double tolerance = std::sin(turretCam.tx * (std::numbers::pi / 180.0)) * turretCam.distanceToTag;
-          tolerance = frc::ApplyDeadband(tolerance, TurretConstants::turretDeadband);
+          double x = drivetrain.getPose().X().value();
+          double y = drivetrain.getPose().Y().value();
+          double yOffset = PoseConstants::BluehubX - y; 
+          double xOffset = PoseConstants::hubPoseY - x;
+          double turnAmt = std::atan(yOffset / xOffset) * (180.0 / std::numbers::pi);
+          double tx = std::clamp(turnAmt + m_turret.getCurrentMotorAngle(), -50.0, 50.0);
+          tolerance = frc::ApplyDeadband(tx, TurretConstants::turretDeadband);
           m_turret.setAngle(tx);
-          noTagVisibleCounter = 0;
-        }
-        else
-        {
-          noTagVisibleCounter++;
         }
       }
     )
