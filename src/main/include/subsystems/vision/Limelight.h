@@ -54,13 +54,14 @@ public:
         LimelightHelpers::PoseEstimate limelightMeasurement =
             LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(LimelightName);
 
-        if (hasTarget && limelightMeasurement.tagCount >= 2) {
+        // Use validPoseEstimate (raw fiducials parsed), not tv — MegaTag2/botpose_orb can disagree with tv.
+        if (LimelightHelpers::validPoseEstimate(limelightMeasurement)) {
             mDrive.odometry.SetVisionMeasurementStdDevs({0.5, 0.5, 9999999}); // Ignore Megatag Gyro Input
             mDrive.odometry.AddVisionMeasurement(
                 limelightMeasurement.pose,
                 limelightMeasurement.timestampSeconds);
         }
-        heartbeat = LimelightHelpers::getHeartbeat();
+        heartbeat = LimelightHelpers::getHeartbeat(LimelightName);
 
         std::vector<double> pose =
             LimelightHelpers::getTargetPose_RobotSpace(LimelightName);
@@ -77,7 +78,7 @@ public:
         if (!hasTarget) {
             return false;
         }
-        int tagID = LimelightHelpers::getFiducialID();
+        int tagID = static_cast<int>(LimelightHelpers::getFiducialID(LimelightName));
         return (tagID >= 2 && tagID <= 11) || (tagID >= 18 && tagID <= 27);
     }
 };
