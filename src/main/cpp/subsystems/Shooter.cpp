@@ -168,7 +168,7 @@ float Shooter::findOptimalRPM() {
     { 3.175f,  1320.0f },  // 125 inches
     { 3.81f,   1398.0f },  // 150 inches
     { 4.445f,  1610.0f },  // 175 inches
-    { 5.08f,   1800.0f },  // 200 inches
+    { 5.08f,   1700.0f },  // 200 inches
     }};
 
     if (dx < kTable.front().dx) return 0.0f;
