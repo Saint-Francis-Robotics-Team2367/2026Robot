@@ -55,7 +55,7 @@ void Shooter::init() {
 bool Shooter::setFlywheelSpeed(float shooterRPM) {
     // set shooter velocity
     float efficientRPM = shooterRPM / ShooterConstants::SHOOTEREFFICIENCY;
-    ShooterMotor.SetControl(ctre::phoenix6::controls::VelocityVoltage{units::angular_velocity::turns_per_second_t{efficientRPM/ 60.0}});
+    ShooterMotor.SetControl(ctre::phoenix6::controls::VelocityVoltage{units::angular_velocity::turns_per_second_t{efficientRPM/ 60.0}}.WithSlot(0));
 
     // float targetVelocity = efficientRPM / 60.0;
     // float actualVelocity = ShooterMotor.GetVelocity().GetValue().value();
@@ -168,7 +168,7 @@ float Shooter::findOptimalRPM() {
     { 3.175f,  1320.0f },  // 125 inches
     { 3.81f,   1398.0f },  // 150 inches
     { 4.445f,  1610.0f },  // 175 inches
-    { 5.08f,   1800.0f },  // 200 inches
+    { 5.08f,   1700.0f },  // 200 inches
     }};
 
     if (dx < kTable.front().dx) return 0.0f;
