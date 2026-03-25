@@ -110,6 +110,7 @@ namespace IndexerConstants {
 
 namespace IntakeConstants {
     static constexpr int intakePivotID = 13;
+    static constexpr int intakePivot2ID = 15;
     static constexpr int intakeRollerID = 14;
     static constexpr int hopperMotorID = 16;
 }
@@ -126,7 +127,7 @@ namespace TurretConstants {
     static constexpr double turretkI = 0.0;
     static constexpr double turretkD = 0.15;
 
-    static constexpr double turretPulleyRatio = 44; //big wheel to small wheel (encoder) ratio
+    static constexpr double turretPulleyRatio = 49.2; //big wheel to small wheel (encoder) ratio
     static constexpr double turretTbRatio = 8.77778;
     static constexpr double turretMaxAngle = 60.0; // deg, mechanical hard limit
     static constexpr double turretDeadband = 0.1;

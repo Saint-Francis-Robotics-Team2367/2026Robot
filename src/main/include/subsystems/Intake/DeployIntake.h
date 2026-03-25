@@ -22,8 +22,11 @@ private:
     units::turn_t hopperDeployedPos = units::turn_t(1/8);
     units::angle::turn_t targetPosition = 0_tr;
 
-    ctre::phoenix6::hardware::TalonFX pivotMotor{IntakeConstants::intakePivotID, "Drivetrain"};
+    ctre::phoenix6::hardware::TalonFX pivotMotor1{IntakeConstants::intakePivotID, "Drivetrain"};
+    ctre::phoenix6::hardware::TalonFX pivotMotor2{IntakeConstants::intakePivot2ID, "Drivetrain"};
+
     ctre::phoenix6::configs::TalonFXConfiguration pivotConfig{};
+    ctre::phoenix6::configs::TalonFXConfiguration pivotConfig2{};
 
     ctre::phoenix6::hardware::TalonFX hopperMotor{IntakeConstants::hopperMotorID, "Drivetrain"};
     ctre::phoenix6::configs::TalonFXConfiguration hopperConfig{};

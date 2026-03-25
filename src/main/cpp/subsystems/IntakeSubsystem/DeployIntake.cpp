@@ -2,23 +2,25 @@
 #include "frc/smartdashboard/SmartDashboard.h"
 
 void DeployIntake::init() {
-    hopperConfig.Slot0.kP = 0.5;
-    hopperConfig.Slot0.kI = 0.0;
-    hopperConfig.Slot0.kD = 0.0;
-
-    hopperConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
-    hopperConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
-    hopperMotor.GetConfigurator().Apply(hopperConfig);
-
     pivotConfig.Slot0.kP = 0.5;
     pivotConfig.Slot0.kI = 0.0;
     pivotConfig.Slot0.kD = 0.0;
-
+    
     pivotConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
     pivotConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
-    pivotMotor.GetConfigurator().Apply(hopperConfig);
 
-    pivotMotor.SetPosition(0_tr);
+    pivotConfig2.Slot0.kP = 0.5;
+    pivotConfig2.Slot0.kI = 0.0;
+    pivotConfig2.Slot0.kD = 0.0;
+
+    pivotConfig2.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
+    pivotConfig2.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
+
+    pivotMotor1.GetConfigurator().Apply(pivotConfig);
+    pivotMotor2.GetConfigurator().Apply(pivotConfig2);
+
+    pivotMotor1.SetPosition(0_tr);
+    pivotMotor2.SetPosition(0_tr);
 }
 
 frc2::CommandPtr DeployIntake::DeployIntakeCommand(DeployIntake* intake) {
@@ -29,22 +31,17 @@ frc2::CommandPtr DeployIntake::DeployIntakeCommand(DeployIntake* intake) {
     );
 }
 
-void DeployIntake::deployHopper() {
-    hopperMotor.SetControl(ctre::phoenix6::controls::PositionVoltage{hopperDeployedPos}.WithSlot(0));
-}
-
-void DeployIntake::retractHopper() {
-    hopperMotor.SetControl(ctre::phoenix6::controls::PositionVoltage{hopperStowPos}.WithSlot(0));
-}
-
 void DeployIntake::deployIntake() {
-    pivotMotor.SetControl(ctre::phoenix6::controls::PositionVoltage{deployedPos}.WithSlot(0));
+    pivotMotor1.SetControl(ctre::phoenix6::controls::PositionVoltage{deployedPos}.WithSlot(0));
+    pivotMotor2.SetControl(ctre::phoenix6::controls::PositionVoltage{deployedPos}.WithSlot(0));
 }
 
 void DeployIntake::retractIntake() {
-    pivotMotor.SetControl(ctre::phoenix6::controls::PositionVoltage{-1*deployedPos}.WithSlot(0));
+    pivotMotor1.SetControl(ctre::phoenix6::controls::PositionVoltage{-1*deployedPos}.WithSlot(0));
+    pivotMotor2.SetControl(ctre::phoenix6::controls::PositionVoltage{-1*deployedPos}.WithSlot(0));
 }
 
 void DeployIntake::zeroPivot(double zeroAmt) {
-    pivotMotor.SetPosition(units::turn_t(zeroAmt));
+    pivotMotor1.SetPosition(units::turn_t(zeroAmt));
+    pivotMotor2.SetPosition(units::turn_t(zeroAmt));
 }
