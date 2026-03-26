@@ -40,7 +40,6 @@ RobotContainer::RobotContainer() {
   positionChooser.AddOption("Top Bump", topBump);
   positionChooser.AddOption("Top Trench", topTrench);
   frc::SmartDashboard::PutData("Field Position", &positionChooser);
-  
 }
 
 
@@ -71,7 +70,7 @@ void RobotContainer::InitializeStartPose() {
   }
   else if (fieldPosition == "Front Hub") {
     startPose = frc::Pose2d{units::inch_t(startX),
-                            units::meter_t(4.025 ),
+                            units::meter_t(4.025),
                             frc::Rotation2d{0_rad}};
   }
   else if (fieldPosition == "Bottom Bump") {
@@ -163,32 +162,21 @@ void RobotContainer::ConfigureBindings() {
   //   )
   // );
 
-  (turretAutoTargetingOn).WhileTrue(
-    frc2::cmd::Run(
-      [this] {
-        if (turretCam.hasTarget)
-        {
-          double tx = std::clamp(turretCam.tx + m_turret.getCurrentMotorAngle(), -50.0, 50.0);
-          double tolerance = std::sin(turretCam.tx * (std::numbers::pi / 180.0)) * turretCam.distanceToTag;
-          tolerance = frc::ApplyDeadband(tolerance, TurretConstants::turretDeadband);
-          m_turret.setAngle(tx);
-          noTagVisibleCounter = 0;
-        }
-        else
-        {
-          noTagVisibleCounter++;
-        }
-      }
-    )
-  );
-
-  (!turretAutoTargetingOn || turretNoAprilTagDetected).OnTrue(
-    frc2::cmd::RunOnce(
-      [this] {
-        m_turret.setAngle(0);
-      }
-    )
-  );
+  // (turretAutoTargetingOn).WhileTrue(
+  //   frc2::cmd::Run(
+  //     [this] {
+  //       double x = drivetrain.getPose().X().value();
+  //       double y = drivetrain.getPose().Y().value();
+  //       double yOffset = PoseConstants::BluehubX - y; 
+  //       double xOffset = PoseConstants::hubPoseY - x;
+  //       double turnAmt = std::atan(yOffset / xOffset) * (180.0 / std::numbers::pi);
+  //       double tx = std::clamp(turnAmt + m_turret.getCurrentMotorAngle(), -50.0, 50.0);
+  //       tx = frc::ApplyDeadband(tx, TurretConstants::turretDeadband);
+  //       frc::SmartDashboard::PutNumber("turret angle", tx);
+  //       m_turret.setAngle(tx);
+  //     }
+  //   )
+  // );
 
   // m_turret.SetDefaultCommand(
   //   m_turret.Run(
@@ -209,10 +197,7 @@ void RobotContainer::ConfigureBindings() {
           frc::SmartDashboard::PutBoolean("Indexer Stall", true);
         }
       ),
-      frc2::cmd::Parallel(
-        BallIndexer.RunIndexer(&BallIndexer, 3000),
-        BallFeeder.RunFeeder(&BallFeeder, 3000)
-      ).WithTimeout(2_s),
+      BallIndexer.RunIndexer(&BallIndexer, 3000).WithTimeout(2_s),
       frc2::cmd::RunOnce(
         [this] {
           frc::SmartDashboard::PutBoolean("Indexer Stall", false);
@@ -243,17 +228,11 @@ void RobotContainer::ConfigureBindings() {
   // ******************** Co-Driver Controls ********************
   // Reverse Indexer and Feeder
   codriverCtr.L2().WhileTrue(
-    frc2::cmd::Parallel(
-      BallIndexer.RunIndexer(&BallIndexer, -3000),
-      BallFeeder.RunFeeder(&BallFeeder, -3000)
-    )
+    BallIndexer.RunIndexer(&BallIndexer, -3000)
   );
 
   codriverCtr.L1().WhileTrue(
-    frc2::cmd::Parallel(
-      BallIndexer.RunIndexer(&BallIndexer, 3000),
-      BallFeeder.RunFeeder(&BallFeeder, 3000)
-    )
+    BallIndexer.RunIndexer(&BallIndexer, 3000)
   );
 
   // Apply Hood Brake
@@ -305,25 +284,7 @@ void RobotContainer::ConfigureBindings() {
           frc2::cmd::RunOnce([this] {
             frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
           }),
-          frc2::cmd::Parallel(
-            frc2::cmd::Run(
-              [this] {
-                frc::SmartDashboard::PutNumber("Feeder Ideal RPM", HoodedShooter.optimalRPM * (1/ShooterConstants::SHOOTEREFFICIENCY));
-                frc::SmartDashboard::PutNumber("Feeder RPM", BallFeeder.getFeederSpeed());
-              }
-            ),
-            BallIndexer.RunIndexer(&BallIndexer, -3000),
-            frc2::cmd::StartEnd(
-              [this]
-              {
-                BallFeeder.setFeederSpeed( -HoodedShooter.optimalRPM * (1/ShooterConstants::SHOOTEREFFICIENCY));
-              },
-              [this]
-              {
-                BallFeeder.stopMotor();
-              }
-            )
-          )
+          BallIndexer.RunIndexer(&BallIndexer, -6250)
         )
       )
     )
