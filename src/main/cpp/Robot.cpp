@@ -63,7 +63,6 @@ void Robot::AutonomousInit() {
 void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {
-  m_container.InitializeStartPose();       // sets pose from dashboard selector (fallback)
   // m_container.autoTargeting = true;
 
   // This makes sure that the autonomous stops running when

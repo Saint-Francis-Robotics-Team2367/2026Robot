@@ -2,49 +2,69 @@
 #include "frc/smartdashboard/SmartDashboard.h"
 
 void DeployIntake::init() {
-    hopperConfig.Slot0.kP = 0.5;
-    hopperConfig.Slot0.kI = 0.0;
-    hopperConfig.Slot0.kD = 0.0;
+    backLeftConfig.Slot0.kP = 0.5;
+    backLeftConfig.Slot0.kI = 0.0;
+    backLeftConfig.Slot0.kD = 0.0;
 
-    hopperConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
-    hopperConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
-    hopperMotor.GetConfigurator().Apply(hopperConfig);
+    backLeftConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
+    backLeftConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
+    backLeftMotor.GetConfigurator().Apply(backLeftConfig);
 
-    pivotConfig.Slot0.kP = 0.5;
-    pivotConfig.Slot0.kI = 0.0;
-    pivotConfig.Slot0.kD = 0.0;
+    backRightConfig.Slot0.kP = 0.5;
+    backRightConfig.Slot0.kI = 0.0;
+    backRightConfig.Slot0.kD = 0.0;
 
-    pivotConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
-    pivotConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
-    pivotMotor.GetConfigurator().Apply(hopperConfig);
+    backLeftConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
+    backRightConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
+    backRightMotor.GetConfigurator().Apply(backLeftConfig);
 
-    pivotMotor.SetPosition(0_tr);
+    backLeftMotor.SetPosition(0_tr);
+    backRightMotor.SetPosition(0_tr);
 }
 
-frc2::CommandPtr DeployIntake::DeployIntakeCommand(DeployIntake* intake) {
-    return frc2::cmd::StartEnd(
-        [intake] {intake->deployIntake();},
-        [intake] {intake->retractIntake();},
-        {intake}
-    );
+frc2::CommandPtr DeployIntake::masterIntakeCommand(DeployIntake* intake, bool shooting) {
+    if (shooting) {
+        return frc2::cmd::Sequence(
+            frc2::cmd::RunOnce(
+                [intake] {intake->retract();}
+            ),
+            frc2::cmd::Wait(0.25_s),
+            frc2::cmd::RunOnce(
+                [intake] {intake->deploy();}
+            ),
+            frc2::cmd::Wait(0.25_s)
+        ).Repeatedly();
+    }
+    else {
+        return frc2::cmd::StartEnd(
+            [intake] {
+                if (intake->deployed == false) {
+                    intake->deploy();
+                    intake->deployed = true;
+                }
+            },
+            [intake] {
+                if (intake->deployed == true) {
+                    intake->retract();
+                    intake->deployed = false;
+                }
+            },
+            {intake}
+        );
+    }
 }
 
-void DeployIntake::deployHopper() {
-    hopperMotor.SetControl(ctre::phoenix6::controls::PositionVoltage{hopperDeployedPos}.WithSlot(0));
+void DeployIntake::deploy() {
+    backLeftMotor.SetControl(positionVoltage.WithPosition(deployedPos).WithSlot(0));
+    backRightMotor.SetControl(positionVoltage.WithPosition(deployedPos).WithSlot(0));
 }
 
-void DeployIntake::retractHopper() {
-    hopperMotor.SetControl(ctre::phoenix6::controls::PositionVoltage{hopperStowPos}.WithSlot(0));
+void DeployIntake::retract() {
+    backLeftMotor.SetControl(positionVoltage.WithPosition(-1 * deployedPos).WithSlot(0));
+    backRightMotor.SetControl(positionVoltage.WithPosition(-1 * deployedPos).WithSlot(0));
 }
 
-void DeployIntake::deployIntake() {
-    pivotMotor.SetControl(ctre::phoenix6::controls::PositionVoltage{deployedPos}.WithSlot(0));
-}
-
-void DeployIntake::retractIntake() {
-    pivotMotor.SetControl(ctre::phoenix6::controls::PositionVoltage{-1*deployedPos}.WithSlot(0));
-}
-
-void DeployIntake::zeroPivot(double zeroAmt) {
-    pivotMotor.SetPosition(units::turn_t(zeroAmt));
+void DeployIntake::zeroMotors(double zeroAmt) {
+    backLeftMotor.SetPosition(units::turn_t(zeroAmt));
+    backRightMotor.SetPosition(units::turn_t(zeroAmt));
 }

@@ -15,17 +15,17 @@
 
 #include <Constants.h>
 
-class Indexer : public frc2::Subsystem {
+class Spindexer : public frc2::Subsystem {
 
     public:
         void init();
-        void setIndexerSpeed(double speed);
-        void stopIndexer();
-        frc2::CommandPtr RunIndexer(Indexer* indexer, double speed);
-        bool IndexerStall();
+        void setSpindexerSpeed(double speed);
+        void stopSpindexer();
+        frc2::CommandPtr RunSpindexer(Spindexer* spindexer, double speed);
+        bool SpindexerStall();
         void DisplayValues();
        
     private:
-        ctre::phoenix6::hardware::TalonFX indexerMotor{IndexerConstants::IndexerMotorID, "Drivetrain"}; // Use CANivore bus if applicable
-        ctre::phoenix6::configs::TalonFXConfiguration indexerConfigs;
+        ctre::phoenix6::hardware::TalonFX spindexerMotor{SpindexerConstants::SpindexerMotorID, "Drivetrain"}; // Use CANivore bus if applicable
+        ctre::phoenix6::configs::TalonFXConfiguration spindexerConfigs;
 };

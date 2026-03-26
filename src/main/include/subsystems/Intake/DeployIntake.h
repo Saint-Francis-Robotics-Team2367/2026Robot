@@ -3,6 +3,7 @@
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <ctre/phoenix6/configs/Configuration.hpp>
 #include <ctre/phoenix6/CANcoder.hpp>
+#include "ctre/phoenix6/controls/PositionVoltage.hpp"
 
 #include "Constants.h"
 #include <array>
@@ -16,26 +17,23 @@
 
 class DeployIntake : public frc2::SubsystemBase {
 private:
-    units::angle::turn_t stowedPos = 0_tr;
     units::angle::turn_t deployedPos = units::turn_t(1.95);   // Example values-->have to tune
-    units::turn_t hopperStowPos = 0_tr;
-    units::turn_t hopperDeployedPos = units::turn_t(1/8);
-    units::angle::turn_t targetPosition = 0_tr;
+    bool deployed = false;
 
-    ctre::phoenix6::hardware::TalonFX pivotMotor{IntakeConstants::intakePivotID, "Drivetrain"};
-    ctre::phoenix6::configs::TalonFXConfiguration pivotConfig{};
+    ctre::phoenix6::hardware::TalonFX backLeftMotor{IntakeConstants::backLeftIntakeID, "Drivetrain"};
+    ctre::phoenix6::configs::TalonFXConfiguration backLeftConfig{};
 
-    ctre::phoenix6::hardware::TalonFX hopperMotor{IntakeConstants::hopperMotorID, "Drivetrain"};
-    ctre::phoenix6::configs::TalonFXConfiguration hopperConfig{};
+    ctre::phoenix6::hardware::TalonFX backRightMotor{IntakeConstants::backRightIntakeID, "Drivetrain"};
+    ctre::phoenix6::configs::TalonFXConfiguration backRightConfig{};
+
+    ctre::phoenix6::controls::PositionVoltage positionVoltage{0_tr};
 
 public:
     void init();
     frc2::CommandPtr deploySequence();
     frc2::CommandPtr retractSequence();
-    frc2::CommandPtr DeployIntakeCommand(DeployIntake* intake);
-    void deployIntake();
-    void deployHopper();
-    void retractHopper();
-    void retractIntake();
-    void zeroPivot(double zeroAmt = 0.0);
+    frc2::CommandPtr masterIntakeCommand(DeployIntake* intake, bool shooting);
+    void deploy();
+    void retract();
+    void zeroMotors(double zeroAmt = 0.0);
 };

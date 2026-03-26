@@ -21,8 +21,7 @@ RobotContainer::RobotContainer() {
   // Initialize Shooter
   ConfigureBindings();
   HoodedShooter.init(); // Initalize Shooter motors and encoders
-  BallFeeder.init(); // Initialize Feeder motors and encoders
-  BallIndexer.init(); // Initialize Indexer motors and encoders
+  mSpindexer.init(); // Initialize Indexer motors and encoders
   m_turret.init();
 
   drivetrain.initModules();
@@ -40,51 +39,6 @@ RobotContainer::RobotContainer() {
   positionChooser.AddOption("Top Bump", topBump);
   positionChooser.AddOption("Top Trench", topTrench);
   frc::SmartDashboard::PutData("Field Position", &positionChooser);
-}
-
-
-void RobotContainer::InitializeStartPose() {
-
-  fieldPosition = positionChooser.GetSelected();
-  allianceColor = allianceChooser.GetSelected();
-
-  if (allianceColor == "Red Alliance") {
-    startXOffset = PoseConstants::alliancePoseOffset;
-    hubPoseX = PoseConstants::RedhubX;
-  } else {
-    startXOffset = 0.0;
-    hubPoseX = PoseConstants::BluehubX;
-  }
-
-  double startX = 4.028694 + startXOffset;
-
-  if (fieldPosition == "Top Trench") {
-    startPose = frc::Pose2d{units::inch_t(startX),
-                            units::meter_t(7.430262),  // meters
-                            frc::Rotation2d{0_rad}};
-  }
-  else if (fieldPosition == "Top Bump") {
-    startPose = frc::Pose2d{units::inch_t(startX),
-                            units::meter_t(5.47497),  // meters
-                            frc::Rotation2d{0_rad}};
-  }
-  else if (fieldPosition == "Front Hub") {
-    startPose = frc::Pose2d{units::inch_t(startX),
-                            units::meter_t(4.025),
-                            frc::Rotation2d{0_rad}};
-  }
-  else if (fieldPosition == "Bottom Bump") {
-    startPose = frc::Pose2d{units::inch_t(startX),
-                            units::meter_t(2.59461),  // meters
-                            frc::Rotation2d{0_rad}};
-  }
-  else if (fieldPosition == "Bottom Trench") {
-    startPose = frc::Pose2d{units::inch_t(startX),
-                            units::meter_t(0.639318),  // meters
-                            frc::Rotation2d{0_rad}};
-  }
-
-  drivetrain.resetOdometry(startPose);
 }
 
 void RobotContainer::ConfigureBindings() {
@@ -119,9 +73,9 @@ void RobotContainer::ConfigureBindings() {
     }
   );
 
-  frc2::Trigger IndexerStall(
+  frc2::Trigger SpindexerStall(
     [&] {
-      return BallIndexer.IndexerStall();
+      return mSpindexer.SpindexerStall();
     }
   );
 
@@ -178,32 +132,20 @@ void RobotContainer::ConfigureBindings() {
   //   )
   // );
 
-  // m_turret.SetDefaultCommand(
-  //   m_turret.Run(
-  //     [this]() {
-  //       if (turretCam.isHub()) {
-  //         double tx = std::clamp(turretCam.tx, -55.0, 55.0);
-  //         m_turret.setAngle(tx);
-  //       }
-  //     }
-  //   )
-  // );
-
   // Detect Indexer Stall
-  IndexerStall.OnTrue(
+  SpindexerStall.OnTrue(
     frc2::cmd::Sequence(
       frc2::cmd::RunOnce(
         [this] {
-          frc::SmartDashboard::PutBoolean("Indexer Stall", true);
+          frc::SmartDashboard::PutBoolean("Spindexer Stall", true);
         }
       ),
       frc2::cmd::Parallel(
-        BallIndexer.RunIndexer(&BallIndexer, 3000),
-        BallFeeder.RunFeeder(&BallFeeder, 3000)
+        mSpindexer.RunSpindexer(&mSpindexer, 3000)
       ).WithTimeout(2_s),
       frc2::cmd::RunOnce(
         [this] {
-          frc::SmartDashboard::PutBoolean("Indexer Stall", false);
+          frc::SmartDashboard::PutBoolean("Spindexer Stall", false);
         }
       ),
       frc2::cmd::Wait(0.25_s)
@@ -228,30 +170,23 @@ void RobotContainer::ConfigureBindings() {
     mRunIntake.IntakeCommand(&mRunIntake, -4000)
   );
 
+  driverCtr.R2().ToggleOnTrue(
+    mDeployIntake.masterIntakeCommand(&mDeployIntake, false)
+  );
+
   // ******************** Co-Driver Controls ********************
   // Reverse Indexer and Feeder
   codriverCtr.L2().WhileTrue(
     frc2::cmd::Parallel(
-      BallIndexer.RunIndexer(&BallIndexer, -3000),
-      BallFeeder.RunFeeder(&BallFeeder, -3000)
+      mSpindexer.RunSpindexer(&mSpindexer, -3000)
     )
   );
 
   codriverCtr.L1().WhileTrue(
     frc2::cmd::Parallel(
-      BallIndexer.RunIndexer(&BallIndexer, 3000),
-      BallFeeder.RunFeeder(&BallFeeder, 3000)
+      mSpindexer.RunSpindexer(&mSpindexer, 3000)
     )
   );
-
-  // Apply Hood Brake
-  /*
-  codriverCtr.Triangle().OnTrue(
-    HoodedShooter.RunOnce(
-      [this] {HoodedShooter.applyHoodBrake();}
-    )
-  );
-  */
 
   codriverCtr.R2().ToggleOnTrue(
     frc2::cmd::Sequence(
@@ -294,8 +229,8 @@ void RobotContainer::ConfigureBindings() {
             frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
           }),
           frc2::cmd::Parallel(
-            BallIndexer.RunIndexer(&BallIndexer, -3000),
-            BallFeeder.RunFeeder(&BallFeeder, HoodedShooter.setFlywheelSpeed(HoodedShooter.optimalRPM))
+            mSpindexer.RunSpindexer(&mSpindexer, -3000),
+            mDeployIntake.masterIntakeCommand(&mDeployIntake, true)
           )
         )
       )

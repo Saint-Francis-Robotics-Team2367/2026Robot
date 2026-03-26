@@ -97,21 +97,21 @@ namespace ShooterConstants {
     static constexpr double RackG = 0.01;
 }
 
-namespace IndexerConstants {
-    static constexpr int IndexerMotorID = 55;
-    static constexpr double IndexerP = 0.0;
-    static constexpr double IndexerI = 0.0;
-    static constexpr double IndexerD = 0.0;
-    static constexpr double IndexerV = 0.0;
+namespace SpindexerConstants {
+    static constexpr int SpindexerMotorID = 55;
+    static constexpr double SpindexerP = 0.0;
+    static constexpr double SpindexerI = 0.0;
+    static constexpr double SpindexerD = 0.0;
+    static constexpr double SpindexerV = 0.0;
 
-    static constexpr double indexerStallCurrent = 35.0; // amps — tune based on observed stall current
-    static constexpr double indexerStallVelocityThreshold = 0.5; // turns/sec — near-zero means stalled
+    static constexpr double spindexerStallCurrent = 35.0; // amps — tune based on observed stall current
+    static constexpr double spindexerStallVelocityThreshold = 0.5; // turns/sec — near-zero means stalled
 }
 
 namespace IntakeConstants {
-    static constexpr int intakePivotID = 13;
+    static constexpr int backLeftIntakeID = 13;
+    static constexpr int backRightIntakeID = 15;
     static constexpr int intakeRollerID = 14;
-    static constexpr int hopperMotorID = 16;
 }
 
 namespace TurretConstants {
@@ -126,9 +126,9 @@ namespace TurretConstants {
     static constexpr double turretkI = 0.0;
     static constexpr double turretkD = 0.15;
 
-    static constexpr double turretPulleyRatio = 44; //big wheel to small wheel (encoder) ratio
+    static constexpr double turretPulleyRatio = 49.2; //big wheel to small wheel (encoder) ratio
     static constexpr double turretTbRatio = 8.77778;
-    static constexpr double turretMaxAngle = 60.0; // deg, mechanical hard limit
+    static constexpr double turretMaxAngle = 170.0; // deg, mechanical hard limit
     static constexpr double turretDeadband = 0.1;
 
     static constexpr int turretNoTagResetThreshold = 50; // in frames

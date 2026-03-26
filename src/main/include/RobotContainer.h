@@ -12,8 +12,7 @@
 #include "Constants.h"
 
 #include "subsystems/Shooter.h"
-#include "subsystems/Feeder.h"
-#include "subsystems/Indexer.h"
+#include "subsystems/Spindexer.h"
 #include "subsystems/Intake/RunIntake.h"
 #include "subsystems/Intake/DeployIntake.h"
 
@@ -49,8 +48,7 @@ class RobotContainer {
 
   // The robot's subsystems are defined here...
   Shooter HoodedShooter;
-  Feeder BallFeeder;
-  Indexer BallIndexer;
+  Spindexer mSpindexer;
   RunIntake mRunIntake;
   DeployIntake mDeployIntake;
 
