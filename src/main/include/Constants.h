@@ -37,23 +37,23 @@ namespace MathConstants {
 }
 
 namespace HardwareIDs { 
-    static constexpr int FLsteerID = 11; 
-    static constexpr int FLdriveID = 10; 
-    static constexpr int FLencoderID = 12; 
+    static constexpr int FLsteerID = 1; 
+    static constexpr int FLdriveID = 2; 
+    static constexpr int FLencoderID = 3; 
     
-    static constexpr int FRsteerID = 1;
-    static constexpr int FRdriveID = 2;
-    static constexpr int FRencoderID = 3;
+    static constexpr int FRsteerID = 5;
+    static constexpr int FRdriveID = 4;
+    static constexpr int FRencoderID = 0;
 
-    static constexpr int BLsteerID = 7; 
-    static constexpr int BLdriveID = 8; 
-    static constexpr int BLencoderID = 9; 
+    static constexpr int BLsteerID = 11; 
+    static constexpr int BLdriveID = 10; 
+    static constexpr int BLencoderID = 12; 
 
-    static constexpr int BRsteerID = 5; 
-    static constexpr int BRdriveID = 4; 
-    static constexpr int BRencoderID = 6; 
+    static constexpr int BRsteerID = 7; 
+    static constexpr int BRdriveID = 8; 
+    static constexpr int BRencoderID = 9; 
 
-    static constexpr int pigeonID = 0;
+    // static constexpr int pigeonID = 0;
 }
 
 
@@ -98,7 +98,7 @@ namespace ShooterConstants {
 }
 
 namespace SpindexerConstants {
-    static constexpr int SpindexerMotorID = 55;
+    static constexpr int SpindexerMotorID = 23;
     static constexpr double SpindexerP = 0.0;
     static constexpr double SpindexerI = 0.0;
     static constexpr double SpindexerD = 0.0;
@@ -109,14 +109,14 @@ namespace SpindexerConstants {
 }
 
 namespace IntakeConstants {
-    static constexpr int backLeftIntakeID = 13;
-    static constexpr int backRightIntakeID = 15;
-    static constexpr int intakeRollerID = 14;
+    static constexpr int backLeftIntakeID = 38;
+    static constexpr int backRightIntakeID = 34;
+    static constexpr int intakeRollerID = 41;
 }
 
 namespace TurretConstants {
     static constexpr int turretEncoderID = 60;
-    static constexpr int turretMotorID = 18;
+    static constexpr int turretMotorID = 42;
     static constexpr double turretTurnRatio = 1.0;
 
     //TURRET CONSTANTS
