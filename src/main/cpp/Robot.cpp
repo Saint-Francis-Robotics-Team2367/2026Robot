@@ -4,10 +4,13 @@
 
 #include "Robot.h"
 #include "RobotContainer.h"
+#include "LED.h"
 
 #include "cameraserver/CameraServer.h"
 #include <frc2/command/CommandScheduler.h>
 #include <limits>
+#include <frc/util/Color.h>
+
 
 
 Robot::Robot() {}
@@ -63,6 +66,11 @@ void Robot::AutonomousInit() {
 void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {
+  m_container.InitializeStartPose();  
+  mled.Toggle();
+  mled.SetSolidColor(frc::Color::kAqua);
+       // sets pose from dashboard selector (fallback)
+
   // m_container.autoTargeting = true;
 
   // This makes sure that the autonomous stops running when
