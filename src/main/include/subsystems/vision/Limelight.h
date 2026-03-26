@@ -6,6 +6,7 @@ class Limelight {
 private:
     DriveSubsystem &mDrive;
     std::string LimelightName = "";
+    bool runMegatag = false;
 
 public:
     double tx = 0;
@@ -37,31 +38,33 @@ public:
         // MegaTag2: SetRobotOrientation every frame, then read botpose_orb_wpiblue. Use wpiBlue for
         // AddVisionMeasurement even when viewing tags on the red side — tag IDs map to poses in the
         // global WPILib frame; wpiRed is a different convention, not "tags on the red alliance half."
-        LimelightHelpers::SetRobotOrientation(
-            LimelightName,
-            QuestNav::getInstance().getRotation2d().Degrees().value(),
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0);
+        if (runMegatag) {
+            LimelightHelpers::SetRobotOrientation(
+                LimelightName,
+                QuestNav::getInstance().getRotation2d().Degrees().value(),
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0);
 
+            LimelightHelpers::PoseEstimate limelightMeasurement =
+                LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(LimelightName);
+
+            // Use validPoseEstimate (raw fiducials parsed), not tv — MegaTag2/botpose_orb can disagree with tv.
+            if (LimelightHelpers::validPoseEstimate(limelightMeasurement)) {
+                mDrive.odometry.SetVisionMeasurementStdDevs({0.5, 0.5, 9999999}); // Ignore Megatag Gyro Input
+                mDrive.odometry.AddVisionMeasurement(
+                    limelightMeasurement.pose,
+                    limelightMeasurement.timestampSeconds);
+            }
+        }
+        
+        heartbeat = LimelightHelpers::getHeartbeat(LimelightName);
         tx = LimelightHelpers::getTX(LimelightName);
         ty = LimelightHelpers::getTY(LimelightName);
         ta = LimelightHelpers::getTA(LimelightName);
         hasTarget = LimelightHelpers::getTV(LimelightName);
-
-        LimelightHelpers::PoseEstimate limelightMeasurement =
-            LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(LimelightName);
-
-        // Use validPoseEstimate (raw fiducials parsed), not tv — MegaTag2/botpose_orb can disagree with tv.
-        if (LimelightHelpers::validPoseEstimate(limelightMeasurement)) {
-            mDrive.odometry.SetVisionMeasurementStdDevs({0.5, 0.5, 9999999}); // Ignore Megatag Gyro Input
-            mDrive.odometry.AddVisionMeasurement(
-                limelightMeasurement.pose,
-                limelightMeasurement.timestampSeconds);
-        }
-        heartbeat = LimelightHelpers::getHeartbeat(LimelightName);
 
         std::vector<double> pose =
             LimelightHelpers::getTargetPose_RobotSpace(LimelightName);

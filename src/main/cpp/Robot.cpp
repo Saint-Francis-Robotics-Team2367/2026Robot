@@ -66,10 +66,8 @@ void Robot::AutonomousInit() {
 void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {
-  m_container.InitializeStartPose();  
   mled.Toggle();
   mled.SetSolidColor(frc::Color::kAqua);
-       // sets pose from dashboard selector (fallback)
 
   // m_container.autoTargeting = true;
 

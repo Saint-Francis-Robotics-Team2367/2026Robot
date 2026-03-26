@@ -110,11 +110,32 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
-  // HoodedShooter.SetDefaultCommand(
-  //   HoodedShooter.Run(
-  //     [this]() {HoodedShooter.setFlywheelSpeed(-500);}
-  //   )
-  // );
+  (turretAutoTargetingOn).WhileTrue(
+    frc2::cmd::Run(
+      [this] {
+        if (turretCam.hasTarget)
+        {
+          double tx = std::clamp(turretCam.tx + m_turret.getCurrentMotorAngle(), -50.0, 50.0);
+          double tolerance = std::sin(turretCam.tx * (std::numbers::pi / 180.0)) * turretCam.distanceToTag;
+          tolerance = frc::ApplyDeadband(tolerance, TurretConstants::turretDeadband);
+          m_turret.setAngle(tx);
+          noTagVisibleCounter = 0;
+        }
+        else
+        {
+          noTagVisibleCounter++;
+        }
+      }
+    )
+  );
+
+  (!turretAutoTargetingOn || turretNoAprilTagDetected).OnTrue(
+    frc2::cmd::RunOnce(
+      [this] {
+        m_turret.setAngle(0);
+      }
+    )
+  );
 
   // (turretAutoTargetingOn).WhileTrue(
   //   frc2::cmd::Run(
