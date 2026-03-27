@@ -104,7 +104,7 @@ namespace SpindexerConstants {
     static constexpr double SpindexerD = 0.0;
     static constexpr double SpindexerV = 0.0;
 
-    static constexpr double spindexerStallCurrent = 35.0; // amps — tune based on observed stall current
+    static constexpr double spindexerStallCurrent = 30.0; // amps — tune based on observed stall current
     static constexpr double spindexerStallVelocityThreshold = 0.5; // turns/sec — near-zero means stalled
 }
 
