@@ -14,6 +14,12 @@
 #include "frc/smartdashboard/SmartDashboard.h"
 #include <frc2/command/CommandPtr.h>
 
+#include "commands/Autos.h"
+#include "commands/ExampleCommand.h"
+#include "frc/DriverStation.h"
+#include "pathplanner/lib/auto/AutoBuilder.h"
+#include "pathplanner/lib/controllers/PathFollowingController.h"
+#include "pathplanner/lib/controllers/PPHolonomicDriveController.h"
 
 //basically initializes robot
 RobotContainer::RobotContainer() {
@@ -28,6 +34,24 @@ RobotContainer::RobotContainer() {
   drivetrain.initGyro();
   QuestNav::getInstance().init();
   drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
+
+  pathplanner::RobotConfig robotConfig = pathplanner::RobotConfig::fromGUISettings();
+
+  pathplanner::AutoBuilder::configure(
+    [this]() {return drivetrain.getPose();}, 
+    [this](const frc::Pose2d& pose) {drivetrain.resetOdometry(pose);},
+    [this]() {return drivetrain.getRobotRelativeSpeeds();},
+    [this](auto speeds, auto feedforwards) {
+      drivetrain.Drive(speeds.vx.value(), speeds.vy.value(), speeds.omega.value(), drivetrain.gyroConnected());
+    },
+    std::make_shared<pathplanner::PPHolonomicDriveController> (
+      pathplanner::PIDConstants(3.5, 0.0, 0.0), // Translation PID constants
+      pathplanner::PIDConstants(3.5, 0.0, 0.0) // Rotation PID constants
+    ),
+    robotConfig,
+    []() { return frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed;},
+    &drivetrain
+  );
 
   allianceChooser.SetDefaultOption("Blue Alliance", blueAlliance);
   allianceChooser.AddOption("Red Alliance", redAlliance);
@@ -342,6 +366,5 @@ void RobotContainer::ConfigureBindings() {
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
-  // An example command will be run in autonomous
-  //return autos::ExampleAuto(&m_subsystem);
+  return autos::FollowPath(&drivetrain, "E to S2", "S1 to T", "S3 to T");
 }

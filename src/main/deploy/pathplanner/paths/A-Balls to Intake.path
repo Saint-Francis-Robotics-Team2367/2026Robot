@@ -1,0 +1,59 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.211654970760234,
+        "y": 6.851473684210527
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 8.2806081871345,
+        "y": 5.504233918128655
+      },
+      "isLocked": false,
+      "linkedName": "Balls for A"
+    },
+    {
+      "anchor": {
+        "x": 7.697157894736842,
+        "y": 4.491152046783626
+      },
+      "prevControl": {
+        "x": 8.158614035087718,
+        "y": 5.079906432748539
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Intake End-A"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.8,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 124.71860657106745
+  },
+  "reversed": false,
+  "folder": "2026 Paths",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -90.71615994547054
+  },
+  "useDefaultConstraints": true
+}

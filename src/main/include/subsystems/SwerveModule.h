@@ -5,6 +5,7 @@
 #include <ctre/phoenix6/CANBus.hpp>
 #include <ctre/phoenix6/controls/VelocityVoltage.hpp>
 #include <ctre/phoenix6/controls/PositionVoltage.hpp>
+#include <ctre/phoenix6/controls/TorqueCurrentFOC.hpp>
 #include <ctre/phoenix6/configs/Configuration.hpp>
 
 #include <frc/kinematics/SwerveModuleState.h>
@@ -51,5 +52,8 @@ public:
     void invertModule(ctre::phoenix6::signals::InvertedValue value, bool steer, bool drive); // Defaulted to CounterClockwise Positive
     void setDesiredState(frc::SwerveModuleState& state);
     frc::SwerveModulePosition getPosition();
+    frc::SwerveModuleState getState();
+    units::meters_per_second_t getDriveVelocity();
+    void setDesiredStateVolts(const frc::SwerveModuleState& state, units::ampere_t torqueCurrent);
     void zeroModule();
 };

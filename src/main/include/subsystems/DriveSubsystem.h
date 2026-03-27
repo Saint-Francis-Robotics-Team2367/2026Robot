@@ -17,11 +17,15 @@
 
 #include "subsystems/SwerveModule.h"
 
+#include "pathplanner/lib/path/PathPlannerPath.h"
+#include "pathplanner/lib/util/PathPlannerLogging.h"
+
 class DriveSubsystem : public frc2::SubsystemBase {
 public:
   DriveSubsystem();
 
   void Drive(double vx, double vy, double rot, bool fieldRelative);
+  void DriveWithFF(const frc::ChassisSpeeds& speeds, const pathplanner::DriveFeedforwards& feedforwards);
   void initModules();
   void updateOdometry();
   void resetOdometry(frc::Pose2d pose);
@@ -32,7 +36,7 @@ public:
   bool gyroConnected();
   void stopAllModules();
   void initGyro();
-  void AddVisionMeasurement(frc::Pose2d pose, units::second_t timestamp);
+  frc::ChassisSpeeds getRobotRelativeSpeeds();
 
 private:
   //module objects
