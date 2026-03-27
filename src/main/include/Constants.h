@@ -128,7 +128,7 @@ namespace TurretConstants {
 
     static constexpr double turretPulleyRatio = 49.2; //big wheel to small wheel (encoder) ratio
     static constexpr double turretTbRatio = 8.77778;
-    static constexpr double turretMaxAngle = 170.0; // deg, mechanical hard limit
+    static constexpr double turretMaxAngle = 950.0; // deg, mechanical hard limit
     static constexpr double turretDeadband = 0.1;
 
     static constexpr int turretNoTagResetThreshold = 50; // in frames

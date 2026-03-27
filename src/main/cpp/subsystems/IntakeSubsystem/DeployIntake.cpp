@@ -2,7 +2,7 @@
 #include "frc/smartdashboard/SmartDashboard.h"
 
 void DeployIntake::init() {
-    backLeftConfig.Slot0.kP = 0.5;
+    backLeftConfig.Slot0.kP = 0.75;
     backLeftConfig.Slot0.kI = 0.0;
     backLeftConfig.Slot0.kD = 0.0;
 
@@ -10,11 +10,11 @@ void DeployIntake::init() {
     backLeftConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
     backLeftMotor.GetConfigurator().Apply(backLeftConfig);
 
-    backRightConfig.Slot0.kP = 0.5;
+    backRightConfig.Slot0.kP = 0.75;
     backRightConfig.Slot0.kI = 0.0;
     backRightConfig.Slot0.kD = 0.0;
 
-    backRightConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
+    backRightConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
     backRightConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
     backRightMotor.GetConfigurator().Apply(backRightConfig);
 
@@ -26,11 +26,11 @@ frc2::CommandPtr DeployIntake::masterIntakeCommand(DeployIntake* intake, bool sh
     if (shooting) {
         return frc2::cmd::Sequence(
             frc2::cmd::RunOnce(
-                [intake] {intake->retract();}
+                [intake] {intake->shooterRetract();}
             ),
             frc2::cmd::Wait(0.25_s),
             frc2::cmd::RunOnce(
-                [intake] {intake->deploy();}
+                [intake] {intake->shooterDeploy();}
             ),
             frc2::cmd::Wait(0.25_s)
         ).Repeatedly();
@@ -55,13 +55,23 @@ frc2::CommandPtr DeployIntake::masterIntakeCommand(DeployIntake* intake, bool sh
 }
 
 void DeployIntake::deploy() {
-    backLeftMotor.SetControl(positionVoltage.WithPosition(-deployedPos).WithSlot(0));
-    backRightMotor.SetControl(positionVoltage.WithPosition(deployedPos).WithSlot(0));
+    backLeftMotor.SetControl(positionVoltage.WithPosition(leftDeployPos).WithSlot(0));
+    backRightMotor.SetControl(positionVoltage.WithPosition(rightDeployPos).WithSlot(0));
 }
 
-void DeployIntake::retract() {
+void DeployIntake::shooterDeploy() {
+    backLeftMotor.SetControl(positionVoltage.WithPosition(leftDeployPos).WithSlot(0));
+    backRightMotor.SetControl(positionVoltage.WithPosition(rightDeployPos).WithSlot(0));
+}
+
+void DeployIntake::retract() {  
     backLeftMotor.SetControl(positionVoltage.WithPosition(0_tr).WithSlot(0));
     backRightMotor.SetControl(positionVoltage.WithPosition(0_tr).WithSlot(0));
+}
+
+void DeployIntake::shooterRetract() {  
+    backLeftMotor.SetControl(positionVoltage.WithPosition(leftDeployPos / 3).WithSlot(0));
+    backRightMotor.SetControl(positionVoltage.WithPosition(rightDeployPos/ 3).WithSlot(0));
 }
 
 void DeployIntake::zeroMotors(double zeroAmt) {

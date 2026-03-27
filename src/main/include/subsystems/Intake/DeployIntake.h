@@ -16,8 +16,9 @@
 #include "frc2/command/CommandPtr.h"
 
 class DeployIntake : public frc2::SubsystemBase {
-private:
-    units::angle::turn_t deployedPos = units::turn_t(1.95);   // Example values-->have to tune
+public:
+    units::angle::turn_t leftDeployPos = units::turn_t(-4.15);   // Example values-->have to tune
+    units::angle::turn_t rightDeployPos = units::turn_t(4.00);
     bool deployed = false;
 
     ctre::phoenix6::hardware::TalonFX backLeftMotor{IntakeConstants::backLeftIntakeID, "Drivetrain"};
@@ -35,5 +36,7 @@ public:
     frc2::CommandPtr masterIntakeCommand(DeployIntake* intake, bool shooting);
     void deploy();
     void retract();
+    void shooterDeploy();
+    void shooterRetract();
     void zeroMotors(double zeroAmt = 0.0);
 };

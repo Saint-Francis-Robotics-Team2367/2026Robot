@@ -40,6 +40,8 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("ty", m_container.turretCam.ty);
   frc::SmartDashboard::PutNumber("Turret Angle", m_container.m_turret.getCurrentMotorAngle());
   frc::SmartDashboard::PutBoolean("Has Target", m_container.turretCam.hasTarget);
+  frc::SmartDashboard::PutNumber("Back Left Motor", m_container.mDeployIntake.backLeftMotor.GetPosition().GetValueAsDouble());
+  frc::SmartDashboard::PutNumber("back right mnotor", m_container.mDeployIntake.backRightMotor.GetPosition().GetValueAsDouble());
 }
 
 /**
@@ -48,7 +50,7 @@ void Robot::RobotPeriodic() {
  * robot is disabled.
  */
 void Robot::DisabledInit() {
-  m_container.mDeployIntake.retract();
+  // m_container.mDeployIntake.retract();
 }
 
 void Robot::DisabledPeriodic() {}

@@ -117,7 +117,7 @@ void RobotContainer::ConfigureBindings() {
       [this] {
         if (turretCam.hasTarget)
         {
-          double tx = std::clamp(turretCam.tx + m_turret.getCurrentMotorAngle(), -50.0, 50.0);
+          double tx = std::clamp(turretCam.tx + m_turret.getCurrentMotorAngle(), -92.5, 92.5);
           double tolerance = std::sin(turretCam.tx * (std::numbers::pi / 180.0)) * turretCam.distanceToTag;
           tolerance = frc::ApplyDeadband(tolerance, TurretConstants::turretDeadband);
           m_turret.setAngle(tx);
@@ -156,24 +156,27 @@ void RobotContainer::ConfigureBindings() {
   // );
 
   // Detect Indexer Stall
-  SpindexerStall.OnTrue(
-    frc2::cmd::Sequence(
-      frc2::cmd::RunOnce(
-        [this] {
-          frc::SmartDashboard::PutBoolean("Spindexer Stall", true);
-        }
-      ),
-      frc2::cmd::Parallel(
-        mSpindexer.RunSpindexer(&mSpindexer, 3000)
-      ).WithTimeout(2_s),
-      frc2::cmd::RunOnce(
-        [this] {
-          frc::SmartDashboard::PutBoolean("Spindexer Stall", false);
-        }
-      ),
-      frc2::cmd::Wait(0.25_s)
-    )
-  );
+  // SpindexerStall.OnTrue(
+  //   frc2::cmd::Sequence(
+  //     frc2::cmd::RunOnce(
+  //       [this] {
+  //         frc::SmartDashboard::PutBoolean("Spindexer Stall", true);
+  //       }
+  //     ),
+  //     frc2::cmd::Sequence(
+  //       mSpindexer.RunSpindexer(&mSpindexer, -2200),
+  //       frc2::cmd::Wait(0.75_s),
+  //       mSpindexer.RunSpindexer(&mSpindexer, 2200),
+  //       frc2::cmd::Wait(0.75_s)
+  //     ).WithTimeout(2.5_s),
+  //     frc2::cmd::RunOnce(
+  //       [this] {
+  //         frc::SmartDashboard::PutBoolean("Spindexer Stall", false);
+  //       }
+  //     ),
+  //     frc2::cmd::Wait(0.25_s)
+  //   )
+  // );
 
   // ******************** Driver Controls ********************
   // Zero Gyro
@@ -185,12 +188,12 @@ void RobotContainer::ConfigureBindings() {
 
   // Run Intake
   driverCtr.R1().ToggleOnTrue(
-    mRunIntake.IntakeCommand(&mRunIntake, 4000)
+    mRunIntake.IntakeCommand(&mRunIntake, 3000)
   );
 
   // Outtake Intake
   driverCtr.L1().ToggleOnTrue(
-    mRunIntake.IntakeCommand(&mRunIntake, -4000)
+    mRunIntake.IntakeCommand(&mRunIntake, -3000)
   );
 
   driverCtr.R2().ToggleOnTrue(
@@ -211,7 +214,7 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
-  codriverCtr.R2().ToggleOnTrue(
+  (codriverCtr.R2()).ToggleOnTrue(
     frc2::cmd::Sequence(
       // Step 1: Set hood position
       HoodedShooter.RunOnce(
@@ -252,7 +255,7 @@ void RobotContainer::ConfigureBindings() {
             frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
           }),
           frc2::cmd::Parallel(
-            mSpindexer.RunSpindexer(&mSpindexer, -6250),
+            mSpindexer.RunSpindexer(&mSpindexer, 6250),
             mDeployIntake.masterIntakeCommand(&mDeployIntake, true)
           )
         )
