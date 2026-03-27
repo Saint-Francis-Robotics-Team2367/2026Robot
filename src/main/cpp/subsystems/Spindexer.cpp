@@ -5,14 +5,14 @@ void Spindexer::init(){
     spindexerConfigs.Slot0.kP = 0.5;
     spindexerConfigs.Slot0.kI = 0.0;
     spindexerConfigs.Slot0.kD = 0.0;
-    spindexerConfigs.Slot0.kV = 0.0;
+    spindexerConfigs.Slot0.kV = 0.096;
 
     spindexerConfigs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
     spindexerConfigs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
 
     spindexerConfigs.CurrentLimits.StatorCurrentLimit = 45_A;
     spindexerConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
-    spindexerConfigs.CurrentLimits.SupplyCurrentLimit = 15_A;
+    spindexerConfigs.CurrentLimits.SupplyCurrentLimit = 40_A;
     spindexerConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
     spindexerConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 10_A;
     spindexerConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -10_A;

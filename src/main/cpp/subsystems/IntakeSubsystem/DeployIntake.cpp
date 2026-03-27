@@ -14,7 +14,7 @@ void DeployIntake::init() {
     backRightConfig.Slot0.kI = 0.0;
     backRightConfig.Slot0.kD = 0.0;
 
-    backRightConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
+    backRightConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
     backRightConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
     backRightMotor.GetConfigurator().Apply(backRightConfig);
 
@@ -55,7 +55,7 @@ frc2::CommandPtr DeployIntake::masterIntakeCommand(DeployIntake* intake, bool sh
 }
 
 void DeployIntake::deploy() {
-    backLeftMotor.SetControl(positionVoltage.WithPosition(deployedPos).WithSlot(0));
+    backLeftMotor.SetControl(positionVoltage.WithPosition(-deployedPos).WithSlot(0));
     backRightMotor.SetControl(positionVoltage.WithPosition(deployedPos).WithSlot(0));
 }
 

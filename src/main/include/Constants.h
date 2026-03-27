@@ -109,8 +109,8 @@ namespace SpindexerConstants {
 }
 
 namespace IntakeConstants {
-    static constexpr int backLeftIntakeID = 38;
-    static constexpr int backRightIntakeID = 34;
+    static constexpr int backLeftIntakeID = 38; // negative
+    static constexpr int backRightIntakeID = 34; // positive
     static constexpr int intakeRollerID = 41;
 }
 
