@@ -366,5 +366,5 @@ void RobotContainer::ConfigureBindings() {
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
-  return autos::FollowPath(&drivetrain, "E to S2", "S1 to T", "S3 to T");
+  return autos::FollowPath(&drivetrain, &HoodedShooter, &turretCam, &mSpindexer, &mDeployIntake, "Back B");
 }

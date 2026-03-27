@@ -61,6 +61,15 @@ frc::Pose2d DriveSubsystem::getPose() {
   return odometry.GetEstimatedPosition();
 }
 
+frc::ChassisSpeeds DriveSubsystem::getRobotRelativeSpeeds() {
+    return kinematics.ToChassisSpeeds(
+        frontLeft.getState(),
+        frontRight.getState(),
+        backLeft.getState(),
+        backRight.getState()
+    );
+}
+
 //initializes swerve modules
 void DriveSubsystem::initModules() {
   frontLeft.initHardware();
@@ -92,10 +101,6 @@ void DriveSubsystem::stopAllModules() {
   frontRight.stopModule();
   backLeft.stopModule();
   backRight.stopModule();
-}
-
-void DriveSubsystem::AddVisionMeasurement(frc::Pose2d pose, units::second_t timestamp) {
-  odometry.AddVisionMeasurement(pose, timestamp);
 }
 
 //initializes gyro and sets current gyro situation to zero

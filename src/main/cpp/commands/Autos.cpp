@@ -10,21 +10,51 @@
 #include "pathplanner/lib/auto/AutoBuilder.h"
 #include "pathplanner/lib/path/PathPlannerPath.h"
 
-frc2::CommandPtr autos::FollowPath(DriveSubsystem* subsystem, std::string pathName1, std::string pathName2, std::string pathName3) {
+frc2::CommandPtr autos::FollowPath(DriveSubsystem* subsystem, Shooter* mShooter, Limelight* cam, Spindexer* mSpindexer, DeployIntake* mDeployIntake, std::string pathName1) {
     auto path1 = pathplanner::PathPlannerPath::fromPathFile(pathName1);
-    auto path2 = pathplanner::PathPlannerPath::fromPathFile(pathName2);
-    auto path3 = pathplanner::PathPlannerPath::fromPathFile(pathName3);
-
-    // auto resetPose = frc2::cmd::RunOnce(
-    //     [subsystem, &path1] {
-    //         subsystem->resetOdometry(path1.get()->getStartingHolonomicPose().value());
-    //     }
-    // );
 
     return frc2::cmd::Sequence(
-        // std::move(resetPose),
-        pathplanner::AutoBuilder::followPath(path1)
-        // frc2::cmd::Wait(1_s),
-        // pathplanner::AutoBuilder::followPath(path2)
+        pathplanner::AutoBuilder::followPath(path1),
+        frc2::cmd::Wait(0.25_s),
+        frc2::cmd::RunOnce(
+            [mShooter, cam] {
+                mShooter->distanceToTag = std::cos((cam->ty + 15.0) * (std::numbers::pi / 180.0)) * cam->distanceToTag;
+                mShooter->xOffset = std::sin(cam->tx * (std::numbers::pi / 180.0)) * mShooter->distanceToTag;
+                mShooter->yOffset = std::cos(cam->tx * (std::numbers::pi / 180.0)) * mShooter->distanceToTag;
+                mShooter->optimalRPM = mShooter->findOptimalRPM();
+                mShooter->setHoodPosition(mShooter->optimalRPM, mShooter->xOffset, mShooter->yOffset);
+
+                frc::SmartDashboard::PutNumber("Shooter Distance (dx)", mShooter->xOffset);
+                frc::SmartDashboard::PutNumber("Shooter Distance (dy)", mShooter->yOffset);
+            }
+        ),
+        frc2::cmd::Parallel(
+            frc2::cmd::StartEnd(
+                [mShooter] {
+                    mShooter->setFlywheelSpeed(-mShooter->optimalRPM);
+                },
+                [mShooter] {
+                    mShooter->ShooterMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0});
+                    mShooter->moveHoodToZero();
+                }
+            ),
+            frc2::cmd::Sequence(
+                frc2::cmd::WaitUntil(
+                    [mShooter, cam] {
+                        return cam->hasTarget && 
+                            (mShooter->getShooterVelocity() > 
+                                (0.95 * (1.0 / ShooterConstants::SHOOTEREFFICIENCY) * 
+                                mShooter->optimalRPM));
+                    }
+                ),
+                frc2::cmd::RunOnce([] {
+                    frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
+                }),
+                frc2::cmd::Parallel(
+                    mSpindexer->RunSpindexer(mSpindexer, -6250),
+                    mDeployIntake->masterIntakeCommand(mDeployIntake, true)
+                )
+            )
+        ).WithTimeout(4_s)
     );
 }
