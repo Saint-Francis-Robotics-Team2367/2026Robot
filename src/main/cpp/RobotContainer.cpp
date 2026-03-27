@@ -313,6 +313,20 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
+  // Square: Turret 45° left, Hood 45°, Flywheel 1000 RPM
+  codriverCtr.Square().ToggleOnTrue(
+    frc2::cmd::Sequence(
+      frc2::cmd::Parallel(
+        m_turret.RunOnce([this] { m_turret.setAngle(-45); }),
+        HoodedShooter.RunOnce([this] { HoodedShooter.setManualHoodPosition(45); })
+      ),
+      frc2::cmd::StartEnd(
+        [this] { HoodedShooter.setFlywheelSpeed(1000); },
+        [this] { HoodedShooter.ShooterMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0}); }
+      )
+    )
+  );
+
   // ******************** Robot Disabling ********************
   frc2::RobotModeTriggers::Disabled().WhileTrue(
     drivetrain.RunOnce(
