@@ -100,17 +100,4 @@ void DriveSubsystem::AddVisionMeasurement(frc::Pose2d pose, units::second_t time
 
 //initializes gyro and sets current gyro situation to zero
 void DriveSubsystem::initGyro() {
-  ctre::phoenix6::configs::Pigeon2Configuration pigeonConfigs{};
-
-  pigeonConfigs.MountPose.MountPosePitch = units::degree_t(0.0);
-  pigeonConfigs.MountPose.MountPoseRoll = units::degree_t(0.0);
-  pigeonConfigs.MountPose.MountPoseYaw = units::degree_t(0.0);
-
-  pigeonConfigs.Pigeon2Features.EnableCompass = true;
-  pigeonConfigs.FutureProofConfigs = false;
-
-  pigeon.GetConfigurator().Apply(pigeonConfigs);
-
-  pigeon.Reset();
-  pigeon.ClearStickyFaults();
 }

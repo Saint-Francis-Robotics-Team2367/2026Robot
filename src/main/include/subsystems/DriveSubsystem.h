@@ -16,7 +16,6 @@
 #include "frc/geometry/Pose2d.h"
 
 #include "subsystems/SwerveModule.h"
-#include "ctre/phoenix6/Pigeon2.hpp"
 
 class DriveSubsystem : public frc2::SubsystemBase {
 public:
@@ -36,8 +35,6 @@ public:
   void AddVisionMeasurement(frc::Pose2d pose, units::second_t timestamp);
 
 private:
-  ctre::phoenix6::hardware::Pigeon2 pigeon{HardwareIDs::pigeonID, "Drivetrain"};
-
   //module objects
   SwerveModule frontLeft{HardwareIDs::FLdriveID, HardwareIDs::FLsteerID, HardwareIDs::FLencoderID, "Drivetrain"};
   SwerveModule frontRight{HardwareIDs::FRdriveID, HardwareIDs::FRsteerID, HardwareIDs::FRencoderID, "Drivetrain"};
