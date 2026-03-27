@@ -6,7 +6,7 @@ void DeployIntake::init() {
     backLeftConfig.Slot0.kI = 0.0;
     backLeftConfig.Slot0.kD = 0.0;
 
-    backLeftConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
+    backLeftConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
     backLeftConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
     backLeftMotor.GetConfigurator().Apply(backLeftConfig);
 
