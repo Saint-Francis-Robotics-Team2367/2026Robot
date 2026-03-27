@@ -18,17 +18,21 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/SubsystemBase.h>
 
-class Shooter : public frc2::SubsystemBase{
+class Shooter : public frc2::SubsystemBase {
 public:
     void stop();
     void init();
     bool setFlywheelSpeed(float rotationsPerMinute);
-    void setHoodPosition(float shooterRPM, float horizontalOffset, float yOffset, float shooterHeight = (34), float initialAngle = 68, float minAngle = 31, float MotorGearRatio = 116.8831, float ThroughBoreGearRatio = 16.32);
-    void zeroHood();
+    void setHoodPosition(float shooterRPM, float horizontalOffset, float yOffset, float shooterHeight = 0.4318f, float initialAngle = 68, float minAngle = 31, float MotorGearRatio = ShooterConstants::motorGearRatio, float ThroughBoreGearRatio = 16.32);
+    void setManualHoodPosition(float targetAngle);
+    void moveHoodToZero();
     void applyHoodBrake();
     void releaseHoodBrake(); 
-    float findOptimalRPM(float horizontalOffset, float yOffset);
-    
+    float findOptimalRPM();
+    double getShooterVelocity();
+    void ZeroHood();
+    double findHoodAngle();
+
     float hoodCenterRot;
     float targetAbs;
 
@@ -49,7 +53,10 @@ public:
 
     // Timeout for configuration
     const std::chrono::milliseconds kTimeoutMs{30};
-
+    double xOffset = 0.0f;
+    double yOffset = 0.0f;
+    double distanceToTag = 0.0f;
+    float optimalRPM = 0.0f;
 };
 
 

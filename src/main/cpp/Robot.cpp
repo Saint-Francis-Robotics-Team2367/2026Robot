@@ -3,8 +3,15 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "Robot.h"
+#include "RobotContainer.h"
+#include "LED.h"
 
+#include "cameraserver/CameraServer.h"
 #include <frc2/command/CommandScheduler.h>
+#include <limits>
+#include <frc/util/Color.h>
+
+
 
 Robot::Robot() {}
 
@@ -17,11 +24,22 @@ Robot::Robot() {}
  * LiveWindow and SmartDashboard integrated updating.
  */
 void Robot::RobotPeriodic() {
-  m_container.drivetrain.updateOdometry();
-  frc::SmartDashboard::PutNumber("Odometry X", m_container.drivetrain.getPose().X().value());
-  frc::SmartDashboard::PutNumber("Odometry Y", m_container.drivetrain.getPose().Y().value());
-  frc::SmartDashboard::PutNumber("Heading", m_container.drivetrain.getPose().Rotation().Degrees().value());
+  // frc::CameraServer::StartAutomaticCapture();
   frc2::CommandScheduler::GetInstance().Run(); //runs command-based queue
+  QuestNav::getInstance().periodic();
+  // Advance odometry before vision so SwerveDrivePoseEstimator state matches wheel/gyro, then fuse.
+  m_container.drivetrain.updateOdometry();
+  m_container.turretCam.periodic();
+  frc::SmartDashboard::PutNumber("Robot Pose X", m_container.drivetrain.getPose().X().value());
+  frc::SmartDashboard::PutNumber("Robot Pose Y", m_container.drivetrain.getPose().Y().value());
+  frc::SmartDashboard::PutNumber("Quest Heading", QuestNav::getInstance().getPose2d().Rotation().Degrees().value());
+  frc::SmartDashboard::PutBoolean("Auto Target", m_container.autoTargeting);
+  frc::SmartDashboard::PutNumber("Distance to Tag", m_container.turretCam.distanceToTag);
+  frc::SmartDashboard::PutNumber("Strafe Distance to Tag", m_container.turretCam.strafeDistanceToTag);
+  frc::SmartDashboard::PutNumber("tx", m_container.turretCam.tx);
+  frc::SmartDashboard::PutNumber("ty", m_container.turretCam.ty);
+  frc::SmartDashboard::PutNumber("Turret Angle", m_container.m_turret.getCurrentMotorAngle());
+  frc::SmartDashboard::PutBoolean("Has Target", m_container.turretCam.hasTarget);
 }
 
 /**
@@ -48,6 +66,11 @@ void Robot::AutonomousInit() {
 void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {
+  mled.Toggle();
+  mled.SetSolidColor(frc::Color::kAqua);
+
+  // m_container.autoTargeting = true;
+
   // This makes sure that the autonomous stops running when
   // teleop starts running. If you want the autonomous to
   // continue until interrupted by another command, remove
@@ -60,8 +83,9 @@ void Robot::TeleopInit() {
 /**
  * This function is called periodically during operator control.
  */
-void Robot::TeleopPeriodic() {}
-
+void Robot::TeleopPeriodic() {
+  //frc::SmartDashboard::PutNumber("encoder angle", m_turret.getCurrentAngle());
+}
 /**
  * This function is called periodically during test mode.
  */

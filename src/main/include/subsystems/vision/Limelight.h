@@ -1,0 +1,87 @@
+#include "LimelightHelpers.h"
+#include "subsystems/DriveSubsystem.h"
+#include "subsystems/vision/QuestNav.h"
+
+class Limelight {
+private:
+    DriveSubsystem &mDrive;
+    std::string LimelightName = "";
+    bool runMegatag = false;
+
+public:
+    double tx = 0;
+    double ty = 0;
+    double ta = 0;
+    bool hasTarget = false;
+    double heartbeat = 0.0;
+    double distanceToTag = 0.0;
+    double strafeDistanceToTag = 0.0;
+
+    Limelight(DriveSubsystem &mDriveInput, std::string name = "") : mDrive(mDriveInput) {
+        LimelightName = name;
+        LimelightHelpers::setPipelineIndex(LimelightName, 0);
+        LimelightHelpers::setCameraPose_RobotSpace(
+            LimelightName,
+            0.305, 
+            0.0,
+            0.36,
+            0.0,
+            15,
+            0.0
+        );
+        LimelightHelpers::SetRobotOrientation(LimelightName, QuestNav::getInstance().getRotation2d().Degrees().value(), 0.0, 0.0, 0.0, 0.0, 0.0);
+        LimelightHelpers::SetFiducialIDFiltersOverride(LimelightName, std::vector<int>{2, 4, 5, 10, 24, 26, 27, 20, 8}); // Remove ID 8 to blacklist 
+        LimelightHelpers::SetFiducialDownscalingOverride(LimelightName, 2.0);
+    }
+
+    void periodic() {
+        // MegaTag2: SetRobotOrientation every frame, then read botpose_orb_wpiblue. Use wpiBlue for
+        // AddVisionMeasurement even when viewing tags on the red side — tag IDs map to poses in the
+        // global WPILib frame; wpiRed is a different convention, not "tags on the red alliance half."
+        if (runMegatag) {
+            LimelightHelpers::SetRobotOrientation(
+                LimelightName,
+                QuestNav::getInstance().getRotation2d().Degrees().value(),
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0);
+
+            LimelightHelpers::PoseEstimate limelightMeasurement =
+                LimelightHelpers::getBotPoseEstimate_wpiBlue_MegaTag2(LimelightName);
+
+            // Use validPoseEstimate (raw fiducials parsed), not tv — MegaTag2/botpose_orb can disagree with tv.
+            if (LimelightHelpers::validPoseEstimate(limelightMeasurement)) {
+                mDrive.odometry.SetVisionMeasurementStdDevs({0.5, 0.5, 9999999}); // Ignore Megatag Gyro Input
+                mDrive.odometry.AddVisionMeasurement(
+                    limelightMeasurement.pose,
+                    limelightMeasurement.timestampSeconds);
+            }
+        }
+        
+        heartbeat = LimelightHelpers::getHeartbeat(LimelightName);
+        tx = LimelightHelpers::getTX(LimelightName);
+        ty = LimelightHelpers::getTY(LimelightName);
+        ta = LimelightHelpers::getTA(LimelightName);
+        hasTarget = LimelightHelpers::getTV(LimelightName);
+
+        std::vector<double> pose =
+            LimelightHelpers::getTargetPose_RobotSpace(LimelightName);
+        if (pose.size() >= 3) {
+            distanceToTag = pose[2];
+            strafeDistanceToTag = pose[0];
+        } else {
+            distanceToTag = 0.0;
+            strafeDistanceToTag = 0.0;
+        }
+    }
+
+    bool isHub() {
+        if (!hasTarget) {
+            return false;
+        }
+        int tagID = static_cast<int>(LimelightHelpers::getFiducialID(LimelightName));
+        return (tagID >= 2 && tagID <= 11) || (tagID >= 18 && tagID <= 27);
+    }
+};
