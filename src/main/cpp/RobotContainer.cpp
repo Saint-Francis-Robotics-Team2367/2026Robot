@@ -250,7 +250,7 @@ void RobotContainer::ConfigureBindings() {
             frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
           }),
           frc2::cmd::Parallel(
-            mSpindexer.RunSpindexer(&mSpindexer, -3000),
+            mSpindexer.RunSpindexer(&mSpindexer, -6250),
             mDeployIntake.masterIntakeCommand(&mDeployIntake, true)
           )
         )
