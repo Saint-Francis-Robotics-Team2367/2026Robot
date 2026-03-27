@@ -37,21 +37,21 @@ namespace MathConstants {
 }
 
 namespace HardwareIDs { 
-    static constexpr int FLsteerID = 1; 
-    static constexpr int FLdriveID = 2; 
-    static constexpr int FLencoderID = 3; 
+    static constexpr int FLsteerID = 7; 
+    static constexpr int FLdriveID = 8; 
+    static constexpr int FLencoderID = 9; 
     
-    static constexpr int FRsteerID = 5;
-    static constexpr int FRdriveID = 4;
-    static constexpr int FRencoderID = 0;
+    static constexpr int FRsteerID = 11;
+    static constexpr int FRdriveID = 10;
+    static constexpr int FRencoderID = 12;
 
-    static constexpr int BLsteerID = 11; 
-    static constexpr int BLdriveID = 10; 
-    static constexpr int BLencoderID = 12; 
+    static constexpr int BLsteerID = 5; 
+    static constexpr int BLdriveID = 4; 
+    static constexpr int BLencoderID = 0; 
 
-    static constexpr int BRsteerID = 7; 
-    static constexpr int BRdriveID = 8; 
-    static constexpr int BRencoderID = 9; 
+    static constexpr int BRsteerID = 1; 
+    static constexpr int BRdriveID = 2; 
+    static constexpr int BRencoderID = 3; 
 
     // static constexpr int pigeonID = 0;
 }
@@ -74,7 +74,7 @@ namespace ShooterConstants {
     // CAN IDs
     static constexpr int ShooterID = 36; // Wheel
     static constexpr int RackMotorID = 27; // Kraken
-    static constexpr int RackEncoderID = 2; // ThroughBore
+    static constexpr int RackEncoderID = 59; // ThroughBore
     static constexpr int FeederID = 21; // Feeder
 
     // PID Constants Feeder

@@ -105,7 +105,7 @@ void RobotContainer::ConfigureBindings() {
         frc::SmartDashboard::PutNumber("vy", vy);
         frc::SmartDashboard::PutNumber("rot", rot);
 
-        drivetrain.Drive(vx, -vy, rot, drivetrain.gyroConnected());
+        drivetrain.Drive(-vx, vy, rot, drivetrain.gyroConnected());
       }
     )
   );
