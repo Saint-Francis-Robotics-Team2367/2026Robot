@@ -23,6 +23,8 @@ RobotContainer::RobotContainer() {
   HoodedShooter.init(); // Initalize Shooter motors and encoders
   mSpindexer.init(); // Initialize Indexer motors and encoders
   m_turret.init();
+  mDeployIntake.init();
+  mRunIntake.init();
 
   drivetrain.initModules();
   drivetrain.initGyro();
