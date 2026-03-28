@@ -34,14 +34,12 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Robot Pose Y", m_container.drivetrain.getPose().Y().value());
   frc::SmartDashboard::PutNumber("Quest Heading", QuestNav::getInstance().getPose2d().Rotation().Degrees().value());
   frc::SmartDashboard::PutBoolean("Auto Target", m_container.autoTargeting);
-  frc::SmartDashboard::PutNumber("Distance to Tag", m_container.turretCam.distanceToTag);
-  frc::SmartDashboard::PutNumber("Strafe Distance to Tag", m_container.turretCam.strafeDistanceToTag);
-  frc::SmartDashboard::PutNumber("tx", m_container.turretCam.tx);
-  frc::SmartDashboard::PutNumber("ty", m_container.turretCam.ty);
   frc::SmartDashboard::PutNumber("Turret Angle", m_container.m_turret.getCurrentMotorAngle());
   frc::SmartDashboard::PutBoolean("Has Target", m_container.turretCam.hasTarget);
   frc::SmartDashboard::PutNumber("Back Left Motor", m_container.mDeployIntake.backLeftMotor.GetPosition().GetValueAsDouble());
   frc::SmartDashboard::PutNumber("back right mnotor", m_container.mDeployIntake.backRightMotor.GetPosition().GetValueAsDouble());
+  frc::SmartDashboard::PutNumber("Limelight Heartbeat", m_container.turretCam.heartbeat);
+  m_container.mSpindexer.DisplayValues();
 }
 
 /**

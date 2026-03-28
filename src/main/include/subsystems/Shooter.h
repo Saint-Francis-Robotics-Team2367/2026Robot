@@ -22,7 +22,7 @@ class Shooter : public frc2::SubsystemBase {
 public:
     void stop();
     void init();
-    bool setFlywheelSpeed(float rotationsPerMinute);
+    bool setFlywheelSpeed(float rotationsPerMinute, double shooterEff);
     void setHoodPosition(float shooterRPM, float horizontalOffset, float yOffset, float shooterHeight = 0.4318f, float initialAngle = 68, float minAngle = 31, float MotorGearRatio = ShooterConstants::motorGearRatio, float ThroughBoreGearRatio = 16.32);
     void setManualHoodPosition(float targetAngle);
     void moveHoodToZero();

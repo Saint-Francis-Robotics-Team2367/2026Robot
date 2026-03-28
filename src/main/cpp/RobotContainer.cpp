@@ -41,6 +41,8 @@ RobotContainer::RobotContainer() {
   positionChooser.AddOption("Top Bump", topBump);
   positionChooser.AddOption("Top Trench", topTrench);
   frc::SmartDashboard::PutData("Field Position", &positionChooser);
+
+  frc::SmartDashboard::PutNumber("Shooter Eff", eff);
 }
 
 void RobotContainer::ConfigureBindings() {
@@ -107,7 +109,7 @@ void RobotContainer::ConfigureBindings() {
         frc::SmartDashboard::PutNumber("vy", vy);
         frc::SmartDashboard::PutNumber("rot", rot);
 
-        drivetrain.Drive(-vx, vy, rot, drivetrain.gyroConnected());
+        drivetrain.Drive(-vx * 0.75, vy * 0.75, rot, drivetrain.gyroConnected());
       }
     )
   );
@@ -117,7 +119,7 @@ void RobotContainer::ConfigureBindings() {
       [this] {
         if (turretCam.hasTarget)
         {
-          double tx = std::clamp(turretCam.tx + m_turret.getCurrentMotorAngle(), -92.5, 92.5);
+          double tx = std::clamp(turretCam.tx + m_turret.getCurrentMotorAngle(), -85.0, 85.0);
           double tolerance = std::sin(turretCam.tx * (std::numbers::pi / 180.0)) * turretCam.distanceToTag;
           tolerance = frc::ApplyDeadband(tolerance, TurretConstants::turretDeadband);
           m_turret.setAngle(tx);
@@ -156,27 +158,24 @@ void RobotContainer::ConfigureBindings() {
   // );
 
   // Detect Indexer Stall
-  // SpindexerStall.OnTrue(
-  //   frc2::cmd::Sequence(
-  //     frc2::cmd::RunOnce(
-  //       [this] {
-  //         frc::SmartDashboard::PutBoolean("Spindexer Stall", true);
-  //       }
-  //     ),
-  //     frc2::cmd::Sequence(
-  //       mSpindexer.RunSpindexer(&mSpindexer, -2200),
-  //       frc2::cmd::Wait(0.75_s),
-  //       mSpindexer.RunSpindexer(&mSpindexer, 2200),
-  //       frc2::cmd::Wait(0.75_s)
-  //     ).WithTimeout(2.5_s),
-  //     frc2::cmd::RunOnce(
-  //       [this] {
-  //         frc::SmartDashboard::PutBoolean("Spindexer Stall", false);
-  //       }
-  //     ),
-  //     frc2::cmd::Wait(0.25_s)
-  //   )
-  // );
+  SpindexerStall.WhileTrue(
+    frc2::cmd::Sequence(
+      frc2::cmd::RunOnce(
+        [this] {
+          frc::SmartDashboard::PutBoolean("Spindexer Stall", true);
+        }
+      ),
+      mSpindexer.RunSpindexer(&mSpindexer, -2200)
+    )
+  );
+
+  SpindexerStall.OnFalse(
+    frc2::cmd::RunOnce(
+        [this] {
+          frc::SmartDashboard::PutBoolean("Spindexer Stall", false);
+        }
+    )
+  );
 
   // ******************** Driver Controls ********************
   // Zero Gyro
@@ -187,24 +186,24 @@ void RobotContainer::ConfigureBindings() {
   );
 
   // Run Intake
-  driverCtr.R1().ToggleOnTrue(
-    mRunIntake.IntakeCommand(&mRunIntake, 3000)
+  driverCtr.R1().WhileTrue(
+    mRunIntake.IntakeCommand(&mRunIntake, 3500)
   );
 
   // Outtake Intake
-  driverCtr.L1().ToggleOnTrue(
-    mRunIntake.IntakeCommand(&mRunIntake, -3000)
+  driverCtr.L1().WhileTrue(
+    mRunIntake.IntakeCommand(&mRunIntake, -3500)
   );
 
   driverCtr.R2().ToggleOnTrue(
-    mDeployIntake.masterIntakeCommand(&mDeployIntake, false)
+    mDeployIntake.masterIntakeCommand(&mDeployIntake, &mSpindexer, false)
   );
 
   // ******************** Co-Driver Controls ********************
   // Reverse Indexer and Feeder
   codriverCtr.L2().WhileTrue(
     frc2::cmd::Parallel(
-      mSpindexer.RunSpindexer(&mSpindexer, -1 * spindexerSpeed)
+      mSpindexer.RunSpindexer(&mSpindexer, -1 * 3000)
     )
   );
 
@@ -237,7 +236,7 @@ void RobotContainer::ConfigureBindings() {
 
   codriverCtr.L1().WhileTrue(
     frc2::cmd::Parallel(
-      mSpindexer.RunSpindexer(&mSpindexer, spindexerSpeed)
+      mSpindexer.RunSpindexer(&mSpindexer, 3000)
     )
   );
 
@@ -246,6 +245,7 @@ void RobotContainer::ConfigureBindings() {
       // Step 1: Set hood position
       HoodedShooter.RunOnce(
         [this] {
+          eff = frc::SmartDashboard::GetNumber("Shooter Eff", 0.0);
           HoodedShooter.distanceToTag = std::cos((turretCam.ty + 15.0) * (std::numbers::pi / 180.0)) * turretCam.distanceToTag;
           HoodedShooter.xOffset = std::sin(turretCam.tx * (std::numbers::pi / 180.0)) * HoodedShooter.distanceToTag;
           HoodedShooter.yOffset = std::cos(turretCam.tx * (std::numbers::pi / 180.0)) * HoodedShooter.distanceToTag;
@@ -261,7 +261,7 @@ void RobotContainer::ConfigureBindings() {
       frc2::cmd::Parallel(
         frc2::cmd::StartEnd(
           [this] {
-            HoodedShooter.setFlywheelSpeed(-HoodedShooter.optimalRPM);
+            HoodedShooter.setFlywheelSpeed(-HoodedShooter.optimalRPM, eff);
           },
           [this] {
             HoodedShooter.ShooterMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0});
@@ -282,15 +282,15 @@ void RobotContainer::ConfigureBindings() {
             frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
           }),
           frc2::cmd::Parallel(
-            mSpindexer.RunSpindexer(&mSpindexer, 6250),
-            mDeployIntake.masterIntakeCommand(&mDeployIntake, true)
+            mSpindexer.RunSpindexer(&mSpindexer, 3000)
+            // mDeployIntake.masterIntakeCommand(&mDeployIntake, &mSpindexer, true)
           )
         )
       )
     )
   );
 
-  // Square: Turret 45° left, Hood 45°, Flywheel 1000 RPM
+  // Rebounding Square: Turret 45° left, Hood 45°, Flywheel 1000 RPM
   codriverCtr.Square().ToggleOnTrue(
     frc2::cmd::Sequence(
       frc2::cmd::Parallel(
@@ -299,7 +299,7 @@ void RobotContainer::ConfigureBindings() {
       ),
       frc2::cmd::Parallel(
         frc2::cmd::StartEnd(
-          [this] { HoodedShooter.setFlywheelSpeed(1000); },
+          [this] { HoodedShooter.setFlywheelSpeed(1000, eff); },
           [this] { HoodedShooter.ShooterMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0}); }
         ),
         mSpindexer.RunSpindexer(&mSpindexer, 6250)
@@ -318,6 +318,12 @@ void RobotContainer::ConfigureBindings() {
   (codriverCtr.R1() && codriverCtr.Circle()).OnTrue(
     m_turret.RunOnce(
       [this] {m_turret.ZeroTurret();}
+    )
+  );
+
+  (codriverCtr.R1() && codriverCtr.Square()).OnTrue(
+    m_turret.RunOnce(
+      [this] {mDeployIntake.zeroMotors();}
     )
   );
 

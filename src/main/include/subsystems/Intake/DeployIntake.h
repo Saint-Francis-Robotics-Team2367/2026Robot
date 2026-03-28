@@ -8,6 +8,7 @@
 #include "Constants.h"
 #include <array>
 #include <units/angle.h>
+#include "subsystems/Spindexer.h"
 
 #include "frc2/command/StartEndCommand.h"
 #include "frc2/command/SubsystemBase.h"
@@ -17,8 +18,8 @@
 
 class DeployIntake : public frc2::SubsystemBase {
 public:
-    units::angle::turn_t leftDeployPos = units::turn_t(-4.15);   // Example values-->have to tune
-    units::angle::turn_t rightDeployPos = units::turn_t(4.00);
+    units::angle::turn_t leftDeployPos = units::turn_t(-4.00);   // Example values-->have to tune
+    units::angle::turn_t rightDeployPos = units::turn_t(3.9);
     bool deployed = false;
 
     ctre::phoenix6::hardware::TalonFX backLeftMotor{IntakeConstants::backLeftIntakeID, "Drivetrain"};
@@ -33,7 +34,7 @@ public:
     void init();
     frc2::CommandPtr deploySequence();
     frc2::CommandPtr retractSequence();
-    frc2::CommandPtr masterIntakeCommand(DeployIntake* intake, bool shooting);
+    frc2::CommandPtr masterIntakeCommand(DeployIntake* intake, Spindexer* mSpindexer, bool shooting);
     void deploy();
     void retract();
     void shooterDeploy();

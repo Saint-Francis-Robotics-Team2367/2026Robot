@@ -52,7 +52,7 @@ void Shooter::init() {
     hoodCenterRot = RackMotor.GetPosition().GetValueAsDouble();
 }
 
-bool Shooter::setFlywheelSpeed(float shooterRPM) {
+bool Shooter::setFlywheelSpeed(float shooterRPM, double shooterEff) {
     // set shooter velocity
     float efficientRPM = shooterRPM / ShooterConstants::SHOOTEREFFICIENCY;
     ShooterMotor.SetControl(ctre::phoenix6::controls::VelocityVoltage{units::angular_velocity::turns_per_second_t{efficientRPM/ 60.0}});

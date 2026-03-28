@@ -2,7 +2,7 @@
 #include "frc/smartdashboard/SmartDashboard.h"
 
 void DeployIntake::init() {
-    backLeftConfig.Slot0.kP = 0.75;
+    backLeftConfig.Slot0.kP = 0.6;
     backLeftConfig.Slot0.kI = 0.0;
     backLeftConfig.Slot0.kD = 0.0;
 
@@ -10,7 +10,7 @@ void DeployIntake::init() {
     backLeftConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
     backLeftMotor.GetConfigurator().Apply(backLeftConfig);
 
-    backRightConfig.Slot0.kP = 0.75;
+    backRightConfig.Slot0.kP = 0.6;
     backRightConfig.Slot0.kI = 0.0;
     backRightConfig.Slot0.kD = 0.0;
 
@@ -22,8 +22,9 @@ void DeployIntake::init() {
     backRightMotor.SetPosition(0_tr);
 }
 
-frc2::CommandPtr DeployIntake::masterIntakeCommand(DeployIntake* intake, bool shooting) {
-    if (shooting) {
+frc2::CommandPtr DeployIntake::masterIntakeCommand(DeployIntake* intake, Spindexer* mSpindexer, bool shooting) {
+    bool jam = mSpindexer->SpindexerStall();
+    if (shooting && !jam) {
         return frc2::cmd::Sequence(
             frc2::cmd::RunOnce(
                 [intake] {intake->shooterRetract();}
@@ -34,6 +35,11 @@ frc2::CommandPtr DeployIntake::masterIntakeCommand(DeployIntake* intake, bool sh
             ),
             frc2::cmd::Wait(0.25_s)
         ).Repeatedly();
+    }
+    else if (jam) {
+        return frc2::cmd::RunOnce(
+            [intake] {intake->retract();}
+        );
     }
     else {
         return frc2::cmd::StartEnd(
