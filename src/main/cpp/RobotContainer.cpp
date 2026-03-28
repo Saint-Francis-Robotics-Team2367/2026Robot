@@ -307,6 +307,18 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
+  // Manual Shoot: Hood 45°, Flywheel 2000 RPM
+  codriverCtr.Cross().ToggleOnTrue(
+    frc2::cmd::Parallel(
+      HoodedShooter.RunOnce([this] { HoodedShooter.setManualHoodPosition(45); }),
+      frc2::cmd::StartEnd(
+        [this] { HoodedShooter.setFlywheelSpeed(2000); },
+        [this] { HoodedShooter.ShooterMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0}); },
+        {&HoodedShooter}
+      )
+    )
+  );
+
   // Zero Hood Position
   (codriverCtr.R1() && codriverCtr.Triangle()).OnTrue(
     HoodedShooter.RunOnce(
