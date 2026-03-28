@@ -208,6 +208,34 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
+  codriverCtr.POVDown().OnTrue(
+    frc2::cmd::RunOnce(
+      [this] {
+        if (settings = 0) {
+          spindexerSpeed = 2000;
+        }
+        else if (settings == 1) {
+          spindexerSpeed = 2500;
+        }
+        else if (settings == 2) {
+          spindexerSpeed = 3000;
+        }
+        else if (settings == 3) {
+          spindexerSpeed = 3500;
+        }
+        else if (settings == 4) {
+          spindexerSpeed = 4000;
+        }
+        else if (settings == 5) {
+          spindexerSpeed = 4500;
+        }
+        else if (settings == 6) {
+          spindexerSpeed = 5000;
+        }
+      }
+    )
+  );
+
   codriverCtr.L1().WhileTrue(
     frc2::cmd::Parallel(
       mSpindexer.RunSpindexer(&mSpindexer, 3000)
