@@ -72,7 +72,7 @@ class RobotContainer {
   double startXOffset = 0.0;
   double hubPoseX = 0.0;
   int noTagVisibleCounter = 0;
-  int settings = 0;
+  int settings = 1;
   double spindexerSpeed = 0.0;
 
   frc::SlewRateLimiter<units::scalar> xLimiter{ControllerConstants::slewRate / 1_s};

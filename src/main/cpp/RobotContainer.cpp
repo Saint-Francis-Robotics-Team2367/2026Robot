@@ -204,17 +204,15 @@ void RobotContainer::ConfigureBindings() {
   // Reverse Indexer and Feeder
   codriverCtr.L2().WhileTrue(
     frc2::cmd::Parallel(
-      mSpindexer.RunSpindexer(&mSpindexer, -3000)
+      mSpindexer.RunSpindexer(&mSpindexer, -1 * spindexerSpeed)
     )
   );
 
   codriverCtr.POVDown().OnTrue(
     frc2::cmd::RunOnce(
       [this] {
-        if (settings = 0) {
-          spindexerSpeed = 2000;
-        }
-        else if (settings == 1) {
+        settings = settings % 6;
+        if (settings == 1) {
           spindexerSpeed = 2500;
         }
         else if (settings == 2) {
@@ -232,13 +230,14 @@ void RobotContainer::ConfigureBindings() {
         else if (settings == 6) {
           spindexerSpeed = 5000;
         }
+        settings++;
       }
     )
   );
 
   codriverCtr.L1().WhileTrue(
     frc2::cmd::Parallel(
-      mSpindexer.RunSpindexer(&mSpindexer, 3000)
+      mSpindexer.RunSpindexer(&mSpindexer, spindexerSpeed)
     )
   );
 
