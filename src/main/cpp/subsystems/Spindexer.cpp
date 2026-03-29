@@ -10,9 +10,9 @@ void Spindexer::init(){
     spindexerConfigs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
     spindexerConfigs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
 
-    spindexerConfigs.CurrentLimits.StatorCurrentLimit = 45_A;
+    spindexerConfigs.CurrentLimits.StatorCurrentLimit = 70_A;
     spindexerConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
-    spindexerConfigs.CurrentLimits.SupplyCurrentLimit = 40_A;
+    spindexerConfigs.CurrentLimits.SupplyCurrentLimit = 30_A;
     spindexerConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
     spindexerConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 10_A;
     spindexerConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -10_A;
@@ -31,6 +31,13 @@ void Spindexer::stopSpindexer(){
 }
 
 frc2::CommandPtr Spindexer::RunSpindexer(Spindexer* spindexer, double speed) {
+    if (SpindexerStall()) {
+        return frc2::cmd::Run(
+            [this] {
+                spindexerMotor.SetControl(ctre::phoenix6::controls::VoltageOut{0.0_V});
+            }
+        ).WithTimeout(0.5_s);
+    }
     return frc2::cmd::StartEnd(
         [spindexer, speed] {
             spindexer->setSpindexerSpeed(speed);

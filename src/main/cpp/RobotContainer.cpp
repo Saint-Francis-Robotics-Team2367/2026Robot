@@ -109,7 +109,7 @@ void RobotContainer::ConfigureBindings() {
         frc::SmartDashboard::PutNumber("vy", vy);
         frc::SmartDashboard::PutNumber("rot", rot);
 
-        drivetrain.Drive(-vx * 0.75, vy * 0.75, rot, drivetrain.gyroConnected());
+        drivetrain.Drive(-vx, vy, rot, drivetrain.gyroConnected());
       }
     )
   );
@@ -159,13 +159,10 @@ void RobotContainer::ConfigureBindings() {
 
   // Detect Indexer Stall
   SpindexerStall.WhileTrue(
-    frc2::cmd::Sequence(
-      frc2::cmd::RunOnce(
-        [this] {
-          frc::SmartDashboard::PutBoolean("Spindexer Stall", true);
-        }
-      ),
-      mSpindexer.RunSpindexer(&mSpindexer, -2200)
+    frc2::cmd::RunOnce(
+      [this] {
+        frc::SmartDashboard::PutBoolean("Spindexer Stall", true);
+      }
     )
   );
 
@@ -187,12 +184,12 @@ void RobotContainer::ConfigureBindings() {
 
   // Run Intake
   driverCtr.R1().WhileTrue(
-    mRunIntake.IntakeCommand(&mRunIntake, 3500)
+    mRunIntake.IntakeCommand(&mRunIntake, 4000)
   );
 
   // Outtake Intake
   driverCtr.L1().WhileTrue(
-    mRunIntake.IntakeCommand(&mRunIntake, -3500)
+    mRunIntake.IntakeCommand(&mRunIntake, -4000)
   );
 
   driverCtr.R2().ToggleOnTrue(
@@ -201,11 +198,11 @@ void RobotContainer::ConfigureBindings() {
 
   // ******************** Co-Driver Controls ********************
   // Reverse Indexer and Feeder
-  codriverCtr.L2().WhileTrue(
-    frc2::cmd::Parallel(
-      mSpindexer.RunSpindexer(&mSpindexer, -1 * 3000)
-    )
-  );
+  // codriverCtr.L2().WhileTrue(
+  //   frc2::cmd::Parallel(
+  //     mSpindexer.RunSpindexer(&mSpindexer, -1 * 3000)
+  //   )
+  // );
 
   codriverCtr.POVDown().OnTrue(
     frc2::cmd::RunOnce(
@@ -234,61 +231,61 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
-  codriverCtr.L1().WhileTrue(
-    frc2::cmd::Parallel(
-      mSpindexer.RunSpindexer(&mSpindexer, 3000)
-    )
-  );
+  // codriverCtr.L1().WhileTrue(
+  //   frc2::cmd::Parallel(
+  //     mSpindexer.RunSpindexer(&mSpindexer, 3000)
+  //   )
+  // );
 
-  (codriverCtr.R2()).ToggleOnTrue(
-    frc2::cmd::Sequence(
-      // Step 1: Set hood position
-      HoodedShooter.RunOnce(
-        [this] {
-          eff = frc::SmartDashboard::GetNumber("Shooter Eff", 0.0);
-          HoodedShooter.distanceToTag = std::cos((turretCam.ty + 15.0) * (std::numbers::pi / 180.0)) * turretCam.distanceToTag;
-          HoodedShooter.xOffset = std::sin(turretCam.tx * (std::numbers::pi / 180.0)) * HoodedShooter.distanceToTag;
-          HoodedShooter.yOffset = std::cos(turretCam.tx * (std::numbers::pi / 180.0)) * HoodedShooter.distanceToTag;
-          HoodedShooter.optimalRPM = HoodedShooter.findOptimalRPM();
-          HoodedShooter.setHoodPosition(HoodedShooter.optimalRPM, HoodedShooter.xOffset, HoodedShooter.yOffset);
+  // (codriverCtr.R2()).ToggleOnTrue(
+  //   frc2::cmd::Sequence(
+  //     // Step 1: Set hood position
+  //     HoodedShooter.RunOnce(
+  //       [this] {
+  //         eff = frc::SmartDashboard::GetNumber("Shooter Eff", 0.0);
+  //         HoodedShooter.distanceToTag = std::cos((turretCam.ty + 15.0) * (std::numbers::pi / 180.0)) * turretCam.distanceToTag;
+  //         HoodedShooter.xOffset = std::sin(turretCam.tx * (std::numbers::pi / 180.0)) * HoodedShooter.distanceToTag;
+  //         HoodedShooter.yOffset = std::cos(turretCam.tx * (std::numbers::pi / 180.0)) * HoodedShooter.distanceToTag;
+  //         HoodedShooter.optimalRPM = HoodedShooter.findOptimalRPM();
+  //         HoodedShooter.setHoodPosition(HoodedShooter.optimalRPM, HoodedShooter.xOffset, HoodedShooter.yOffset);
 
-          frc::SmartDashboard::PutNumber("Shooter Distance (dx)", HoodedShooter.xOffset);
-          frc::SmartDashboard::PutNumber("Shooter Distance (dy)", HoodedShooter.yOffset);
+  //         frc::SmartDashboard::PutNumber("Shooter Distance (dx)", HoodedShooter.xOffset);
+  //         frc::SmartDashboard::PutNumber("Shooter Distance (dy)", HoodedShooter.yOffset);
 
-        }
-      ),
-      // Step 2: Spin up flywheel and wait 4 seconds, then feed while flywheel keeps spinning
-      frc2::cmd::Parallel(
-        frc2::cmd::StartEnd(
-          [this] {
-            HoodedShooter.setFlywheelSpeed(-HoodedShooter.optimalRPM, eff);
-          },
-          [this] {
-            HoodedShooter.ShooterMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0});
-            HoodedShooter.moveHoodToZero();
-          }
-        ),
-        frc2::cmd::Sequence(
-          frc2::cmd::WaitUntil(
-            [this] {
-              return turretCam.hasTarget && 
-                (HoodedShooter.getShooterVelocity() > 
-                  (0.95 * (1/ShooterConstants::SHOOTEREFFICIENCY) * 
-                  HoodedShooter.optimalRPM));
-            }
-          ),
-          // Step 3: Run indexer and feeder while flywheel is still spinning
-          frc2::cmd::RunOnce([this] {
-            frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
-          }),
-          frc2::cmd::Parallel(
-            mSpindexer.RunSpindexer(&mSpindexer, 3000)
-            // mDeployIntake.masterIntakeCommand(&mDeployIntake, &mSpindexer, true)
-          )
-        )
-      )
-    )
-  );
+  //       }
+  //     ),
+  //     // Step 2: Spin up flywheel and wait 4 seconds, then feed while flywheel keeps spinning
+  //     frc2::cmd::Parallel(
+  //       frc2::cmd::StartEnd(
+  //         [this] {
+  //           HoodedShooter.setFlywheelSpeed(-HoodedShooter.optimalRPM, eff);
+  //         },
+  //         [this] {
+  //           HoodedShooter.ShooterMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0});
+  //           HoodedShooter.moveHoodToZero();
+  //         }
+  //       ),
+  //       frc2::cmd::Sequence(
+  //         frc2::cmd::WaitUntil(
+  //           [this] {
+  //             return turretCam.hasTarget && 
+  //               (HoodedShooter.getShooterVelocity() > 
+  //                 (0.95 * (1/ShooterConstants::SHOOTEREFFICIENCY) * 
+  //                 HoodedShooter.optimalRPM));
+  //           }
+  //         ),
+  //         // Step 3: Run indexer and feeder while flywheel is still spinning
+  //         frc2::cmd::RunOnce([this] {
+  //           frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
+  //         }),
+  //         frc2::cmd::Parallel(
+  //           mSpindexer.RunSpindexer(&mSpindexer, 4500)
+  //           // mDeployIntake.masterIntakeCommand(&mDeployIntake, &mSpindexer, true)
+  //         )
+  //       )
+  //     )
+  //   )
+  // );
 
   // Rebounding Square: Turret 45° left, Hood 45°, Flywheel 1000 RPM
   codriverCtr.Square().ToggleOnTrue(

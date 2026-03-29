@@ -6,6 +6,12 @@ void DeployIntake::init() {
     backLeftConfig.Slot0.kI = 0.0;
     backLeftConfig.Slot0.kD = 0.0;
 
+    backLeftConfig.CurrentLimits.SupplyCurrentLimit = 30.0_A; //breaker limit
+    backLeftConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+    backLeftConfig.CurrentLimits.StatorCurrentLimit = 80.0_A; //motor limit
+    backLeftConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+
     backLeftConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
     backLeftConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
     backLeftMotor.GetConfigurator().Apply(backLeftConfig);
@@ -13,6 +19,12 @@ void DeployIntake::init() {
     backRightConfig.Slot0.kP = 0.6;
     backRightConfig.Slot0.kI = 0.0;
     backRightConfig.Slot0.kD = 0.0;
+
+    backRightConfig.CurrentLimits.SupplyCurrentLimit = 30.0_A; //breaker limit
+    backRightConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+    backRightConfig.CurrentLimits.StatorCurrentLimit = 80.0_A; //motor limit
+    backRightConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     backRightConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
     backRightConfig.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
