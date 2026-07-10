@@ -10,10 +10,13 @@
 #include <frc2/command/CommandScheduler.h>
 #include <limits>
 #include <frc/util/Color.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 
 
-Robot::Robot() {}
+Robot::Robot() {
+  frc::SmartDashboard::PutData("Field", &m_field);
+}
 
 /**
  * This function is called every 20 ms, no matter the mode. Use
@@ -30,6 +33,7 @@ void Robot::RobotPeriodic() {
   // Advance odometry before vision so SwerveDrivePoseEstimator state matches wheel/gyro, then fuse.
   m_container.drivetrain.updateOdometry();
   m_container.turretCam.periodic();
+  m_field.SetRobotPose(m_container.drivetrain.getPose());
   frc::SmartDashboard::PutNumber("Robot Pose X", m_container.drivetrain.getPose().X().value());
   frc::SmartDashboard::PutNumber("Robot Pose Y", m_container.drivetrain.getPose().Y().value());
   frc::SmartDashboard::PutNumber("Quest Heading", QuestNav::getInstance().getPose2d().Rotation().Degrees().value());
@@ -58,8 +62,8 @@ void Robot::DisabledPeriodic() {}
 void Robot::AutonomousInit() {
   m_autonomousCommand = m_container.GetAutonomousCommand();
 
-  if (m_autonomousCommand) {
-    frc2::CommandScheduler::GetInstance().Schedule(m_autonomousCommand.value());
+  if (m_autonomousCommand != nullptr) {
+    frc2::CommandScheduler::GetInstance().Schedule(m_autonomousCommand);
   }
 }
 
@@ -75,8 +79,9 @@ void Robot::TeleopInit() {
   // teleop starts running. If you want the autonomous to
   // continue until interrupted by another command, remove
   // this line or comment it out.
-  if (m_autonomousCommand) {
+  if (m_autonomousCommand != nullptr) {
     m_autonomousCommand->Cancel();
+    m_autonomousCommand = nullptr;
   }
 }
 

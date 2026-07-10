@@ -5,6 +5,7 @@
 #pragma once
 
 #include <frc2/command/CommandPtr.h>
+#include <frc2/command/Command.h>
 #include "frc2/command/Commands.h"
 #include <frc2/command/button/CommandPS5Controller.h>
 #include "frc/smartdashboard/SendableChooser.h"
@@ -36,7 +37,7 @@ class RobotContainer {
  public:
   RobotContainer();
 
-  frc2::CommandPtr GetAutonomousCommand();
+  frc2::Command* GetAutonomousCommand();
 
   DriveSubsystem drivetrain;
   Limelight turretCam{drivetrain};
@@ -64,6 +65,8 @@ class RobotContainer {
   frc::SendableChooser<std::string> allianceChooser;
   const std::string blueAlliance = "Blue Alliance";
   const std::string redAlliance = "Red Alliance";
+
+  frc::SendableChooser<frc2::Command*> autoChooser;
 
   frc::Pose2d startPose{0_m, 0_m, 0_rad};
   std::string allianceColor;

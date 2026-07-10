@@ -53,7 +53,5 @@ public:
     void setDesiredState(frc::SwerveModuleState& state);
     frc::SwerveModulePosition getPosition();
     frc::SwerveModuleState getState();
-    units::meters_per_second_t getDriveVelocity();
-    void setDesiredStateVolts(const frc::SwerveModuleState& state, units::ampere_t torqueCurrent);
     void zeroModule();
 };

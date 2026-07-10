@@ -9,6 +9,7 @@
 #include <frc/TimedRobot.h>
 #include <frc2/command/CommandPtr.h>
 #include <frc/PS5Controller.h>
+#include <frc/smartdashboard/Field2d.h>
 #include "LED.h"
 #include "RobotContainer.h"
 #include "subsystems/Turret.h"
@@ -31,11 +32,12 @@ class Robot : public frc::TimedRobot {
  private:
   // Have it empty by default so that if testing teleop it
   // doesn't have undefined behavior and potentially crash.
-  std::optional<frc2::CommandPtr> m_autonomousCommand;
+  frc2::Command* m_autonomousCommand = nullptr;
 
-  Led mled = Led(1,  40); 
+  Led mled = Led(1,  40);
 
-  
+  frc::Field2d m_field;
+
   RobotContainer m_container;
 
 

@@ -134,6 +134,14 @@ namespace TurretConstants {
     static constexpr int turretNoTagResetThreshold = 50; // in frames
 }
 
+namespace AutoConstants {
+    static constexpr double kAutoHoodAngle = 45.0;
+    static constexpr float kAutoFlywheelRPM = 3500.0f;
+    static constexpr double kIntakeRollerRPM = 3000.0;
+    static constexpr double kFeedSpindexerRPM = 6250.0;
+    static constexpr double kReverseSpindexerRPM = -2500.0;
+}
+
 namespace PoseConstants {
     static constexpr double BluehubX = 4.625594;         // meters (182.11 inches)
     static constexpr double RedhubX = 4.625594 + 7.2898; // meters (469.11 inches)

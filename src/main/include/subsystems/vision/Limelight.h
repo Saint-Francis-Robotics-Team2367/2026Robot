@@ -55,7 +55,7 @@ public:
 
             // Use validPoseEstimate (raw fiducials parsed), not tv — MegaTag2/botpose_orb can disagree with tv.
             if (LimelightHelpers::validPoseEstimate(limelightMeasurement)) {
-                mDrive.odometry.SetVisionMeasurementStdDevs({0.5, 0.5, 9999999}); // Ignore Megatag Gyro Input
+                mDrive.odometry.SetVisionMeasurementStdDevs({0.5, 0.5, 9999999.0}); // Ignore Megatag Gyro Input
                 mDrive.odometry.AddVisionMeasurement(
                     limelightMeasurement.pose,
                     limelightMeasurement.timestampSeconds);

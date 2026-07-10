@@ -14,31 +14,34 @@
 
 #include "frc/geometry/Translation2d.h"
 #include "frc/geometry/Pose2d.h"
+#include "frc/geometry/Rotation2d.h"
 
 #include "subsystems/SwerveModule.h"
-
-#include "pathplanner/lib/path/PathPlannerPath.h"
-#include "pathplanner/lib/util/PathPlannerLogging.h"
 
 class DriveSubsystem : public frc2::SubsystemBase {
 public:
   DriveSubsystem();
 
   void Drive(double vx, double vy, double rot, bool fieldRelative);
-  void DriveWithFF(const frc::ChassisSpeeds& speeds, const pathplanner::DriveFeedforwards& feedforwards);
+  void driveRobotRelative(frc::ChassisSpeeds speeds);
   void initModules();
+  void configurePathPlanner();
   void updateOdometry();
   void resetOdometry(frc::Pose2d pose);
   frc::SwerveDrivePoseEstimator<4> getPoseEstimator();
   
   frc::Pose2d getPose();
+  frc::ChassisSpeeds getRobotRelativeSpeeds();
+  frc::Rotation2d getHeading();
   void resetGyro();
   bool gyroConnected();
   void stopAllModules();
   void initGyro();
-  frc::ChassisSpeeds getRobotRelativeSpeeds();
+  void AddVisionMeasurement(frc::Pose2d pose, units::second_t timestamp);
 
 private:
+  void integrateSimPose(const frc::ChassisSpeeds& speeds);
+
   //module objects
   SwerveModule frontLeft{HardwareIDs::FLdriveID, HardwareIDs::FLsteerID, HardwareIDs::FLencoderID, "Drivetrain"};
   SwerveModule frontRight{HardwareIDs::FRdriveID, HardwareIDs::FRsteerID, HardwareIDs::FRencoderID, "Drivetrain"};
@@ -52,6 +55,11 @@ private:
     frc::Translation2d{-0.381_m, 0.381_m},
     frc::Translation2d{-0.381_m, -0.381_m} 
   };
+
+  // Desktop sim has no QuestNav / real encoders — integrate commanded speeds instead.
+  frc::Pose2d m_simPose{0_m, 0_m, 0_deg};
+  frc::ChassisSpeeds m_lastSpeeds{};
+  units::second_t m_lastSimTimestamp{0_s};
 
 public:
   frc::SwerveDrivePoseEstimator<4> odometry{

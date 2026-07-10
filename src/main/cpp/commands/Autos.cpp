@@ -1,60 +1,136 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 #include "commands/Autos.h"
 
+#include <frc/RobotBase.h>
 #include <frc2/command/Commands.h>
+#include <pathplanner/lib/auto/NamedCommands.h>
 
-#include "commands/ExampleCommand.h"
-#include "pathplanner/lib/auto/AutoBuilder.h"
-#include "pathplanner/lib/path/PathPlannerPath.h"
+#include "Constants.h"
+#include "subsystems/Shooter.h"
+#include "subsystems/Spindexer.h"
+#include "subsystems/Intake/DeployIntake.h"
+#include "subsystems/Intake/RunIntake.h"
 
-frc2::CommandPtr autos::FollowPath(DriveSubsystem* subsystem, Shooter* mShooter, Limelight* cam, Spindexer* mSpindexer, DeployIntake* mDeployIntake, std::string pathName1) {
-    auto path1 = pathplanner::PathPlannerPath::fromPathFile(pathName1);
+using namespace pathplanner;
 
-    return frc2::cmd::Sequence(
-        pathplanner::AutoBuilder::followPath(path1),
-        frc2::cmd::Wait(0.25_s),
-        frc2::cmd::RunOnce(
-            [mShooter, cam] {
-                mShooter->distanceToTag = std::cos((cam->ty + 15.0) * (std::numbers::pi / 180.0)) * cam->distanceToTag;
-                mShooter->xOffset = std::sin(cam->tx * (std::numbers::pi / 180.0)) * mShooter->distanceToTag;
-                mShooter->yOffset = std::cos(cam->tx * (std::numbers::pi / 180.0)) * mShooter->distanceToTag;
-                mShooter->optimalRPM = mShooter->findOptimalRPM();
-                mShooter->setHoodPosition(mShooter->optimalRPM, mShooter->xOffset, mShooter->yOffset);
+namespace autos {
 
-                frc::SmartDashboard::PutNumber("Shooter Distance (dx)", mShooter->xOffset);
-                frc::SmartDashboard::PutNumber("Shooter Distance (dy)", mShooter->yOffset);
-            }
-        ),
-        frc2::cmd::Parallel(
-            frc2::cmd::StartEnd(
-                [mShooter] {
-                    mShooter->setFlywheelSpeed(-mShooter->optimalRPM);
-                },
-                [mShooter] {
-                    mShooter->ShooterMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0});
-                    mShooter->moveHoodToZero();
-                }
-            ),
-            frc2::cmd::Sequence(
-                frc2::cmd::WaitUntil(
-                    [mShooter, cam] {
-                        return cam->hasTarget && 
-                            (mShooter->getShooterVelocity() > 
-                                (0.95 * (1.0 / ShooterConstants::SHOOTEREFFICIENCY) * 
-                                mShooter->optimalRPM));
-                    }
-                ),
-                frc2::cmd::RunOnce([] {
-                    frc::SmartDashboard::PutString("Ran", "RAN INDEXER AND FEEDER");
-                }),
-                frc2::cmd::Parallel(
-                    mSpindexer->RunSpindexer(mSpindexer, -6250),
-                    mDeployIntake->masterIntakeCommand(mDeployIntake, true)
-                )
-            )
-        ).WithTimeout(4_s)
-    );
+void RegisterNamedCommands(
+    Shooter* shooter,
+    Spindexer* spindexer,
+    DeployIntake* deployIntake,
+    RunIntake* runIntake) {
+  NamedCommands::registerCommand("SpinUpShooter", SpinUpShooter(shooter));
+  NamedCommands::registerCommand(
+      "Shoot", Shoot(shooter, spindexer, deployIntake));
+  NamedCommands::registerCommand(
+      "StopShooter", StopShooter(shooter, spindexer, deployIntake));
+
+  NamedCommands::registerCommand("DeployIntake", DeployIntakeCommand(deployIntake));
+  NamedCommands::registerCommand("RunIntake", RunIntakeCommand(runIntake));
+  NamedCommands::registerCommand(
+      "StopIntake", StopIntakeCommand(runIntake, deployIntake));
+
+  NamedCommands::registerCommand("FeedHopper", FeedHopper(spindexer));
+  NamedCommands::registerCommand("ReverseHopper", ReverseHopper(spindexer));
+  NamedCommands::registerCommand("StopHopper", StopHopper(spindexer));
 }
+
+frc2::CommandPtr SpinUpShooter(Shooter* shooter) {
+  auto spinUp = shooter->RunOnce(
+      [shooter] {
+        shooter->setManualHoodPosition(AutoConstants::kAutoHoodAngle);
+        shooter->setFlywheelSpeed(-AutoConstants::kAutoFlywheelRPM);
+      });
+
+  // In desktop sim the flywheel never reaches target RPM — don't block the auto.
+  if (frc::RobotBase::IsSimulation()) {
+    return frc2::cmd::Sequence(std::move(spinUp), frc2::cmd::Wait(0.5_s));
+  }
+
+  return frc2::cmd::Sequence(
+      std::move(spinUp),
+      frc2::cmd::WaitUntil(
+          [shooter] {
+            return shooter->getShooterVelocity() >
+                   (0.95 * (1 / ShooterConstants::SHOOTEREFFICIENCY) *
+                    AutoConstants::kAutoFlywheelRPM);
+          }));
+}
+
+frc2::CommandPtr Shoot(
+    Shooter* shooter, Spindexer* spindexer, DeployIntake* deployIntake) {
+  // Instant start — auto Wait + StopShooter control how long feeding runs.
+  return frc2::cmd::Parallel(
+      spindexer->RunOnce(
+          [spindexer] {
+            spindexer->setSpindexerSpeed(AutoConstants::kFeedSpindexerRPM);
+          }),
+      deployIntake->RunOnce(
+          [deployIntake] { deployIntake->shooterDeploy(); }),
+      shooter->RunOnce(
+          [shooter] {
+            shooter->setFlywheelSpeed(-AutoConstants::kAutoFlywheelRPM);
+          }));
+}
+
+frc2::CommandPtr StopShooter(
+    Shooter* shooter, Spindexer* spindexer, DeployIntake* deployIntake) {
+  return frc2::cmd::Parallel(
+      shooter->RunOnce(
+          [shooter] {
+            shooter->ShooterMotor.SetControl(
+                ctre::phoenix6::controls::DutyCycleOut{0.0});
+            shooter->moveHoodToZero();
+          }),
+      frc2::cmd::RunOnce([spindexer] { spindexer->stopSpindexer(); }),
+      deployIntake->RunOnce([deployIntake] { deployIntake->shooterRetract(); }));
+}
+
+frc2::CommandPtr DeployIntakeCommand(DeployIntake* deployIntake) {
+  return deployIntake->RunOnce(
+      [deployIntake] {
+        deployIntake->deploy();
+        deployIntake->deployed = true;
+      });
+}
+
+frc2::CommandPtr RunIntakeCommand(RunIntake* runIntakeSubsystem) {
+  // Instant start — keeps rollers running until StopIntake. A StartEnd would
+  // block PathPlanner sequential autos forever after the first path.
+  return runIntakeSubsystem->RunOnce(
+      [runIntakeSubsystem] {
+        runIntakeSubsystem->setMotorSpeed(AutoConstants::kIntakeRollerRPM);
+      });
+}
+
+frc2::CommandPtr StopIntakeCommand(
+    RunIntake* runIntakeSubsystem, DeployIntake* deployIntakeSubsystem) {
+  return frc2::cmd::Parallel(
+      runIntakeSubsystem->RunOnce(
+          [runIntakeSubsystem] { runIntakeSubsystem->stop(); }),
+      deployIntakeSubsystem->RunOnce(
+          [deployIntakeSubsystem] {
+            deployIntakeSubsystem->retract();
+            deployIntakeSubsystem->deployed = false;
+          }));
+}
+
+frc2::CommandPtr FeedHopper(Spindexer* spindexer) {
+  return spindexer->RunOnce(
+      [spindexer] {
+        spindexer->setSpindexerSpeed(AutoConstants::kFeedSpindexerRPM);
+      });
+}
+
+frc2::CommandPtr ReverseHopper(Spindexer* spindexer) {
+  return spindexer->RunOnce(
+      [spindexer] {
+        spindexer->setSpindexerSpeed(AutoConstants::kReverseSpindexerRPM);
+      });
+}
+
+frc2::CommandPtr StopHopper(Spindexer* spindexer) {
+  return frc2::cmd::RunOnce([spindexer] { spindexer->stopSpindexer(); });
+}
+
+}  // namespace autos

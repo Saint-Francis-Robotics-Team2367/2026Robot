@@ -13,13 +13,11 @@
 
 #include "frc/smartdashboard/SmartDashboard.h"
 #include <frc2/command/CommandPtr.h>
+#include <pathplanner/lib/auto/AutoBuilder.h>
 
 #include "commands/Autos.h"
-#include "commands/ExampleCommand.h"
-#include "frc/DriverStation.h"
-#include "pathplanner/lib/auto/AutoBuilder.h"
-#include "pathplanner/lib/controllers/PathFollowingController.h"
-#include "pathplanner/lib/controllers/PPHolonomicDriveController.h"
+
+using namespace pathplanner;
 
 //basically initializes robot
 RobotContainer::RobotContainer() {
@@ -29,29 +27,21 @@ RobotContainer::RobotContainer() {
   HoodedShooter.init(); // Initalize Shooter motors and encoders
   mSpindexer.init(); // Initialize Indexer motors and encoders
   m_turret.init();
+  mDeployIntake.init();
+  mRunIntake.init();
 
   drivetrain.initModules();
   drivetrain.initGyro();
   QuestNav::getInstance().init();
   drivetrain.resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
 
-  pathplanner::RobotConfig robotConfig = pathplanner::RobotConfig::fromGUISettings();
+  autos::RegisterNamedCommands(
+      &HoodedShooter, &mSpindexer, &mDeployIntake, &mRunIntake);
 
-  pathplanner::AutoBuilder::configure(
-    [this]() {return drivetrain.getPose();}, 
-    [this](const frc::Pose2d& pose) {drivetrain.resetOdometry(pose);},
-    [this]() {return drivetrain.getRobotRelativeSpeeds();},
-    [this](auto speeds, auto feedforwards) {
-      drivetrain.Drive(speeds.vx.value(), speeds.vy.value(), speeds.omega.value(), drivetrain.gyroConnected());
-    },
-    std::make_shared<pathplanner::PPHolonomicDriveController> (
-      pathplanner::PIDConstants(3.5, 0.0, 0.0), // Translation PID constants
-      pathplanner::PIDConstants(3.5, 0.0, 0.0) // Rotation PID constants
-    ),
-    robotConfig,
-    []() { return frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kRed;},
-    &drivetrain
-  );
+  drivetrain.configurePathPlanner();
+
+  autoChooser = AutoBuilder::buildAutoChooser("2 Shot Auto");
+  frc::SmartDashboard::PutData("Auto Chooser", &autoChooser);
 
   allianceChooser.SetDefaultOption("Blue Alliance", blueAlliance);
   allianceChooser.AddOption("Red Alliance", redAlliance);
@@ -299,6 +289,18 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
+  // Manual Shoot: Hood 45°, Flywheel 2000 RPM
+  codriverCtr.Cross().ToggleOnTrue(
+    frc2::cmd::Sequence(
+      HoodedShooter.RunOnce([this] { HoodedShooter.setManualHoodPosition(45); }),
+      frc2::cmd::StartEnd(
+        [this] { HoodedShooter.setFlywheelSpeed(2000); },
+        [this] { HoodedShooter.ShooterMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0}); },
+        {&HoodedShooter}
+      )
+    )
+  );
+
   // Zero Hood Position
   (codriverCtr.R1() && codriverCtr.Triangle()).OnTrue(
     HoodedShooter.RunOnce(
@@ -365,6 +367,6 @@ void RobotContainer::ConfigureBindings() {
   );
 }
 
-frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
-  return autos::FollowPath(&drivetrain, &HoodedShooter, &turretCam, &mSpindexer, &mDeployIntake, "Back B");
+frc2::Command* RobotContainer::GetAutonomousCommand() {
+  return autoChooser.GetSelected();
 }
