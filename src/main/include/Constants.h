@@ -42,7 +42,7 @@ namespace HardwareIDs {
     static constexpr int FLencoderID = 9; 
     
     static constexpr int FRsteerID = 11;
-    static constexpr int FRdriveID = 10;
+    static constexpr int FRdriveID = 12;
     static constexpr int FRencoderID = 12;
 
     static constexpr int BLsteerID = 5; 
