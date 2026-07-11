@@ -60,11 +60,14 @@ void Robot::DisabledPeriodic() {}
  * RobotContainer} class.
  */
 void Robot::AutonomousInit() {
-  // m_autonomousCommand = m_container.GetAutonomousCommand();
+  // Scheduler plumbing is complete: this grabs the command returned by
+  // RobotContainer::GetAutonomousCommand() and schedules it. Students only need
+  // to build the command in GetAutonomousCommand() — no changes needed here.
+  m_autonomousCommand = m_container.GetAutonomousCommand();
 
-  // if (m_autonomousCommand) {
-  //   frc2::CommandScheduler::GetInstance().Schedule(m_autonomousCommand.value());
-  // }
+  if (m_autonomousCommand) {
+    frc2::CommandScheduler::GetInstance().Schedule(m_autonomousCommand.value());
+  }
 }
 
 void Robot::AutonomousPeriodic() {}

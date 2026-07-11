@@ -103,7 +103,7 @@ public:
 
     frc::Rotation2d getRotation2d() {
         units::radian_t rawYaw = robotPose.Rotation().Z();
-        units::radian_t correctedYaw = rawYaw - yawOffset;
+        units::radian_t correctedYaw = rawYaw + yawOffset;
         return frc::Rotation2d(correctedYaw);
     }
 

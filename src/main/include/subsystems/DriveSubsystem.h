@@ -43,10 +43,10 @@ private:
 
     //CHANGE THESE IF ROBOT DIMENSIONS CHANGE; positions of swerve modules relative to robot
   frc::SwerveDriveKinematics<4> kinematics {
-    frc::Translation2d{0.381_m, 0.381_m}, 
-    frc::Translation2d{0.381_m, -0.381_m},
+    frc::Translation2d{0.381_m, 0.381_m},
     frc::Translation2d{-0.381_m, 0.381_m},
-    frc::Translation2d{-0.381_m, -0.381_m} 
+    frc::Translation2d{0.381_m, -0.381_m},
+    frc::Translation2d{-0.381_m, -0.381_m}
   };
 
 public:

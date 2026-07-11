@@ -117,7 +117,7 @@ void RobotContainer::ConfigureBindings() {
       [this] {
         if (turretCam.hasTarget)
         {
-          double tx = std::clamp(turretCam.tx + m_turret.getCurrentMotorAngle(), -92.5, 92.5);
+          double tx = std::clamp(-turretCam.tx + m_turret.getCurrentMotorAngle(), -92.5, 92.5);
           double tolerance = std::sin(turretCam.tx * (std::numbers::pi / 180.0)) * turretCam.distanceToTag;
           tolerance = frc::ApplyDeadband(tolerance, TurretConstants::turretDeadband);
           m_turret.setAngle(tx);
@@ -188,12 +188,12 @@ void RobotContainer::ConfigureBindings() {
 
   // Run Intake
   driverCtr.R1().ToggleOnTrue(
-    mRunIntake.IntakeCommand(&mRunIntake, 3000)
+    mRunIntake.IntakeCommand(&mRunIntake, -3000)
   );
 
   // Outtake Intake
   driverCtr.L1().ToggleOnTrue(
-    mRunIntake.IntakeCommand(&mRunIntake, -3000)
+    mRunIntake.IntakeCommand(&mRunIntake, 3000)
   );
 
   driverCtr.R2().ToggleOnTrue(
@@ -386,6 +386,27 @@ void RobotContainer::ConfigureBindings() {
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
-  // An example command will be run in autonomous
-  //return autos::ExampleAuto(&m_subsystem);
+  // ==========================================================================
+  // TODO (student exercise): Implement the autonomous routine.
+  //
+  // Goal: a ~15 second autonomous that, at minimum:
+  //   1. Reads the selected starting position (positionChooser) and alliance
+  //      (allianceChooser) and sets the starting pose / resets odometry
+  //      accordingly (see InitializeStartPose / drivetrain.resetOdometry).
+  //   2. Drives the robot off the starting line.
+  //   3. Aims the turret at the hub and shoots the preloaded ball(s).
+  //
+  // Hints:
+  //   - Model the shoot logic on the codriver R2 sequence in ConfigureBindings().
+  //   - Compose with frc2::cmd::Sequence(...) and frc2::cmd::Parallel(...).
+  //   - Use drivetrain.Drive(...) for simple open-loop motion, or the
+  //     PathPlanner files under src/main/deploy/pathplanner for path following.
+  //   - Return the composed command (e.g. someSequence built with cmd::Sequence,
+  //     or a subsystem command's .ToPtr()).
+  //
+  // The scheduler is already wired in Robot::AutonomousInit(), so whatever you
+  // return here will run automatically when autonomous is enabled. For now this
+  // returns a no-op so the project compiles and does nothing in autonomous.
+  // ==========================================================================
+  return frc2::cmd::None();
 }

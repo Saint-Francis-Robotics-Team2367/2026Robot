@@ -69,8 +69,8 @@ public:
         std::vector<double> pose =
             LimelightHelpers::getTargetPose_RobotSpace(LimelightName);
         if (pose.size() >= 3) {
-            distanceToTag = pose[2];
-            strafeDistanceToTag = pose[0];
+            distanceToTag = pose[0];
+            strafeDistanceToTag = pose[2];
         } else {
             distanceToTag = 0.0;
             strafeDistanceToTag = 0.0;

@@ -1,6 +1,9 @@
 # This gitignore has been specially created by the WPILib team.
 # If you remove items from this file, intellisense might break.
 
+# Agent-demo exercise: instructor answer key must never be shared with students
+ANSWER_KEY.md
+
 ### C++ ###
 # Prerequisites
 *.d
