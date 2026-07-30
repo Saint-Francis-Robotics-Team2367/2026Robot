@@ -473,9 +473,12 @@ void RobotContainer::TrimManualTurret(double deltaDegrees) {
 // co-driver R2 auto-shot, minus the vision math: fixed RPM, fixed starting hood angle,
 // and the D-pad trims hood/turret live while it runs.
 frc2::CommandPtr RobotContainer::ManualShootCommand() {
-  return frc2::cmd::Sequence(
-    // Step 1: latch into manual mode and set the starting hood/turret positions.
-    frc2::cmd::RunOnce(
+  return frc2::cmd::Parallel(
+    // The manualShooting flag is set and cleared by this one StartEnd so the pair is
+    // symmetric. Setting it in a preceding RunOnce would leave it latched true if the
+    // command were interrupted before the clearing command ever started, which would
+    // disable the normal D-pad bindings and vision tracking until a reboot.
+    frc2::cmd::StartEnd(
       [this] {
         manualShooting = true;
         manualHoodAngle = ManualShootConstants::startingHoodAngle;
@@ -483,39 +486,34 @@ frc2::CommandPtr RobotContainer::ManualShootCommand() {
 
         HoodedShooter.setManualHoodPosition(manualHoodAngle);
         m_turret.setAngle(manualTurretAngle);
+        HoodedShooter.setFlywheelSpeed(
+          ManualShootConstants::flywheelDirection * ManualShootConstants::flywheelRPM);
 
         frc::SmartDashboard::PutBoolean("Manual Shooting", true);
         frc::SmartDashboard::PutNumber("Manual Hood Angle", manualHoodAngle);
         frc::SmartDashboard::PutNumber("Manual Turret Angle", manualTurretAngle);
+      },
+      [this] {
+        HoodedShooter.ShooterMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0});
+        HoodedShooter.moveHoodToZero();
+        manualShooting = false;
+        frc::SmartDashboard::PutBoolean("Manual Shooting", false);
       }
     ),
-    // Step 2: spin the flywheel and hold it there for as long as the sequence runs.
-    frc2::cmd::Parallel(
-      frc2::cmd::StartEnd(
+    frc2::cmd::Sequence(
+      // Wait for 95% of target RPM before feeding, so the first ball isn't shot
+      // into a flywheel that's still spinning up. getShooterVelocity() is absolute,
+      // so this holds regardless of the commanded direction.
+      frc2::cmd::WaitUntil(
         [this] {
-          HoodedShooter.setFlywheelSpeed(-ManualShootConstants::flywheelRPM);
-        },
-        [this] {
-          HoodedShooter.ShooterMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0});
-          HoodedShooter.moveHoodToZero();
-          manualShooting = false;
-          frc::SmartDashboard::PutBoolean("Manual Shooting", false);
+          return HoodedShooter.getShooterVelocity() >
+            (ManualShootConstants::flywheelReadyFraction *
+              (1 / ShooterConstants::SHOOTEREFFICIENCY) *
+              ManualShootConstants::flywheelRPM);
         }
       ),
-      frc2::cmd::Sequence(
-        // Step 3: wait for 95% of target RPM before feeding, so the first ball
-        // isn't shot into a flywheel that's still spinning up.
-        frc2::cmd::WaitUntil(
-          [this] {
-            return HoodedShooter.getShooterVelocity() >
-              (ManualShootConstants::flywheelReadyFraction *
-                (1 / ShooterConstants::SHOOTEREFFICIENCY) *
-                ManualShootConstants::flywheelRPM);
-          }
-        ),
-        // Step 4: feed. Spindexer runs until the operator toggles the sequence off.
-        mSpindexer.RunSpindexer(&mSpindexer, ManualShootConstants::spindexerRPM)
-      )
+      // Feed. Spindexer runs until the operator toggles the sequence off.
+      mSpindexer.RunSpindexer(&mSpindexer, ManualShootConstants::spindexerRPM)
     )
   );
 }

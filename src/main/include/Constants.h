@@ -154,6 +154,14 @@ namespace ManualShootConstants {
     // The hood angle convention is unverified on hardware: if a larger angle number
     // actually aims the hood LOWER, flip this to false so D-pad Up still raises it.
     static constexpr bool hoodUpIncreasesAngle = true;
+
+    // Flywheel sign is genuinely ambiguous in this codebase: the R2 auto-shot commands
+    // a NEGATIVE RPM while the Cross/Square manual shots command POSITIVE. Only one
+    // direction actually shoots. Set to +1.0 to match Cross (same 2000 RPM manual shot
+    // this sequence is modeled on); flip to -1.0 if it turns out R2 has it right.
+    // The 95%-ready check uses getShooterVelocity(), which is absolute, so it holds
+    // either way.
+    static constexpr double flywheelDirection = 1.0;
 }
 
 namespace PoseConstants {
