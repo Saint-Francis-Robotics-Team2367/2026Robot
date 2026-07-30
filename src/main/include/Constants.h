@@ -132,6 +132,28 @@ namespace TurretConstants {
     static constexpr double turretDeadband = 0.1;
 
     static constexpr int turretNoTagResetThreshold = 50; // in frames
+
+    // Manual (no-vision) shoot: turret is limited to +/- this many degrees from
+    // wherever the turret sat when the robot booted, since we have no tag to trust.
+    static constexpr double manualTurretRange = 45.0; // deg
+    static constexpr double manualTurretStep = 0.5;   // deg per scheduler loop while D-pad held
+}
+
+namespace ManualShootConstants {
+    // Generic no-Limelight shot. Spindexer waits until the flywheel reaches
+    // flywheelReadyFraction of this RPM before feeding.
+    static constexpr double flywheelRPM = 2000.0;
+    static constexpr double flywheelReadyFraction = 0.95;
+    static constexpr double spindexerRPM = 6250.0;
+
+    static constexpr double startingHoodAngle = 45.0; // deg
+    static constexpr double hoodStep = 0.5;           // deg per scheduler loop while D-pad held
+    static constexpr double hoodMinAngle = 31.0;      // deg, matches setHoodPosition's limits
+    static constexpr double hoodMaxAngle = 68.0;      // deg, resting/max angle
+
+    // The hood angle convention is unverified on hardware: if a larger angle number
+    // actually aims the hood LOWER, flip this to false so D-pad Up still raises it.
+    static constexpr bool hoodUpIncreasesAngle = true;
 }
 
 namespace PoseConstants {

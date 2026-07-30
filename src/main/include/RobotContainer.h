@@ -54,6 +54,19 @@ class RobotContainer {
 
   bool autoTargeting = false;
 
+  // ******************** Manual (no-Limelight) shoot state ********************
+  // True while the generic shoot sequence is running. Gates the co-driver D-pad
+  // over to hood/turret trim and holds off the vision-based turret tracking.
+  bool manualShooting = false;
+
+  // Turret angle at boot, captured after Turret::init() zeroes the motor. The
+  // manual sequence clamps the turret to +/- manualTurretRange around this.
+  double turretBootAngle = 0.0;
+
+  // Live setpoints trimmed by the D-pad during the manual sequence.
+  double manualHoodAngle = ManualShootConstants::startingHoodAngle;
+  double manualTurretAngle = 0.0;
+
   frc::SendableChooser<std::string> positionChooser;
   const std::string topTrench = "Top Trench";
   const std::string topBump = "Top Bump";
@@ -81,4 +94,12 @@ class RobotContainer {
 
   void ConfigureBindings();
   void InitializeStartPose();
+
+  // Generic shoot sequence that does not depend on the Limelight: spin the
+  // flywheel to a fixed RPM, wait for 95% of it, then feed. Hood and turret are
+  // trimmed by the co-driver D-pad while it runs.
+  frc2::CommandPtr ManualShootCommand();
+
+  void TrimManualHood(bool up);
+  void TrimManualTurret(double deltaDegrees);
 };

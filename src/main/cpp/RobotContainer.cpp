@@ -23,6 +23,11 @@ RobotContainer::RobotContainer() {
   HoodedShooter.init(); // Initalize Shooter motors and encoders
   mSpindexer.init(); // Initialize Indexer motors and encoders
   m_turret.init();
+  // Turret::init() zeroes the motor position, so the boot reference angle is 0 by
+  // definition. Don't read it back off the encoder here — SetPosition is async over
+  // CAN and an immediate read can still return the pre-zero value.
+  turretBootAngle = 0.0;
+  manualTurretAngle = turretBootAngle;
   mDeployIntake.init();
   mRunIntake.init();
 
@@ -87,6 +92,14 @@ void RobotContainer::ConfigureBindings() {
     }
   };
 
+  // True while the generic (no-Limelight) shoot sequence is running. Hands the
+  // co-driver D-pad over to hood/turret trim and holds off vision turret tracking.
+  frc2::Trigger manualShootActive(
+    [&] {
+      return manualShooting;
+    }
+  );
+
   // ******************** DEFAULT COMMANDS ********************
   drivetrain.SetDefaultCommand(
     drivetrain.Run(
@@ -112,7 +125,7 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
-  (turretAutoTargetingOn).WhileTrue(
+  (turretAutoTargetingOn && !manualShootActive).WhileTrue(
     frc2::cmd::Run(
       [this] {
         if (turretCam.hasTarget)
@@ -131,7 +144,9 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
-  (!turretAutoTargetingOn || turretNoAprilTagDetected).OnTrue(
+  // Don't yank the turret back to zero mid-manual-shot: losing the tag is expected
+  // there, since the manual sequence doesn't use the camera at all.
+  ((!turretAutoTargetingOn || turretNoAprilTagDetected) && !manualShootActive).OnTrue(
     frc2::cmd::RunOnce(
       [this] {
         m_turret.setAngle(0);
@@ -180,10 +195,16 @@ void RobotContainer::ConfigureBindings() {
 
   // ******************** Driver Controls ********************
   // Zero Gyro
-  driverCtr.POVUp().OnTrue(
+  driverCtr.Cross().OnTrue(
     frc2::cmd::RunOnce(
       [this] {QuestNav::getInstance().ZeroGyro();}
     )
+  );
+
+  // Generic shoot sequence — no Limelight required. Hood/turret trimmed on the
+  // co-driver D-pad while this runs.
+  driverCtr.Square().ToggleOnTrue(
+    ManualShootCommand()
   );
 
   // Run Intake
@@ -208,7 +229,7 @@ void RobotContainer::ConfigureBindings() {
     )
   );
 
-  codriverCtr.POVDown().OnTrue(
+  (codriverCtr.POVDown() && !manualShootActive).OnTrue(
     frc2::cmd::RunOnce(
       [this] {
         settings = settings % 6;
@@ -350,7 +371,7 @@ void RobotContainer::ConfigureBindings() {
   );
 
   // Enable/disable automatic turret targeting (QuestNav + hub equations)
-  codriverCtr.POVUp().OnTrue(
+  (codriverCtr.POVUp() && !manualShootActive).OnTrue(
     frc2::cmd::RunOnce(
       [this] {
         autoTargeting = !autoTargeting;
@@ -359,7 +380,7 @@ void RobotContainer::ConfigureBindings() {
   );
 
   // Rotate Turret Left
-  codriverCtr.POVLeft().WhileTrue(
+  (codriverCtr.POVLeft() && !manualShootActive).WhileTrue(
     m_turret.StartEnd(
       [this] { m_turret.setSpeed(-0.1); },
       [this] { m_turret.stop(); }
@@ -367,10 +388,42 @@ void RobotContainer::ConfigureBindings() {
   );
 
   // Rotate Turret Right
-  codriverCtr.POVRight().WhileTrue(
+  (codriverCtr.POVRight() && !manualShootActive).WhileTrue(
     m_turret.StartEnd(
       [this] { m_turret.setSpeed(0.1); },
       [this] { m_turret.stop(); }
+    )
+  );
+
+  // ******************** Manual Shoot D-pad Trim ********************
+  // Active only while the generic shoot sequence runs, so the bindings above keep
+  // their normal jobs the rest of the time.
+
+  // Hood Up
+  (codriverCtr.POVUp() && manualShootActive).WhileTrue(
+    HoodedShooter.Run(
+      [this] { TrimManualHood(true); }
+    )
+  );
+
+  // Hood Down
+  (codriverCtr.POVDown() && manualShootActive).WhileTrue(
+    HoodedShooter.Run(
+      [this] { TrimManualHood(false); }
+    )
+  );
+
+  // Turret Left
+  (codriverCtr.POVLeft() && manualShootActive).WhileTrue(
+    m_turret.Run(
+      [this] { TrimManualTurret(-TurretConstants::manualTurretStep); }
+    )
+  );
+
+  // Turret Right
+  (codriverCtr.POVRight() && manualShootActive).WhileTrue(
+    m_turret.Run(
+      [this] { TrimManualTurret(TurretConstants::manualTurretStep); }
     )
   );
 
@@ -382,6 +435,88 @@ void RobotContainer::ConfigureBindings() {
         drivetrain.stopAllModules();
       }
     ).IgnoringDisable(true)
+  );
+}
+
+// Trim the manual hood setpoint one step. `up` is the direction the operator asked
+// for; ManualShootConstants::hoodUpIncreasesAngle maps that onto the angle sign,
+// since the hood angle convention hasn't been confirmed on hardware yet.
+void RobotContainer::TrimManualHood(bool up) {
+  double step = ManualShootConstants::hoodStep;
+  if (!ManualShootConstants::hoodUpIncreasesAngle) step = -step;
+  if (!up) step = -step;
+
+  manualHoodAngle = std::clamp(
+    manualHoodAngle + step,
+    ManualShootConstants::hoodMinAngle,
+    ManualShootConstants::hoodMaxAngle
+  );
+
+  HoodedShooter.setManualHoodPosition(manualHoodAngle);
+  frc::SmartDashboard::PutNumber("Manual Hood Angle", manualHoodAngle);
+}
+
+// Trim the manual turret setpoint, clamped to +/- manualTurretRange around wherever
+// the turret sat at boot.
+void RobotContainer::TrimManualTurret(double deltaDegrees) {
+  manualTurretAngle = std::clamp(
+    manualTurretAngle + deltaDegrees,
+    turretBootAngle - TurretConstants::manualTurretRange,
+    turretBootAngle + TurretConstants::manualTurretRange
+  );
+
+  m_turret.setAngle(manualTurretAngle);
+  frc::SmartDashboard::PutNumber("Manual Turret Angle", manualTurretAngle);
+}
+
+// Generic shoot sequence with no Limelight involvement. Mirrors the structure of the
+// co-driver R2 auto-shot, minus the vision math: fixed RPM, fixed starting hood angle,
+// and the D-pad trims hood/turret live while it runs.
+frc2::CommandPtr RobotContainer::ManualShootCommand() {
+  return frc2::cmd::Sequence(
+    // Step 1: latch into manual mode and set the starting hood/turret positions.
+    frc2::cmd::RunOnce(
+      [this] {
+        manualShooting = true;
+        manualHoodAngle = ManualShootConstants::startingHoodAngle;
+        manualTurretAngle = turretBootAngle;
+
+        HoodedShooter.setManualHoodPosition(manualHoodAngle);
+        m_turret.setAngle(manualTurretAngle);
+
+        frc::SmartDashboard::PutBoolean("Manual Shooting", true);
+        frc::SmartDashboard::PutNumber("Manual Hood Angle", manualHoodAngle);
+        frc::SmartDashboard::PutNumber("Manual Turret Angle", manualTurretAngle);
+      }
+    ),
+    // Step 2: spin the flywheel and hold it there for as long as the sequence runs.
+    frc2::cmd::Parallel(
+      frc2::cmd::StartEnd(
+        [this] {
+          HoodedShooter.setFlywheelSpeed(-ManualShootConstants::flywheelRPM);
+        },
+        [this] {
+          HoodedShooter.ShooterMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{0.0});
+          HoodedShooter.moveHoodToZero();
+          manualShooting = false;
+          frc::SmartDashboard::PutBoolean("Manual Shooting", false);
+        }
+      ),
+      frc2::cmd::Sequence(
+        // Step 3: wait for 95% of target RPM before feeding, so the first ball
+        // isn't shot into a flywheel that's still spinning up.
+        frc2::cmd::WaitUntil(
+          [this] {
+            return HoodedShooter.getShooterVelocity() >
+              (ManualShootConstants::flywheelReadyFraction *
+                (1 / ShooterConstants::SHOOTEREFFICIENCY) *
+                ManualShootConstants::flywheelRPM);
+          }
+        ),
+        // Step 4: feed. Spindexer runs until the operator toggles the sequence off.
+        mSpindexer.RunSpindexer(&mSpindexer, ManualShootConstants::spindexerRPM)
+      )
+    )
   );
 }
 
