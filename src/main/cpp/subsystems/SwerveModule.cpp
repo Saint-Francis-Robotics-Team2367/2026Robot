@@ -82,8 +82,15 @@ void SwerveModule::initHardware() {
 
 
     // Encoder
+    // Refresh first so applying our sensor direction does not clobber the MagnetOffset
+    // that was calibrated onto the device in Tuner X.
+    encoder.GetConfigurator().Refresh(encoderConfigs);
     encoderConfigs.MagnetSensor.WithSensorDirection(ctre::phoenix6::signals::SensorDirectionValue::CounterClockwise_Positive);
-    moduleOffset = encoderConfigs.MagnetSensor.MagnetOffset.value();
+    encoder.GetConfigurator().Apply(encoderConfigs);
+
+    // Phoenix 6 applies MagnetOffset on the CANcoder itself, so GetAbsolutePosition() is
+    // already zeroed. Keep the software offset at 0 so we don't subtract it a second time.
+    moduleOffset = 0.0;
 }
 
 void SwerveModule::invertModule(ctre::phoenix6::signals::InvertedValue value, bool steer, bool drive) {

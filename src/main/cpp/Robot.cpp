@@ -10,10 +10,15 @@
 #include <frc2/command/CommandScheduler.h>
 #include <limits>
 #include <frc/util/Color.h>
+#include <frc/DriverStation.h>
 
 
 
-Robot::Robot() {}
+Robot::Robot() {
+  // POV triggers are polled every scheduler loop, so a missing controller spams a warning
+  // plus a full stack trace at 50 Hz and floods the DS console. Ignored when on FMS.
+  frc::DriverStation::SilenceJoystickConnectionWarning(true);
+}
 
 /**
  * This function is called every 20 ms, no matter the mode. Use
